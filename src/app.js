@@ -1,3 +1,4 @@
+const path = require("node:path");
 const express = require("express");
 const { TARIFAS, DESCRIPCIONES, MONEDA } = require("./tarifas");
 const { validarSolicitud } = require("./validacion");
@@ -7,6 +8,10 @@ const app = express();
 
 // Convierte el cuerpo JSON de la petición en un objeto (req.body).
 app.use(express.json());
+
+// Interfaz React compilada (solo existe tras `npm run build`).
+// En Vercel, la carpeta public/ la sirve directamente su CDN.
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 // GET /api/estado → confirma que el servicio funciona.
 app.get("/api/estado", (req, res) => {

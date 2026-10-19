@@ -1,8 +1,12 @@
 # Dependencias (se instalan con npm install)
 node_modules/
 
-# Compilación del cliente React
+# Compilación del cliente React (se genera con npm run build)
 cliente/dist/
+public/
+
+# Configuración local de Vercel CLI
+.vercel/
 
 # Variables de entorno y credenciales
 .env

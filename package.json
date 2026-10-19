@@ -7,7 +7,8 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "test": "node --test test/api.test.js",
-    "pruebas": "node pruebas/ejecutar-pruebas.js"
+    "pruebas": "node pruebas/ejecutar-pruebas.js",
+    "build": "npm --prefix cliente install && npm --prefix cliente run build"
   },
   "keywords": [
     "api",
