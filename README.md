@@ -10,6 +10,30 @@ servidor. Nunca usa un precio ni un total enviado por el cliente.
 Incluye además la ampliación opcional: una **interfaz React** (carpeta
 [`cliente/`](cliente/)) que consume la API.
 
+## Enlaces
+
+| Qué | Enlace |
+| --- | ------ |
+| Repositorio | <https://github.com/jacobmelendezjm-tech/presupuesta-mi-web> |
+| Interfaz React desplegada | <https://presupuesta-mi-web.vercel.app> |
+| API desplegada: estado | <https://presupuesta-mi-web.vercel.app/api/estado> |
+| API desplegada: tarifas | <https://presupuesta-mi-web.vercel.app/api/tarifas> |
+| API desplegada: presupuesto (POST) | `https://presupuesta-mi-web.vercel.app/api/presupuesto` |
+
+Probar el POST desplegado desde la terminal:
+
+```bash
+curl -i https://presupuesta-mi-web.vercel.app/api/presupuesto \
+  -H "Content-Type: application/json" \
+  -d '{"tipo":"corporativa","paginas":4,"formulario":true,"segundoIdioma":false}'
+```
+
+O ejecutar todas las pruebas contra la versión desplegada:
+
+```bash
+API_URL=https://presupuesta-mi-web.vercel.app npm run pruebas
+```
+
 ---
 
 ## Requisitos
@@ -27,7 +51,7 @@ npm -v
 ## Instalación
 
 ```bash
-git clone <URL-de-este-repositorio>
+git clone https://github.com/jacobmelendezjm-tech/presupuesta-mi-web.git
 cd presupuesta-mi-web
 npm install
 ```
@@ -261,7 +285,8 @@ En los casos inválidos, los demás campos son correctos para comprobar cada err
 | A7 | `GET /api/otra` (ruta inexistente) | 404 | 404 · No existe la ruta GET /api/otra | ✔ |
 
 Resultados obtenidos el 19/10/2026 con `curl` contra `http://localhost:3000`,
-y confirmados con `npm test` (19 pruebas, 19 correctas).
+y confirmados con `npm test` (19 pruebas, 19 correctas). Los mismos casos
+dan el mismo resultado contra la versión desplegada en Vercel.
 
 ---
 
@@ -289,6 +314,23 @@ Abre <http://localhost:5173>. Vite reenvía las peticiones `/api` a
 
 El formulario no bloquea valores incorrectos (por ejemplo, `2.5` páginas) para
 que se vea cómo la validación del servidor los rechaza y la interfaz muestra el error.
+
+**Alternativa con un solo proceso:** compila la interfaz y deja que Express la sirva:
+
+```bash
+npm run build   # compila cliente/ en public/
+npm start       # interfaz y API en http://localhost:3000
+```
+
+## Despliegue en Vercel
+
+El proyecto está desplegado en <https://presupuesta-mi-web.vercel.app>, conectado
+al repositorio de GitHub: cada `git push` a `main` vuelve a desplegarlo.
+
+- Vercel detecta Express y convierte `src/app.js` en una función del servidor.
+- [`vercel.json`](vercel.json) ejecuta `npm run build`, que compila la interfaz
+  React en `public/`; Vercel sirve esa carpeta desde su CDN.
+- Así la interfaz y la API comparten dirección y no hace falta CORS.
 
 ---
 
