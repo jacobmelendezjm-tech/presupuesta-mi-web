@@ -1,0 +1,26 @@
+{
+  "name": "presupuesta-mi-web",
+  "version": "1.0.0",
+  "description": "API con Node.js y Express que valida las características de una web y calcula su presupuesto desglosado.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/api.test.js",
+    "pruebas": "node pruebas/ejecutar-pruebas.js"
+  },
+  "keywords": [
+    "api",
+    "express",
+    "presupuesto"
+  ],
+  "author": "Jacob Melendez",
+  "license": "ISC",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
