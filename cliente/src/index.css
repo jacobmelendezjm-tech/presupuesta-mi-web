@@ -1024,3 +1024,234 @@ h1.card-title {
     display: none;
   }
 }
+
+/* ==========================================================================
+   Interacción con el ratón
+   - Una luz sigue al cursor (variables --mx y --my, ver useLuzRaton en App.jsx).
+   - Los efectos "hover" solo se aplican con ratón; en móvil se usa :active
+     (al tocar) para que no se queden iluminados.
+   ========================================================================== */
+
+.card,
+.opcion-tipo,
+.fila-extra,
+.boton,
+.stepper,
+.barra-total {
+  --mx: -9999px;
+  --my: -9999px;
+  isolation: isolate;
+}
+
+.card,
+.fila-extra,
+.boton,
+.stepper {
+  position: relative;
+}
+
+/* Brillo interior que sigue al cursor */
+.card::before,
+.opcion-tipo::before,
+.fila-extra::before,
+.stepper::before,
+.barra-total::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(460px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.1), transparent 45%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.opcion-tipo::before,
+.fila-extra::before,
+.stepper::before {
+  background: radial-gradient(200px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.12), transparent 60%);
+}
+
+/* Borde que se ilumina cuando el cursor se acerca */
+.card::after,
+.opcion-tipo::after,
+.stepper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(300px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.65), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+  mask-clip: content-box, border-box;
+  mask-composite: exclude;
+}
+
+.opcion-tipo::after {
+  inset: -1px; /* encima del borde de 1px */
+}
+
+.opcion-tipo::after,
+.stepper::after {
+  background: radial-gradient(140px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.55), transparent 60%);
+}
+
+/* Transiciones suaves */
+.card {
+  transition: box-shadow 0.25s;
+}
+
+.opcion-tipo,
+.fila-extra {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s, background-color 0.2s;
+}
+
+.opcion-icono {
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.2s;
+}
+
+.boton {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s, box-shadow 0.2s, opacity 0.15s;
+}
+
+.boton-icono,
+.switch,
+.grafico-barra,
+.barra-total-enlace,
+.badge {
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.15s, color 0.15s,
+    box-shadow 0.2s, border-color 0.2s, opacity 0.15s, height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.boton-primario::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(120px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.9), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* ---------- Solo con ratón ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover::before,
+  .opcion-tipo:hover::before,
+  .fila-extra:hover::before,
+  .stepper:hover::before,
+  .barra-total:hover::before,
+  .boton-primario:hover::before {
+    opacity: 1;
+  }
+
+  .card:hover {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16), 0 16px 40px -20px rgba(0, 0, 0, 0.8);
+  }
+
+  .opcion-tipo:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .opcion-tipo[data-activo]:hover {
+    border-color: var(--primary);
+  }
+
+  .opcion-tipo:hover .opcion-icono,
+  .fila-extra:hover .opcion-icono {
+    transform: scale(1.08);
+    background: #333;
+  }
+
+  .fila-extra:hover {
+    background: rgba(255, 255, 255, 0.035);
+  }
+
+  .boton-primario:hover {
+    transform: translateY(-1px);
+    background: #f0f0f0;
+    box-shadow: 0 8px 24px -10px rgba(229, 229, 229, 0.45);
+  }
+
+  .boton-icono:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  .switch:hover {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+  }
+
+  .badge:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: #2e2e2e;
+  }
+
+  .grafico-barra:hover {
+    background: #fafafa;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4), 0 -8px 24px -8px rgba(255, 255, 255, 0.25);
+  }
+
+  .tabla tbody tr:hover .opcion-icono {
+    transform: scale(1.1);
+    background: #333;
+  }
+
+  .barra-total-enlace:hover {
+    background: #f0f0f0;
+  }
+}
+
+/* ---------- Al hacer clic o tocar (todos los dispositivos) ---------- */
+.boton:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
+}
+
+.opcion-tipo:active,
+.fila-extra:active {
+  transform: scale(0.985);
+}
+
+.boton-icono:active {
+  transform: scale(0.88);
+}
+
+.switch:active {
+  transform: scale(0.94);
+}
+
+.barra-total:active .barra-total-enlace {
+  transform: scale(0.96);
+}
+
+.grafico-barra:active {
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opcion-tipo,
+  .fila-extra,
+  .boton,
+  .boton-icono,
+  .switch,
+  .opcion-icono {
+    transition: none;
+  }
+  .opcion-tipo:hover,
+  .boton-primario:hover,
+  .opcion-tipo:active,
+  .fila-extra:active,
+  .boton:active:not(:disabled),
+  .boton-icono:active,
+  .switch:active {
+    transform: none;
+  }
+}

@@ -50,6 +50,54 @@ const CONCEPTOS_GRAFICO = [
 
 const ERROR_CONEXION = "No se pudo conectar con la API. ¿Está en marcha con npm start?";
 
+// Elementos que reaccionan al ratón con una luz que sigue al cursor.
+const SELECTOR_REACTIVO = ".card, .opcion-tipo, .fila-extra, .boton, .stepper, .barra-total";
+
+// Guarda la posición del ratón (relativa a cada elemento) en las variables
+// CSS --mx y --my. El CSS las usa para dibujar el brillo. Solo se activa en
+// dispositivos con ratón; en pantallas táctiles no hace nada.
+function useLuzRaton() {
+  useEffect(() => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    let x = -9999;
+    let y = -9999;
+    let fotograma = 0;
+
+    const pintar = () => {
+      fotograma = 0;
+      for (const el of document.querySelectorAll(SELECTOR_REACTIVO)) {
+        const caja = el.getBoundingClientRect();
+        el.style.setProperty("--mx", `${x - caja.left}px`);
+        el.style.setProperty("--my", `${y - caja.top}px`);
+      }
+    };
+    const programar = () => {
+      if (!fotograma) fotograma = requestAnimationFrame(pintar);
+    };
+    const mover = (e) => {
+      x = e.clientX;
+      y = e.clientY;
+      programar();
+    };
+    const salir = () => {
+      x = -9999;
+      y = -9999;
+      programar();
+    };
+
+    window.addEventListener("pointermove", mover, { passive: true });
+    window.addEventListener("scroll", programar, { passive: true });
+    document.documentElement.addEventListener("pointerleave", salir);
+    return () => {
+      cancelAnimationFrame(fotograma);
+      window.removeEventListener("pointermove", mover);
+      window.removeEventListener("scroll", programar);
+      document.documentElement.removeEventListener("pointerleave", salir);
+    };
+  }, []);
+}
+
 // ---------------------------------------------------------------------------
 // Componentes de interfaz
 // ---------------------------------------------------------------------------
@@ -132,6 +180,8 @@ export default function App() {
   const [calculando, setCalculando] = useState(false);
 
   const peticionActual = useRef(null);
+
+  useLuzRaton();
 
   // Al cargar: GET /api/estado y GET /api/tarifas.
   useEffect(() => {
