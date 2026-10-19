@@ -292,8 +292,23 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Formulario en React que consulta `GET /api/tarifas`, envía la solicitud a
-`POST /api/presupuesto` y muestra el desglose o los errores que devuelve el servidor.
+Formulario en React que consume las tres rutas de la API:
+
+- `GET /api/estado`: muestra la insignia «API en línea».
+- `GET /api/tarifas`: muestra los precios en el formulario y en la tabla de tarifas.
+- `POST /api/presupuesto`: recalcula el presupuesto en el servidor con cada cambio
+  y muestra el total, un gráfico del desglose o los errores 400 (el campo erróneo
+  se marca en rojo usando la lista `campos` de la respuesta).
+
+**Diseño:** tema oscuro neutro con tarjetas, tipografía Inter y fondo con grano,
+con el mismo estilo que [ejercicio-vehiculos](https://ejercicio-vehiculos.vercel.app/).
+Es **responsive**:
+
+| Pantalla | Disposición |
+| -------- | ----------- |
+| Móvil (< 640 px) | Una columna: formulario → total y desglose → tarifas, con una barra fija abajo que muestra el total |
+| Tablet (640–1023 px) | Una columna más ancha; el total se muestra en horizontal |
+| Escritorio (≥ 1024 px) | Dos columnas: formulario y tarifas a la izquierda, total y desglose fijos a la derecha |
 
 Hacen falta **dos terminales**:
 
