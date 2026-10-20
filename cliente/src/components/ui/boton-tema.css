@@ -8,14 +8,22 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
-  color: #f5f5f7;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--nav-texto, currentColor);
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s cubic-bezier(0.28, 0.11, 0.32, 1);
 }
 
 .boton-tema:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.11);
+}
+
+:root[data-theme="dark"] .boton-tema {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-theme="dark"] .boton-tema:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .boton-tema:active {

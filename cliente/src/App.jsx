@@ -281,6 +281,15 @@ export default function App() {
   const refHero = useRef(null);
   const refDesglose = useRef(null);
   const heroEnVista = useEnVista(refHero, true);
+  const [conScroll, setConScroll] = useState(false);
+
+  // La isla de navegación se compacta en cuanto la página se desplaza.
+  useEffect(() => {
+    const alDesplazar = () => setConScroll(window.scrollY > 24);
+    alDesplazar();
+    window.addEventListener("scroll", alDesplazar, { passive: true });
+    return () => window.removeEventListener("scroll", alDesplazar);
+  }, []);
   const desgloseEnVista = useEnVista(refDesglose, false, { threshold: 0.15 });
 
   // Al cargar: GET /api/estado y GET /api/tarifas.
@@ -383,7 +392,7 @@ export default function App() {
   return (
     <>
       {/* ---------------- Navegación ---------------- */}
-      <nav className="nav" aria-label="Principal">
+      <nav className="nav" aria-label="Principal" data-scroll={conScroll || undefined}>
         <div className="nav-interior">
           <a href="#hero" className="marca" aria-label="JM · Presupuesta, ir al inicio">
             <LogoJM />

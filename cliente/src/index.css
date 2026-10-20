@@ -42,6 +42,10 @@
   --ancho: 980px;
   --ancho-amplio: 1180px;
   --alto-nav: 52px;
+  --isla-margen: 12px;
+  --isla-ancho: 1020px;
+  /* Espacio que ocupa la isla flotante (margen + alto + aire) */
+  --hueco-nav: calc(var(--alto-nav) + 2 * var(--isla-margen) + env(safe-area-inset-top, 0px));
   --curva: cubic-bezier(0.28, 0.11, 0.32, 1);
 
   color-scheme: light;
@@ -83,7 +87,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--alto-nav);
+  scroll-padding-top: var(--hueco-nav);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -240,28 +244,74 @@ input {
    Navegación translúcida
    -------------------------------------------------------------------------- */
 
+/* Isla flotante de cristal: una píldora separada del borde superior que
+   desenfoca lo que pasa por detrás. Al hacer scroll se compacta un poco. */
 .nav {
-  position: sticky;
-  top: 0;
+  --nav-fondo: rgba(255, 255, 255, 0.58);
+  --nav-fondo-scroll: rgba(255, 255, 255, 0.72);
+  --nav-borde: rgba(255, 255, 255, 0.7);
+  --nav-brillo: rgba(255, 255, 255, 0.9);
+  --nav-sombra: rgba(0, 0, 0, 0.1);
+  --nav-texto: #1d1d1f;
+  --nav-texto-2: rgba(29, 29, 31, 0.72);
+  --nav-separador: rgba(29, 29, 31, 0.18);
+
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--isla-margen));
+  left: 50%;
   z-index: 50;
+  width: min(var(--isla-ancho), calc(100% - 2 * var(--isla-margen)));
   height: var(--alto-nav);
-  padding-top: env(safe-area-inset-top, 0px);
-  box-sizing: content-box;
-  background: rgba(22, 22, 23, 0.8);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(180%) blur(20px);
-  color: #e8e8ed;
+  border: 1px solid var(--nav-borde);
+  border-radius: 980px;
+  background: var(--nav-fondo);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
+  box-shadow: inset 0 1px 0 var(--nav-brillo), 0 8px 32px var(--nav-sombra), 0 1px 2px var(--nav-sombra);
+  color: var(--nav-texto);
+  transform: translateX(-50%);
+  transition: width 0.5s var(--curva), height 0.5s var(--curva), top 0.5s var(--curva),
+    background-color 0.4s var(--curva), box-shadow 0.4s var(--curva);
+}
+
+:root[data-theme="dark"] .nav {
+  --nav-fondo: rgba(29, 29, 31, 0.55);
+  --nav-fondo-scroll: rgba(29, 29, 31, 0.72);
+  --nav-borde: rgba(255, 255, 255, 0.12);
+  --nav-brillo: rgba(255, 255, 255, 0.08);
+  --nav-sombra: rgba(0, 0, 0, 0.45);
+  --nav-texto: #f5f5f7;
+  --nav-texto-2: rgba(245, 245, 247, 0.72);
+  --nav-separador: rgba(245, 245, 247, 0.22);
+}
+
+.nav[data-scroll] {
+  top: calc(env(safe-area-inset-top, 0px) + var(--isla-margen) - 4px);
+  width: min(calc(var(--isla-ancho) - 60px), calc(100% - 2 * var(--isla-margen)));
+  height: calc(var(--alto-nav) - 6px);
+  background: var(--nav-fondo-scroll);
+}
+
+/* Sin desenfoque disponible, el cristal se hace casi opaco para que se lea. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav {
+    --nav-fondo: rgba(255, 255, 255, 0.94);
+    --nav-fondo-scroll: rgba(255, 255, 255, 0.96);
+  }
+
+  :root[data-theme="dark"] .nav {
+    --nav-fondo: rgba(29, 29, 31, 0.94);
+    --nav-fondo-scroll: rgba(29, 29, 31, 0.96);
+  }
 }
 
 .nav-interior {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  max-width: var(--ancho);
+  gap: 20px;
   height: 100%;
-  margin: 0 auto;
-  padding: 0 22px;
+  padding: 0 10px 0 22px;
 }
 
 .marca {
@@ -271,7 +321,7 @@ input {
   font-size: 19px;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: #f5f5f7;
+  color: var(--nav-texto);
 }
 
 .marca {
@@ -292,7 +342,7 @@ input {
 .marca-separador {
   width: 1px;
   height: 18px;
-  background: rgba(232, 232, 237, 0.3);
+  background: var(--nav-separador);
 }
 
 .pie-marca {
@@ -321,12 +371,12 @@ input {
 }
 
 .nav-enlaces a {
-  color: rgba(232, 232, 237, 0.8);
+  color: var(--nav-texto-2);
   transition: color 0.2s;
 }
 
 .nav-enlaces a:hover {
-  color: #fff;
+  color: var(--nav-texto);
 }
 
 .nav-acciones {
@@ -340,7 +390,7 @@ input {
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: rgba(232, 232, 237, 0.8);
+  color: var(--nav-texto-2);
 }
 
 .estado-punto {
@@ -656,7 +706,7 @@ input {
 
 .configurador-fijo {
   position: sticky;
-  top: calc(var(--alto-nav) + 32px);
+  top: calc(var(--hueco-nav) + 20px);
   display: grid;
   gap: 20px;
 }
