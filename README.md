@@ -292,23 +292,31 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Formulario en React que consume las tres rutas de la API:
+Landing en React que funciona como calculadora y consume las tres rutas de la API:
 
-- `GET /api/estado`: muestra la insignia «API en línea».
-- `GET /api/tarifas`: muestra los precios en el formulario y en la tabla de tarifas.
+- `GET /api/estado`: muestra el indicador «API en línea» en la barra de navegación.
+- `GET /api/tarifas`: muestra los precios en las opciones del configurador y en la
+  sección «Tarifas».
 - `POST /api/presupuesto`: recalcula el presupuesto en el servidor con cada cambio
-  y muestra el total, un gráfico del desglose o los errores 400 (el campo erróneo
-  se marca en rojo usando la lista `campos` de la respuesta).
+  y muestra el total, el desglose o los errores 400 (el campo erróneo se marca en
+  rojo usando la lista `campos` de la respuesta).
 
-**Diseño:** tema oscuro neutro con tarjetas, tipografía Inter y fondo con grano,
-con el mismo estilo que [ejercicio-vehiculos](https://ejercicio-vehiculos.vercel.app/).
-Es **responsive**:
+**Diseño:** página de producto de estilo Apple: titulares grandes, secciones claras
+y oscuras alternas, barra de navegación translúcida, botones redondeados y un
+configurador por pasos como el de una tienda online. Secciones:
 
-| Pantalla | Disposición |
-| -------- | ----------- |
-| Móvil (< 640 px) | Una columna: formulario → total y desglose → tarifas, con una barra fija abajo que muestra el total |
-| Tablet (640–1023 px) | Una columna más ancha; el total se muestra en horizontal |
-| Escritorio (≥ 1024 px) | Dos columnas: formulario y tarifas a la izquierda, total y desglose fijos a la derecha |
+| Sección | Qué muestra |
+| ------- | ----------- |
+| Inicio | Titular y una vista previa de la web que cambia con la configuración |
+| Configura tu web | Tipo de web, número de páginas y extras, con el total al lado |
+| Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
+| Tarifas | Las cinco tarifas que publica el servidor |
+| Cómo funciona | Los tres pasos del cálculo y la última petición y respuesta JSON reales |
+
+Es **responsive**: en escritorio el configurador tiene dos columnas (vista previa y
+total fijos a la izquierda); por debajo de 900 px pasa a una sola columna. Al salir
+del inicio aparece una barra fija abajo con el total. Respeta la opción del sistema
+de reducir el movimiento.
 
 Hacen falta **dos terminales**:
 

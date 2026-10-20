@@ -12,7 +12,135 @@ const formatoEuros = new Intl.NumberFormat("es-ES", {
 });
 const euros = (cantidad) => formatoEuros.format(cantidad);
 
-// Iconos pequeños en línea (mismo trazo que los iconos de shadcn/lucide).
+const PAGINAS_MIN = 1;
+const PAGINAS_MAX = 20;
+
+const TIPOS = [
+  {
+    valor: "landing",
+    titulo: "Landing",
+    lema: "Una página. Un objetivo.",
+    texto: "Para lanzar un producto, una campaña o un evento.",
+  },
+  {
+    valor: "corporativa",
+    titulo: "Corporativa",
+    lema: "Toda tu empresa. En una web.",
+    texto: "Varias secciones para contar quién eres y qué haces.",
+  },
+];
+
+const EXTRAS = [
+  {
+    campo: "formulario",
+    titulo: "Formulario de contacto",
+    texto: "Que tus clientes te escriban sin salir de la web.",
+  },
+  {
+    campo: "segundoIdioma",
+    titulo: "Segundo idioma",
+    texto: "Toda la web traducida, para llegar más lejos.",
+  },
+];
+
+// Conceptos del desglose que devuelve POST /api/presupuesto.
+const CONCEPTOS = [
+  { clave: "base", etiqueta: "Precio base" },
+  { clave: "paginasAdicionales", etiqueta: "Páginas adicionales" },
+  { clave: "formulario", etiqueta: "Formulario de contacto" },
+  { clave: "segundoIdioma", etiqueta: "Segundo idioma" },
+];
+
+const PASOS = [
+  {
+    numero: "01",
+    titulo: "Tú eliges.",
+    texto: "El navegador solo envía el tipo de web, las páginas y los extras. Nunca un precio.",
+  },
+  {
+    numero: "02",
+    titulo: "El servidor valida.",
+    texto: "Comprueba cada campo y su tipo. Si algo no cumple el contrato, responde con un error 400.",
+  },
+  {
+    numero: "03",
+    titulo: "El servidor calcula.",
+    texto: "Aplica sus propias tarifas y devuelve el desglose y el total con un 200.",
+  },
+];
+
+const ERROR_CONEXION = "No se pudo conectar con la API. ¿Está en marcha con npm start?";
+
+const resumenSolicitud = (s) =>
+  [
+    s.tipo === "landing" ? "Landing" : "Web corporativa",
+    `${s.paginas} ${s.paginas === 1 ? "página" : "páginas"}`,
+    s.formulario && "formulario",
+    s.segundoIdioma && "2 idiomas",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+const prefiereMenosMovimiento = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------------------------------------------------------------------------
+// Hooks
+// ---------------------------------------------------------------------------
+
+// Anima un número desde el valor que se está mostrando hasta el nuevo objetivo.
+function useNumeroAnimado(objetivo) {
+  const [valor, setValor] = useState(objetivo ?? 0);
+  const mostrado = useRef(objetivo ?? null);
+
+  useEffect(() => {
+    if (objetivo == null) return;
+    const desde = mostrado.current;
+    // El primer valor se muestra directamente; solo se animan los cambios.
+    if (desde == null || desde === objetivo || prefiereMenosMovimiento()) {
+      mostrado.current = objetivo;
+      setValor(objetivo);
+      return;
+    }
+
+    let fotograma;
+    const inicio = performance.now();
+    const duracion = 700;
+    const paso = (ahora) => {
+      const progreso = Math.min(1, (ahora - inicio) / duracion);
+      const suavizado = 1 - Math.pow(1 - progreso, 3);
+      mostrado.current = Math.round(desde + (objetivo - desde) * suavizado);
+      setValor(mostrado.current);
+      if (progreso < 1) fotograma = requestAnimationFrame(paso);
+    };
+    fotograma = requestAnimationFrame(paso);
+    return () => cancelAnimationFrame(fotograma);
+  }, [objetivo]);
+
+  return valor;
+}
+
+// Indica si un elemento está dentro de la ventana.
+function useEnVista(ref, inicial = false, opciones) {
+  const [enVista, setEnVista] = useState(inicial);
+
+  useEffect(() => {
+    const elemento = ref.current;
+    if (!elemento || !("IntersectionObserver" in window)) return;
+    const observador = new IntersectionObserver(([e]) => setEnVista(e.isIntersecting), opciones);
+    observador.observe(elemento);
+    return () => observador.disconnect();
+    // Las opciones se fijan al montar el componente.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref]);
+
+  return enVista;
+}
+
+// ---------------------------------------------------------------------------
+// Componentes de interfaz
+// ---------------------------------------------------------------------------
+
 function Icono({ nombre, className = "icono" }) {
   const trazos = {
     landing: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18" /><path d="M8 14h8" /></>,
@@ -22,7 +150,9 @@ function Icono({ nombre, className = "icono" }) {
     segundoIdioma: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18" /><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18" /></>,
     menos: <path d="M5 12h14" />,
     mas: <><path d="M5 12h14" /><path d="M12 5v14" /></>,
+    check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
     alerta: <><circle cx="12" cy="12" r="9" /><path d="M12 8v4" /><path d="M12 16h.01" /></>,
+    flecha: <path d="m9 6 6 6-6 6" />,
   };
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -31,84 +161,95 @@ function Icono({ nombre, className = "icono" }) {
   );
 }
 
-const TIPOS = [
-  { valor: "landing", titulo: "Landing", texto: "Una página para un producto o campaña." },
-  { valor: "corporativa", titulo: "Corporativa", texto: "La web completa de una empresa." },
-];
-
-const EXTRAS = [
-  { campo: "formulario", titulo: "Formulario de contacto", texto: "Para que te escriban desde la web." },
-  { campo: "segundoIdioma", titulo: "Segundo idioma", texto: "Toda la web traducida a otro idioma." },
-];
-
-const CONCEPTOS_GRAFICO = [
-  { clave: "base", etiqueta: "Base" },
-  { clave: "paginasAdicionales", etiqueta: "Páginas" },
-  { clave: "formulario", etiqueta: "Formulario" },
-  { clave: "segundoIdioma", etiqueta: "Idioma" },
-];
-
-const ERROR_CONEXION = "No se pudo conectar con la API. ¿Está en marcha con npm start?";
-
-// ---------------------------------------------------------------------------
-// Componentes de interfaz
-// ---------------------------------------------------------------------------
-
-function Tarjeta({ className = "", children, ...resto }) {
+// Logo JM: letras de trazo lineal (usan el color del texto) y un punto de acento.
+function LogoJM({ className = "logo-jm" }) {
   return (
-    <section className={`card ${className}`} {...resto}>
-      {children}
-    </section>
+    <svg className={className} viewBox="0 0 46 26" fill="none" aria-hidden="true">
+      <path
+        d="M3 18a5 5 0 0 0 10 0V3M19 23V3l8 11 8-11v20"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="42" cy="21" r="2.4" className="logo-jm-punto" />
+    </svg>
   );
 }
 
-function Interruptor({ id, activo, onChange, etiqueta }) {
+// Hace aparecer su contenido con un fundido al entrar en la ventana.
+function Revelar({ as: Etiqueta = "div", className = "", retraso = 0, children, ...resto }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const elemento = ref.current;
+    if (!elemento || !("IntersectionObserver" in window)) {
+      setVisible(true);
+      return;
+    }
+    const observador = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true);
+          observador.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    observador.observe(elemento);
+    return () => observador.disconnect();
+  }, []);
+
   return (
-    <button
-      type="button"
-      id={id}
-      role="switch"
-      aria-checked={activo}
-      aria-label={etiqueta}
-      className="switch"
-      onClick={() => onChange(!activo)}
+    <Etiqueta
+      ref={ref}
+      className={`revelar${visible ? " visible" : ""} ${className}`}
+      style={{ "--retraso": `${retraso}ms` }}
+      {...resto}
     >
-      <span className="switch-thumb" />
-    </button>
+      {children}
+    </Etiqueta>
   );
 }
 
-// Gráfico de barras del desglose: una sola serie, barras ancladas a la base,
-// con tooltip al pasar el ratón o al tocar (foco) cada barra.
-function GraficoDesglose({ presupuesto }) {
-  const valores = CONCEPTOS_GRAFICO.map((c) => ({ ...c, valor: presupuesto ? presupuesto[c.clave] : 0 }));
-  const maximo = Math.max(...valores.map((v) => v.valor), 1);
+// Ventana de navegador dibujada con CSS que refleja la configuración elegida.
+function VistaPrevia({ tipo, paginas, formulario, segundoIdioma, className = "" }) {
+  const numero = Number.isInteger(paginas) && paginas >= PAGINAS_MIN && paginas <= PAGINAS_MAX ? paginas : 1;
+  const enlaces = Math.min(numero, 5);
+  const restantes = numero - enlaces;
 
   return (
-    <div className="grafico" role="group" aria-label="Gráfico del desglose del presupuesto">
-      <ul className="grafico-area">
-        {valores.map((v) => (
-          <li key={v.clave} className="grafico-columna">
-            <button
-              type="button"
-              className="grafico-barra"
-              style={{ height: `${(v.valor / maximo) * 100}%` }}
-              aria-label={`${v.etiqueta}: ${euros(v.valor)}`}
-              data-vacio={v.valor === 0 || undefined}
-            >
-              <span className="tooltip" role="tooltip">
-                <span className="tooltip-etiqueta">{v.etiqueta}</span>
-                <strong>{euros(v.valor)}</strong>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <ul className="grafico-ejes" aria-hidden="true">
-        {valores.map((v) => (
-          <li key={v.clave}>{v.etiqueta}</li>
-        ))}
-      </ul>
+    <div className={`vista ${className}`} data-tipo={tipo} aria-hidden="true">
+      <div className="vista-barra">
+        <span className="vista-puntos"><i /><i /><i /></span>
+        <span className="vista-url">tuweb.com</span>
+      </div>
+      <div className="vista-pagina">
+        <div className="vista-nav">
+          <span className="vista-logo" />
+          <span className="vista-enlaces">
+            {Array.from({ length: enlaces }, (_, i) => <i key={i} />)}
+            {restantes > 0 && <em>+{restantes}</em>}
+          </span>
+          {segundoIdioma && <span className="vista-idioma">ES · EN</span>}
+        </div>
+        <div className="vista-hero">
+          <b />
+          <b className="corta" />
+          <span className="vista-boton" />
+        </div>
+        {tipo === "corporativa" ? (
+          <div className="vista-tarjetas"><i /><i /><i /></div>
+        ) : (
+          <div className="vista-banda"><i /><i /></div>
+        )}
+        {formulario && (
+          <div className="vista-formulario">
+            <i /><i /><span />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -130,9 +271,13 @@ export default function App() {
   const [presupuesto, setPresupuesto] = useState(null);
   const [errores, setErrores] = useState({ campos: [], detalles: [] });
   const [calculando, setCalculando] = useState(false);
+  const [intercambio, setIntercambio] = useState(null); // última solicitud y respuesta
 
   const peticionActual = useRef(null);
-
+  const refHero = useRef(null);
+  const refDesglose = useRef(null);
+  const heroEnVista = useEnVista(refHero, true);
+  const desgloseEnVista = useEnVista(refDesglose, false, { threshold: 0.15 });
 
   // Al cargar: GET /api/estado y GET /api/tarifas.
   useEffect(() => {
@@ -169,6 +314,7 @@ export default function App() {
         body: JSON.stringify(solicitud),
       });
       const datos = await respuesta.json();
+      setIntercambio({ solicitud, estado: respuesta.status, datos });
 
       if (respuesta.ok) {
         // Guardamos también la solicitud para que el resumen muestre
@@ -197,286 +343,417 @@ export default function App() {
     return () => clearTimeout(espera);
   }, [calcular]);
 
-  const precio = (concepto) => {
-    const tarifa = tarifas?.find((t) => t.concepto === concepto);
-    return tarifa ? euros(tarifa.precio) : "…";
-  };
+  const tarifa = (concepto) => tarifas?.find((t) => t.concepto === concepto)?.precio;
+  const precio = (concepto) => (tarifa(concepto) == null ? "…" : euros(tarifa(concepto)));
 
   const numeroPaginas = Number(paginas);
-  const paginasEnRango = Number.isInteger(numeroPaginas) && numeroPaginas >= 1 && numeroPaginas <= 20;
+  const paginasEnRango =
+    Number.isInteger(numeroPaginas) && numeroPaginas >= PAGINAS_MIN && numeroPaginas <= PAGINAS_MAX;
   const cambiarPaginas = (delta) => {
-    const actual = paginasEnRango ? numeroPaginas : 1;
-    setPaginas(String(Math.min(20, Math.max(1, actual + delta))));
+    const actual = paginasEnRango ? numeroPaginas : PAGINAS_MIN;
+    setPaginas(String(Math.min(PAGINAS_MAX, Math.max(PAGINAS_MIN, actual + delta))));
   };
+
+  const extras = { formulario, segundoIdioma };
+  const cambiarExtra = { formulario: setFormulario, segundoIdioma: setSegundoIdioma };
 
   const hayError = errores.detalles.length > 0;
   const errorEn = (campo) => errores.campos.includes(campo);
-  const mayorConcepto = presupuesto
-    ? CONCEPTOS_GRAFICO.reduce((a, b) => (presupuesto[b.clave] > presupuesto[a.clave] ? b : a))
-    : null;
+  const totalAnimado = useNumeroAnimado(presupuesto?.total);
+  const totalTexto = presupuesto ? euros(totalAnimado) : "—";
+  const desde = tarifas ? Math.min(tarifa("landing"), tarifa("corporativa")) : null;
+  const mostrarBarra = !heroEnVista && !desgloseEnVista;
+
+  const configuracion = { tipo, paginas: numeroPaginas, formulario, segundoIdioma };
 
   return (
     <>
-      <div className="fondo" aria-hidden="true" />
+      {/* ---------------- Navegación ---------------- */}
+      <nav className="nav" aria-label="Principal">
+        <div className="nav-interior">
+          <a href="#inicio" className="marca" aria-label="JM · Presupuesta, ir al inicio">
+            <LogoJM />
+            <span className="marca-separador" aria-hidden="true" />
+            Presupuesta
+          </a>
+          <ul className="nav-enlaces">
+            <li><a href="#configurar">Configurar</a></li>
+            <li><a href="#desglose">Desglose</a></li>
+            <li><a href="#tarifas">Tarifas</a></li>
+            <li><a href="#como-funciona">Cómo funciona</a></li>
+          </ul>
+          <div className="nav-acciones">
+            <span className={`estado estado-${estadoApi}`} title="GET /api/estado">
+              <span className="estado-punto" aria-hidden="true" />
+              <span className="estado-texto">
+                {estadoApi === "ok" ? "API en línea" : estadoApi === "error" ? "API sin conexión" : "Comprobando…"}
+              </span>
+            </span>
+            <a href="#configurar" className="boton boton-pequeno">Calcular</a>
+          </div>
+        </div>
+      </nav>
 
-      <main className="contenedor">
-        <div className="disposicion">
-          {/* ---------------- Formulario ---------------- */}
-            <Tarjeta className="card-formulario">
-              <header className="card-header card-header-accion">
-                <div>
-                  <h1 className="card-title">Presupuesta mi web</h1>
-                  <p className="card-description">
-                    Configura tu web. El servidor valida los datos y calcula el precio.
-                  </p>
+      <main>
+        {/* ---------------- Hero ---------------- */}
+        <section className="hero" id="inicio" ref={refHero}>
+          <div className="hero-texto">
+            <p className="hero-eyebrow revelar-inicio">Presupuesta mi web</p>
+            <h1 className="hero-titulo revelar-inicio" style={{ "--retraso": "80ms" }}>
+              Tu web.
+              <br />
+              <span className="degradado">Al precio exacto.</span>
+            </h1>
+            <p className="hero-subtitulo revelar-inicio" style={{ "--retraso": "160ms" }}>
+              Elige el tipo, las páginas y los extras. Nuestro servidor valida cada dato y calcula tu
+              presupuesto al instante.
+            </p>
+            <div className="hero-acciones revelar-inicio" style={{ "--retraso": "240ms" }}>
+              <a href="#configurar" className="boton">Configurar mi web</a>
+              <a href="#tarifas" className="enlace">
+                Ver tarifas <Icono nombre="flecha" className="icono-enlace" />
+              </a>
+            </div>
+            <p className="hero-desde revelar-inicio" style={{ "--retraso": "320ms" }}>
+              {desde != null ? `Desde ${euros(desde)}¹` : " "}
+            </p>
+          </div>
+          <div className="hero-visual revelar-inicio" style={{ "--retraso": "400ms" }}>
+            <div className="hero-brillo" aria-hidden="true" />
+            <VistaPrevia {...configuracion} className="vista-grande" />
+          </div>
+        </section>
+
+        {/* ---------------- Configurador ---------------- */}
+        <section className="seccion seccion-clara" id="configurar">
+          <Revelar className="seccion-cabecera">
+            <h2 className="titular">Configura tu web.</h2>
+            <p className="entradilla">Cada cambio se envía al servidor y se calcula en tiempo real.</p>
+          </Revelar>
+
+          <div className="configurador">
+            {/* Columna fija con la vista previa y el total */}
+            <div className="configurador-visual">
+              <div className="configurador-fijo">
+                <VistaPrevia {...configuracion} />
+                <div className="mini-total" aria-live="polite">
+                  <span className="texto-suave">Tu presupuesto</span>
+                  <strong className={hayError ? "mini-total-error" : ""}>
+                    {hayError ? "Revisa los datos" : totalTexto}
+                  </strong>
+                  <span className="texto-suave mini-total-resumen">
+                    {presupuesto ? resumenSolicitud(presupuesto.solicitud) : calculando ? "Calculando…" : " "}
+                  </span>
                 </div>
-                <span className={`badge badge-${estadoApi}`}>
-                  <span className="badge-punto" aria-hidden="true" />
-                  {estadoApi === "ok" ? "API en línea" : estadoApi === "error" ? "API sin conexión" : "Comprobando…"}
-                </span>
-              </header>
+              </div>
+            </div>
 
-              <form
-                className="card-content formulario"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  calcular();
-                }}
-                noValidate
-              >
-                {/* Tipo de web */}
-                <fieldset className="campo">
-                  <legend className="etiqueta">Tipo de web</legend>
-                  <div className={`opciones-tipo ${errorEn("tipo") ? "con-error" : ""}`}>
-                    {TIPOS.map((t) => (
-                      <label key={t.valor} className="opcion-tipo" data-activo={tipo === t.valor || undefined}>
-                        <input
-                          type="radio"
-                          name="tipo"
-                          value={t.valor}
-                          checked={tipo === t.valor}
-                          onChange={() => setTipo(t.valor)}
-                        />
-                        <span className="opcion-icono">
-                          <Icono nombre={t.valor} />
-                        </span>
-                        <span className="opcion-texto">
-                          <span className="opcion-titulo">{t.titulo}</span>
-                          <span className="texto-suave">{t.texto}</span>
-                        </span>
+            <form
+              className="configurador-pasos"
+              onSubmit={(e) => {
+                e.preventDefault();
+                calcular();
+              }}
+              noValidate
+            >
+              {/* Paso 1: tipo de web */}
+              <fieldset className="paso">
+                <legend className="paso-titulo">
+                  Tipo de web. <span className="gris">¿Cuál encaja contigo?</span>
+                </legend>
+                <div className={`opciones${errorEn("tipo") ? " con-error" : ""}`}>
+                  {TIPOS.map((t) => (
+                    <label key={t.valor} className="opcion" data-activo={tipo === t.valor || undefined}>
+                      <input
+                        type="radio"
+                        name="tipo"
+                        value={t.valor}
+                        checked={tipo === t.valor}
+                        onChange={() => setTipo(t.valor)}
+                        className="oculto"
+                      />
+                      <span className="opcion-cabecera">
+                        <Icono nombre={t.valor} className="opcion-icono" />
                         <span className="opcion-precio">desde {precio(t.valor)}</span>
-                      </label>
-                    ))}
-                  </div>
-                </fieldset>
-
-                {/* Número de páginas */}
-                <div className="campo">
-                  <div className="campo-cabecera">
-                    <label htmlFor="paginas" className="etiqueta">
-                      Número de páginas
+                      </span>
+                      <span className="opcion-titulo">{t.titulo}</span>
+                      <span className="opcion-lema">{t.lema}</span>
+                      <span className="opcion-texto">{t.texto}</span>
                     </label>
-                    <span className="texto-suave">1 incluida · +{precio("paginaAdicional")} cada adicional</span>
-                  </div>
-                  <div className="paginas">
-                    <input
-                      type="range"
-                      min="1"
-                      max="20"
-                      value={paginasEnRango ? numeroPaginas : 1}
-                      onChange={(e) => setPaginas(e.target.value)}
-                      aria-label="Número de páginas (deslizador)"
-                      className="slider"
-                      style={{ "--progreso": `${(((paginasEnRango ? numeroPaginas : 1) - 1) / 19) * 100}%` }}
-                    />
-                    <div className={`stepper ${errorEn("paginas") ? "con-error" : ""}`}>
-                      <button type="button" className="boton-icono" onClick={() => cambiarPaginas(-1)} aria-label="Quitar una página">
-                        <Icono nombre="menos" />
-                      </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              {/* Paso 2: número de páginas */}
+              <div className="paso" role="group" aria-labelledby="titulo-paginas">
+                <h3 className="paso-titulo" id="titulo-paginas">
+                  Páginas. <span className="gris">¿Cuántas necesitas?</span>
+                </h3>
+                <div className={`tarjeta-paginas${errorEn("paginas") ? " con-error" : ""}`}>
+                  <div className="stepper">
+                    <button
+                      type="button"
+                      className="boton-circular"
+                      onClick={() => cambiarPaginas(-1)}
+                      disabled={paginasEnRango && numeroPaginas <= PAGINAS_MIN}
+                      aria-label="Quitar una página"
+                    >
+                      <Icono nombre="menos" />
+                    </button>
+                    <div className="stepper-valor">
                       <input
                         id="paginas"
                         type="number"
                         inputMode="decimal"
-                        className="input input-numero"
+                        className="input-paginas"
                         value={paginas}
                         onChange={(e) => setPaginas(e.target.value)}
                         aria-invalid={errorEn("paginas") || undefined}
                         aria-describedby="ayuda-paginas"
+                        aria-label="Número de páginas"
                       />
-                      <button type="button" className="boton-icono" onClick={() => cambiarPaginas(1)} aria-label="Añadir una página">
-                        <Icono nombre="mas" />
-                      </button>
+                      <span className="stepper-unidad">{numeroPaginas === 1 ? "página" : "páginas"}</span>
                     </div>
+                    <button
+                      type="button"
+                      className="boton-circular"
+                      onClick={() => cambiarPaginas(1)}
+                      disabled={paginasEnRango && numeroPaginas >= PAGINAS_MAX}
+                      aria-label="Añadir una página"
+                    >
+                      <Icono nombre="mas" />
+                    </button>
+                  </div>
+                  <input
+                    type="range"
+                    min={PAGINAS_MIN}
+                    max={PAGINAS_MAX}
+                    value={paginasEnRango ? numeroPaginas : PAGINAS_MIN}
+                    onChange={(e) => setPaginas(e.target.value)}
+                    aria-label="Número de páginas (deslizador)"
+                    className="deslizador"
+                    style={{
+                      "--progreso": `${(((paginasEnRango ? numeroPaginas : PAGINAS_MIN) - PAGINAS_MIN) / (PAGINAS_MAX - PAGINAS_MIN)) * 100}%`,
+                    }}
+                  />
+                  <div className="deslizador-marcas" aria-hidden="true">
+                    <span>{PAGINAS_MIN}</span>
+                    <span>{PAGINAS_MAX}</span>
                   </div>
                   <p id="ayuda-paginas" className={errorEn("paginas") ? "texto-error" : "texto-suave"}>
-                    {errorEn("paginas") ? "Debe ser un número entero entre 1 y 20." : "Entre 1 y 20 páginas."}
+                    {errorEn("paginas")
+                      ? `Debe ser un número entero entre ${PAGINAS_MIN} y ${PAGINAS_MAX}.`
+                      : `La primera página está incluida. Cada adicional, +${precio("paginaAdicional")}.`}
                   </p>
                 </div>
-
-                {/* Extras */}
-                <fieldset className="campo">
-                  <legend className="etiqueta">Extras</legend>
-                  <ul className="lista-extras">
-                    {EXTRAS.map((extra) => {
-                      const activo = extra.campo === "formulario" ? formulario : segundoIdioma;
-                      const cambiar = extra.campo === "formulario" ? setFormulario : setSegundoIdioma;
-                      return (
-                        <li key={extra.campo} className="fila-extra" onClick={() => cambiar(!activo)}>
-                          <span className="opcion-icono">
-                            <Icono nombre={extra.campo} />
-                          </span>
-                          <span className="opcion-texto">
-                            <span className="opcion-titulo">{extra.titulo}</span>
-                            <span className="texto-suave">{extra.texto}</span>
-                          </span>
-                          <span className="fila-extra-precio">+{precio(extra.campo)}</span>
-                          <span onClick={(e) => e.stopPropagation()}>
-                            <Interruptor id={extra.campo} activo={activo} onChange={cambiar} etiqueta={extra.titulo} />
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </fieldset>
-
-                <div className="acciones">
-                  <p className="texto-suave">El precio se recalcula en el servidor con cada cambio.</p>
-                  <button type="submit" className="boton boton-primario" disabled={calculando}>
-                    {calculando ? "Calculando…" : "Calcular presupuesto"}
-                  </button>
-                </div>
-              </form>
-            </Tarjeta>
-
-          {/* ---------------- Columna lateral ---------------- */}
-          <aside className="columna-lateral" aria-live="polite">
-            <Tarjeta className="tarjeta-total" id="total">
-              <div className="card-content">
-                <p className="texto-suave">Total del presupuesto</p>
-                <p className="cifra-grande">{presupuesto ? euros(presupuesto.total) : "—"}</p>
-                <p className="texto-suave">{presupuesto ? "Sin impuestos · EUR" : "Revisa los datos del formulario"}</p>
-                {presupuesto && (
-                  <p className="resumen">
-                    {presupuesto.solicitud.tipo === "landing" ? "Landing" : "Corporativa"} ·{" "}
-                    {presupuesto.solicitud.paginas} {presupuesto.solicitud.paginas === 1 ? "página" : "páginas"}
-                    {presupuesto.solicitud.formulario ? " · formulario" : ""}
-                    {presupuesto.solicitud.segundoIdioma ? " · 2 idiomas" : ""}
-                  </p>
-                )}
               </div>
-            </Tarjeta>
 
-            {hayError && (
-              <Tarjeta className="tarjeta-error" role="alert">
-                <div className="card-content">
-                  <p className="error-titulo">
-                    <Icono nombre="alerta" /> Solicitud no válida · 400
-                  </p>
-                  <ul className="error-lista">
-                    {errores.detalles.map((d) => (
-                      <li key={d}>{d}</li>
-                    ))}
-                  </ul>
-                </div>
-              </Tarjeta>
-            )}
-
-            <Tarjeta className="tarjeta-grafico" id="desglose">
-              <header className="card-header">
-                <h2 className="card-title">Desglose del presupuesto</h2>
-                <p className="card-description">Coste de cada concepto calculado por el servidor</p>
-              </header>
-              <div className="card-content">
-                <GraficoDesglose presupuesto={presupuesto} />
-                <dl className="desglose">
-                  {CONCEPTOS_GRAFICO.map((c) => (
-                    <div key={c.clave}>
-                      <dt>
-                        {c.clave === "base"
-                          ? `Base${presupuesto ? ` (${presupuesto.solicitud.tipo})` : ""}`
-                          : c.clave === "paginasAdicionales"
-                            ? `Páginas adicionales${presupuesto ? ` (${presupuesto.solicitud.paginas - 1})` : ""}`
-                            : c.clave === "formulario"
-                              ? "Formulario de contacto"
-                              : "Segundo idioma"}
-                      </dt>
-                      <dd>{presupuesto ? euros(presupuesto[c.clave]) : "—"}</dd>
-                    </div>
+              {/* Paso 3: extras */}
+              <fieldset className="paso">
+                <legend className="paso-titulo">
+                  Extras. <span className="gris">Dale un poco más.</span>
+                </legend>
+                <div className="opciones opciones-extras">
+                  {EXTRAS.map((extra) => (
+                    <label
+                      key={extra.campo}
+                      className={`opcion opcion-extra${errorEn(extra.campo) ? " con-error" : ""}`}
+                      data-activo={extras[extra.campo] || undefined}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={extras[extra.campo]}
+                        onChange={(e) => cambiarExtra[extra.campo](e.target.checked)}
+                        className="oculto"
+                      />
+                      <span className="opcion-cabecera">
+                        <Icono nombre={extra.campo} className="opcion-icono" />
+                        <span className="marca-check" aria-hidden="true">
+                          <Icono nombre="check" />
+                        </span>
+                      </span>
+                      <span className="opcion-titulo">{extra.titulo}</span>
+                      <span className="opcion-texto">{extra.texto}</span>
+                      <span className="opcion-precio-extra">+{precio(extra.campo)}</span>
+                    </label>
                   ))}
-                </dl>
-              </div>
-              <footer className="card-footer">
-                {mayorConcepto ? (
-                  <>
-                    <strong>Mayor coste: {mayorConcepto.etiqueta}</strong>
-                    <span className="texto-suave">
-                      {euros(presupuesto[mayorConcepto.clave])} de {euros(presupuesto.total)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="texto-suave">Sin datos que mostrar</span>
-                )}
-              </footer>
-            </Tarjeta>
-          </aside>
+                </div>
+              </fieldset>
 
-            {/* ---------------- Tabla de tarifas (GET /api/tarifas) ---------------- */}
-            <Tarjeta className="card-tarifas">
-              <header className="card-header">
-                <h2 className="card-title">Tarifas del servidor</h2>
-                <p className="card-description">
-                  Publicadas en <code>GET /api/tarifas</code>. El cliente nunca envía precios.
-                </p>
-              </header>
-              <div className="card-content tabla-contenedor">
-                <table className="tabla">
-                  <thead>
-                    <tr>
-                      <th scope="col">Concepto</th>
-                      <th scope="col" className="solo-escritorio">Descripción</th>
-                      <th scope="col" className="derecha">Precio</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(tarifas ?? []).map((t) => (
-                      <tr key={t.concepto}>
-                        <td>
-                          <span className="celda-concepto">
-                            <span className="opcion-icono pequeno">
-                              <Icono nombre={t.concepto} />
-                            </span>
-                            <span>
-                              <code className="codigo">{t.concepto}</code>
-                              <span className="texto-suave solo-movil">{t.descripcion}</span>
-                            </span>
-                          </span>
-                        </td>
-                        <td className="solo-escritorio texto-suave">{t.descripcion}</td>
-                        <td className="derecha numero">{euros(t.precio)}</td>
-                      </tr>
-                    ))}
-                    {!tarifas && (
-                      <tr>
-                        <td colSpan="3" className="texto-suave">Cargando tarifas…</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+              <div className="paso-final">
+                <a href="#desglose" className="boton boton-grande">Ver mi presupuesto</a>
+                <p className="texto-suave">El precio lo decide siempre el servidor, nunca el navegador.</p>
               </div>
-            </Tarjeta>
-        </div>
+            </form>
+          </div>
+        </section>
 
-        <footer className="pie">
-          0613 · Desarrollo web en entorno servidor · Node.js + Express + React
-        </footer>
+        {/* ---------------- Desglose ---------------- */}
+        <section className="seccion seccion-blanca" id="desglose" ref={refDesglose} aria-live="polite">
+          <Revelar className="seccion-cabecera">
+            <h2 className="titular">Tu presupuesto.</h2>
+            <p className="entradilla">
+              {presupuesto ? resumenSolicitud(presupuesto.solicitud) : "Calculado por el servidor con sus propias tarifas."}
+            </p>
+          </Revelar>
+
+          {hayError ? (
+            <Revelar className="tarjeta-error" role="alert">
+              <Icono nombre="alerta" className="tarjeta-error-icono" />
+              <h3>Revisa tu configuración.</h3>
+              <p className="texto-suave">
+                {intercambio?.estado ? `El servidor respondió ${intercambio.estado} · Solicitud no válida` : "Sin respuesta del servidor"}
+              </p>
+              <ul>
+                {errores.detalles.map((d) => (
+                  <li key={d}>{d}</li>
+                ))}
+              </ul>
+              <a href="#configurar" className="enlace">
+                Volver a configurar <Icono nombre="flecha" className="icono-enlace" />
+              </a>
+            </Revelar>
+          ) : (
+            <Revelar className="desglose">
+              <p className="total">
+                <span className="degradado">{totalTexto}</span>
+              </p>
+              <p className="total-nota texto-suave">Sin impuestos · {presupuesto?.moneda ?? "EUR"}¹</p>
+
+              <div className="barra-segmentada" aria-hidden="true">
+                {presupuesto &&
+                  CONCEPTOS.filter((c) => presupuesto[c.clave] > 0).map((c) => (
+                    <span
+                      key={c.clave}
+                      className={`segmento segmento-${c.clave}`}
+                      style={{ flexGrow: presupuesto[c.clave] }}
+                    />
+                  ))}
+              </div>
+
+              <dl className="lista-desglose">
+                {CONCEPTOS.map((c) => (
+                  <div key={c.clave} className="fila-desglose" data-cero={presupuesto?.[c.clave] === 0 || undefined}>
+                    <dt>
+                      <span className={`punto punto-${c.clave}`} aria-hidden="true" />
+                      {c.etiqueta}
+                      {presupuesto && c.clave === "base" && (
+                        <span className="texto-suave"> · {presupuesto.solicitud.tipo}</span>
+                      )}
+                      {presupuesto && c.clave === "paginasAdicionales" && (
+                        <span className="texto-suave">
+                          {" "}· {presupuesto.solicitud.paginas - 1} × {precio("paginaAdicional")}
+                        </span>
+                      )}
+                    </dt>
+                    <dd>{presupuesto ? euros(presupuesto[c.clave]) : "—"}</dd>
+                  </div>
+                ))}
+                <div className="fila-desglose fila-total">
+                  <dt>Total</dt>
+                  <dd>{presupuesto ? euros(presupuesto.total) : "—"}</dd>
+                </div>
+              </dl>
+            </Revelar>
+          )}
+        </section>
+
+        {/* ---------------- Tarifas (GET /api/tarifas) ---------------- */}
+        <section className="seccion seccion-clara" id="tarifas">
+          <Revelar className="seccion-cabecera">
+            <h2 className="titular">
+              Tarifas. <span className="gris">Claras desde el principio.</span>
+            </h2>
+            <p className="entradilla">
+              Publicadas por el servidor en <code>GET /api/tarifas</code>. Sin letra pequeña.
+            </p>
+          </Revelar>
+
+          <ul className="rejilla-tarifas">
+            {(tarifas ?? Array.from({ length: 5 }, (_, i) => ({ concepto: `cargando-${i}` }))).map((t, i) => (
+              <Revelar as="li" key={t.concepto} className="tarifa" retraso={i * 70} data-cargando={t.precio == null || undefined}>
+                <Icono nombre={t.concepto} className="tarifa-icono" />
+                <p className="tarifa-descripcion">{t.descripcion ?? "Cargando…"}</p>
+                <p className="tarifa-precio">{t.precio == null ? "—" : euros(t.precio)}</p>
+                <code className="tarifa-codigo">{t.precio == null ? " " : t.concepto}</code>
+              </Revelar>
+            ))}
+          </ul>
+        </section>
+
+        {/* ---------------- Cómo funciona ---------------- */}
+        <section className="seccion seccion-oscura" id="como-funciona">
+          <Revelar className="seccion-cabecera">
+            <p className="hero-eyebrow">Bajo el capó</p>
+            <h2 className="titular">
+              El navegador pregunta.
+              <br />
+              <span className="degradado">El servidor decide.</span>
+            </h2>
+          </Revelar>
+
+          <ol className="pasos-funcionamiento">
+            {PASOS.map((p, i) => (
+              <Revelar as="li" key={p.numero} className="paso-funcionamiento" retraso={i * 100}>
+                <span className="paso-numero">{p.numero}</span>
+                <h3>{p.titulo}</h3>
+                <p>{p.texto}</p>
+              </Revelar>
+            ))}
+          </ol>
+
+          <Revelar className="consola">
+            <div className="consola-panel">
+              <p className="consola-cabecera">
+                <span className="metodo">POST</span> /api/presupuesto
+              </p>
+              <pre>{JSON.stringify(intercambio?.solicitud ?? configuracion, null, 2)}</pre>
+            </div>
+            <div className="consola-panel">
+              <p className="consola-cabecera">
+                <span className={`codigo-estado${intercambio && intercambio.estado !== 200 ? " codigo-error" : ""}`}>
+                  {intercambio?.estado ?? "···"}
+                </span>{" "}
+                Respuesta
+              </p>
+              <pre>{intercambio ? JSON.stringify(intercambio.datos, null, 2) : "Esperando respuesta…"}</pre>
+            </div>
+          </Revelar>
+        </section>
       </main>
 
-      {/* Barra fija con el total en móvil y tablet */}
-      <a href="#desglose" className="barra-total" aria-label="Ver el desglose del presupuesto">
-        <span className="texto-suave">Total</span>
-        <strong>{presupuesto ? euros(presupuesto.total) : "—"}</strong>
-        <span className="barra-total-enlace">Ver desglose</span>
-      </a>
+      {/* ---------------- Pie ---------------- */}
+      <footer className="pie">
+        <div className="pie-interior">
+          <p>
+            1. Precios sin impuestos, calculados por el servidor con tarifas ficticias de la actividad. No se
+            aplican descuentos ni conceptos adicionales.
+          </p>
+          <p>Los presupuestos no se guardan: cada cálculo se hace al momento.</p>
+          <div className="pie-linea">
+            <span className="pie-marca">
+              <LogoJM className="logo-jm logo-jm-pie" />
+              Presupuesta mi web · 0613 · Desarrollo web en entorno servidor
+            </span>
+            <span>Node.js · Express · React</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* Barra inferior fija con el total, como en una tienda online */}
+      <div className={`barra-total${mostrarBarra ? " visible" : ""}`} aria-hidden={!mostrarBarra}>
+        <div className="barra-total-interior">
+          <div className="barra-total-texto">
+            <span className="texto-suave">
+              {presupuesto ? resumenSolicitud(presupuesto.solicitud) : hayError ? "Configuración no válida" : "Calculando…"}
+            </span>
+            <strong>{hayError ? "Revisa los datos" : totalTexto}</strong>
+          </div>
+          <a href="#desglose" className="boton" tabIndex={mostrarBarra ? undefined : -1}>
+            Ver desglose
+          </a>
+        </div>
+      </div>
     </>
   );
 }
