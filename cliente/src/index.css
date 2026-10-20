@@ -5,6 +5,10 @@
 
 :root {
   --fondo: #ffffff;
+  --superficie: #ffffff;
+  --fondo-error: #fff2f2;
+  --barra-fondo: rgba(251, 251, 253, 0.82);
+  --barra-borde: rgba(0, 0, 0, 0.08);
   --fondo-claro: #f5f5f7;
   --fondo-oscuro: #000000;
   --fondo-oscuro-2: #1d1d1f;
@@ -41,6 +45,34 @@
   --curva: cubic-bezier(0.28, 0.11, 0.32, 1);
 
   color-scheme: light;
+}
+
+/* Modo nocturno: el botón del menú pone data-theme="dark" en <html>.
+   Solo se redefinen los tokens; el resto de reglas los reutiliza. */
+:root[data-theme="dark"] {
+  --fondo: #000000;
+  --fondo-claro: #101011;
+  --superficie: #1d1d1f;
+  --fondo-error: #2a1215;
+  --barra-fondo: rgba(22, 22, 23, 0.82);
+  --barra-borde: rgba(255, 255, 255, 0.1);
+  --texto: #f5f5f7;
+  --texto-2: #a1a1a6;
+  --texto-3: #86868b;
+  --borde: #424245;
+  --borde-suave: #2c2c2e;
+  --enlace: #2997ff;
+  --rojo: #ff453a;
+
+  color-scheme: dark;
+}
+
+/* Transición del cambio de tema: un círculo que se expande desde el botón
+   (View Transitions API). Sin soporte, el cambio es instantáneo. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 *,
@@ -328,96 +360,12 @@ input {
   box-shadow: 0 0 0 3px rgba(255, 69, 58, 0.2);
 }
 
-/* --------------------------------------------------------------------------
-   Hero
-   -------------------------------------------------------------------------- */
-
-.hero {
-  position: relative;
-  overflow: hidden;
-  padding: clamp(64px, 10vw, 120px) 22px 0;
-  background: var(--fondo-oscuro);
-  color: #f5f5f7;
-  text-align: center;
-}
-
-.hero-texto {
-  max-width: 820px;
-  margin: 0 auto;
-}
-
 .hero-eyebrow {
   margin-bottom: 12px;
   font-size: clamp(19px, 2.2vw, 24px);
   font-weight: 600;
   letter-spacing: 0.009em;
   color: #f5f5f7;
-}
-
-.hero-titulo {
-  font-size: clamp(48px, 8.4vw, 96px);
-  font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-}
-
-.hero-subtitulo {
-  max-width: 640px;
-  margin: 24px auto 0;
-  font-size: clamp(19px, 2.2vw, 24px);
-  line-height: 1.38;
-  letter-spacing: 0.004em;
-  color: var(--texto-oscuro-2);
-}
-
-.hero-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px 32px;
-  margin-top: 36px;
-}
-
-.hero .enlace {
-  color: var(--enlace-oscuro);
-}
-
-.hero-desde {
-  margin-top: 20px;
-  font-size: 14px;
-  color: var(--texto-3);
-}
-
-.hero-visual {
-  position: relative;
-  max-width: 900px;
-  margin: clamp(48px, 7vw, 80px) auto 0;
-}
-
-.hero-brillo {
-  position: absolute;
-  inset: 10% 5% -20%;
-  background: radial-gradient(closest-side, rgba(41, 151, 255, 0.45), rgba(162, 89, 255, 0.25) 55%, transparent);
-  filter: blur(40px);
-  pointer-events: none;
-}
-
-/* Animación de entrada del hero (al cargar la página) */
-.revelar-inicio {
-  animation: subir 1s var(--curva) both;
-  animation-delay: var(--retraso, 0ms);
-}
-
-@keyframes subir {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* Aparición al hacer scroll */
@@ -452,11 +400,6 @@ input {
 
 .vista[data-tipo="landing"] {
   --vista-acento: #a259ff;
-}
-
-.vista-grande {
-  border-radius: 18px 18px 0 0;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 -20px 80px rgba(41, 151, 255, 0.15);
 }
 
 .vista-barra {
@@ -506,11 +449,6 @@ input {
   display: grid;
   gap: 18px;
   padding: 18px 22px 24px;
-}
-
-.vista-grande .vista-pagina {
-  gap: 26px;
-  padding: 24px 40px 44px;
 }
 
 .vista-nav {
@@ -591,20 +529,6 @@ input {
   transition: background-color 0.5s var(--curva);
 }
 
-.vista-grande .vista-hero b {
-  height: 26px;
-  border-radius: 13px;
-}
-
-.vista-grande .vista-hero b.corta {
-  height: 14px;
-}
-
-.vista-grande .vista-boton {
-  width: 130px;
-  height: 32px;
-}
-
 .vista-tarjetas {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -637,12 +561,6 @@ input {
   border-radius: 10px;
   background: linear-gradient(135deg, rgba(162, 89, 255, 0.16), rgba(41, 151, 255, 0.16));
   animation: aparecer 0.5s var(--curva) both;
-}
-
-.vista-grande .vista-tarjetas i,
-.vista-grande .vista-banda i {
-  height: 120px;
-  border-radius: 14px;
 }
 
 .vista-formulario {
@@ -748,7 +666,7 @@ input {
   gap: 2px;
   padding: 22px 26px;
   border-radius: var(--radio);
-  background: var(--fondo);
+  background: var(--superficie);
 }
 
 .mini-total strong {
@@ -806,7 +724,7 @@ input {
   gap: 4px;
   padding: 22px 24px;
   border-radius: var(--radio);
-  background: var(--fondo);
+  background: var(--superficie);
   box-shadow: inset 0 0 0 1px var(--borde);
   cursor: pointer;
   transition: box-shadow 0.25s var(--curva), transform 0.25s var(--curva);
@@ -911,7 +829,7 @@ input {
   gap: 18px;
   padding: 28px 24px 22px;
   border-radius: var(--radio);
-  background: var(--fondo);
+  background: var(--superficie);
   box-shadow: inset 0 0 0 1px var(--borde);
 }
 
@@ -1172,7 +1090,7 @@ input {
   margin: 0 auto;
   padding: clamp(28px, 5vw, 48px);
   border-radius: var(--radio-grande);
-  background: #fff2f2;
+  background: var(--fondo-error);
 }
 
 .tarjeta-error-icono {
@@ -1217,7 +1135,7 @@ input {
   min-height: 260px;
   padding: 30px 26px;
   border-radius: var(--radio-grande);
-  background: var(--fondo);
+  background: var(--superficie);
   transition: opacity 0.9s var(--curva) var(--retraso, 0ms), transform 0.9s var(--curva) var(--retraso, 0ms),
     box-shadow 0.3s var(--curva);
 }
@@ -1391,10 +1309,10 @@ input {
   left: 0;
   z-index: 40;
   padding: 12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: rgba(251, 251, 253, 0.82);
+  background: var(--barra-fondo);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(180%) blur(20px);
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--barra-borde);
   transform: translateY(110%);
   transition: transform 0.5s var(--curva);
 }
@@ -1472,16 +1390,6 @@ input {
 
   .estado-texto {
     display: none;
-  }
-
-  .vista-grande .vista-pagina {
-    gap: 16px;
-    padding: 18px 20px 28px;
-  }
-
-  .vista-grande .vista-tarjetas i,
-  .vista-grande .vista-banda i {
-    height: 64px;
   }
 
   .vista-enlaces i {

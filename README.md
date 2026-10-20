@@ -88,8 +88,15 @@ Debe aparecer `{"status":"ok"}`.
 | GET    | `/api/estado`      | Confirma que el servicio funciona             | 200        |
 | GET    | `/api/tarifas`     | Devuelve las tarifas que usa el servidor      | 200        |
 | POST   | `/api/presupuesto` | Valida la solicitud y calcula el presupuesto  | 200 · 400  |
+| GET    | `/api/mantenimiento` | *Ampliación:* planes de mantenimiento mensuales | 200      |
 
 Cualquier otra ruta responde **404** en JSON. Un fallo inesperado responde **500**.
+
+Las tres primeras son las rutas obligatorias. `GET /api/mantenimiento` es una
+ampliación: publica planes mensuales opcionales que se contratan **después** de
+entregar la web. Sus precios también viven en el servidor
+([`src/mantenimiento.js`](src/mantenimiento.js)) y **nunca se suman** al total de
+`POST /api/presupuesto` (hay una prueba que lo comprueba).
 
 ### `GET /api/estado`
 
@@ -194,7 +201,8 @@ presupuesta-mi-web/
 │   ├── app.js            ← rutas de Express (reciben la petición y responden)
 │   ├── tarifas.js        ← tarifas del servidor (constantes congeladas)
 │   ├── validacion.js     ← validarSolicitud(): comprueba el contrato
-│   └── calculo.js        ← calcularPresupuesto(): lógica de negocio
+│   ├── calculo.js        ← calcularPresupuesto(): lógica de negocio
+│   └── mantenimiento.js  ← ampliación: planes de mantenimiento mensuales
 ├── test/
 │   └── api.test.js       ← pruebas automáticas (npm test)
 ├── pruebas/
@@ -307,11 +315,23 @@ configurador por pasos como el de una tienda online. Secciones:
 
 | Sección | Qué muestra |
 | ------- | ----------- |
-| Inicio | Titular y una vista previa de la web que cambia con la configuración |
+| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): cuadrícula de fondo, titular con degradado, precio mínimo y botón al configurador |
 | Configura tu web | Tipo de web, número de páginas y extras, con el total al lado |
 | Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
 | Tarifas | Las cinco tarifas que publica el servidor |
+| Packs | Componente [`pricing.jsx`](cliente/src/components/ui/pricing.jsx): tres configuraciones listas (Esencial, Negocio, Empresa) con un interruptor de uno o dos idiomas. Su precio se pide a `POST /api/presupuesto`, así que no hay precios en el cliente ni descuentos. Al elegir uno, se carga en el configurador |
+| Mantenimiento | Componente [`planes-mantenimiento.jsx`](cliente/src/components/ui/planes-mantenimiento.jsx): planes mensuales de `GET /api/mantenimiento` |
 | Cómo funciona | Los tres pasos del cálculo y la última petición y respuesta JSON reales |
+
+Un botón en la barra de navegación ([`boton-tema.jsx`](cliente/src/components/ui/boton-tema.jsx))
+cambia entre modo claro y nocturno. Recuerda la elección y, si no hay ninguna,
+sigue la del sistema.
+
+Los componentes de `cliente/src/components/ui` vienen de diseños pensados para
+shadcn, Tailwind y TypeScript. Se han adaptado a JSX y CSS propios porque la
+actividad exige JavaScript y porque Tailwind cambiaría los estilos base del
+resto de la página. No necesitan dependencias nuevas: las animaciones se hacen
+con CSS.
 
 Es **responsive**: en escritorio el configurador tiene dos columnas (vista previa y
 total fijos a la izquierda); por debajo de 900 px pasa a una sola columna. Al salir

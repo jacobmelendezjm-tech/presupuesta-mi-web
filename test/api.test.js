@@ -56,6 +56,33 @@ describe("GET /api/tarifas", () => {
   });
 });
 
+describe("GET /api/mantenimiento (ampliación)", () => {
+  test("devuelve los tres planes mensuales con su precio", async () => {
+    const respuesta = await fetch(`${url}/api/mantenimiento`);
+    assert.equal(respuesta.status, 200);
+
+    const cuerpo = await respuesta.json();
+    assert.equal(cuerpo.moneda, "EUR");
+    assert.equal(cuerpo.periodo, "mes");
+    assert.deepEqual(
+      cuerpo.planes.map((p) => [p.id, p.precioMensual]),
+      [["basico", 29], ["profesional", 59], ["premium", 99]]
+    );
+  });
+
+  test("no cambia el presupuesto: el total sigue sin incluir mantenimiento", async () => {
+    const respuesta = await enviarPresupuesto({
+      tipo: "corporativa",
+      paginas: 4,
+      formulario: true,
+      segundoIdioma: false,
+      mantenimiento: "premium",
+    });
+    assert.equal(respuesta.status, 200);
+    assert.equal((await respuesta.json()).total, 830);
+  });
+});
+
 describe("POST /api/presupuesto: casos obligatorios", () => {
   for (const c of casosObligatorios) {
     test(`Caso ${c.caso}: ${c.descripcion} → ${c.estadoEsperado}`, async () => {

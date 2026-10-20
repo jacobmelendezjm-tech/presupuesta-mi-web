@@ -1,4 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Hero } from "./components/ui/hero-1.jsx";
+import { BotonTema } from "./components/ui/boton-tema.jsx";
+import PricingSection from "./components/ui/pricing.jsx";
+import { PlanesMantenimiento } from "./components/ui/planes-mantenimiento.jsx";
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -366,12 +370,22 @@ export default function App() {
 
   const configuracion = { tipo, paginas: numeroPaginas, formulario, segundoIdioma };
 
+  // Un pack carga su configuración en el formulario; el servidor la recalcula
+  // con el mismo POST /api/presupuesto que cualquier otro cambio.
+  const elegirPack = (config, destino) => {
+    setTipo(config.tipo);
+    setPaginas(String(config.paginas));
+    setFormulario(config.formulario);
+    setSegundoIdioma(config.segundoIdioma);
+    document.getElementById(destino)?.scrollIntoView({ behavior: prefiereMenosMovimiento() ? "auto" : "smooth" });
+  };
+
   return (
     <>
       {/* ---------------- Navegación ---------------- */}
       <nav className="nav" aria-label="Principal">
         <div className="nav-interior">
-          <a href="#inicio" className="marca" aria-label="JM · Presupuesta, ir al inicio">
+          <a href="#hero" className="marca" aria-label="JM · Presupuesta, ir al inicio">
             <LogoJM />
             <span className="marca-separador" aria-hidden="true" />
             Presupuesta
@@ -380,7 +394,8 @@ export default function App() {
             <li><a href="#configurar">Configurar</a></li>
             <li><a href="#desglose">Desglose</a></li>
             <li><a href="#tarifas">Tarifas</a></li>
-            <li><a href="#como-funciona">Cómo funciona</a></li>
+            <li><a href="#packs">Packs</a></li>
+            <li><a href="#mantenimiento">Mantenimiento</a></li>
           </ul>
           <div className="nav-acciones">
             <span className={`estado estado-${estadoApi}`} title="GET /api/estado">
@@ -389,6 +404,7 @@ export default function App() {
                 {estadoApi === "ok" ? "API en línea" : estadoApi === "error" ? "API sin conexión" : "Comprobando…"}
               </span>
             </span>
+            <BotonTema />
             <a href="#configurar" className="boton boton-pequeno">Calcular</a>
           </div>
         </div>
@@ -396,33 +412,15 @@ export default function App() {
 
       <main>
         {/* ---------------- Hero ---------------- */}
-        <section className="hero" id="inicio" ref={refHero}>
-          <div className="hero-texto">
-            <p className="hero-eyebrow revelar-inicio">Presupuesta mi web</p>
-            <h1 className="hero-titulo revelar-inicio" style={{ "--retraso": "80ms" }}>
-              Tu web.
-              <br />
-              <span className="degradado">Al precio exacto.</span>
-            </h1>
-            <p className="hero-subtitulo revelar-inicio" style={{ "--retraso": "160ms" }}>
-              Elige el tipo, las páginas y los extras. Nuestro servidor valida cada dato y calcula tu
-              presupuesto al instante.
-            </p>
-            <div className="hero-acciones revelar-inicio" style={{ "--retraso": "240ms" }}>
-              <a href="#configurar" className="boton">Configurar mi web</a>
-              <a href="#tarifas" className="enlace">
-                Ver tarifas <Icono nombre="flecha" className="icono-enlace" />
-              </a>
-            </div>
-            <p className="hero-desde revelar-inicio" style={{ "--retraso": "320ms" }}>
-              {desde != null ? `Desde ${euros(desde)}¹` : " "}
-            </p>
-          </div>
-          <div className="hero-visual revelar-inicio" style={{ "--retraso": "400ms" }}>
-            <div className="hero-brillo" aria-hidden="true" />
-            <VistaPrevia {...configuracion} className="vista-grande" />
-          </div>
-        </section>
+        <Hero
+          ref={refHero}
+          eyebrow={desde != null ? `Presupuestos desde ${euros(desde)}` : "Presupuesta mi web"}
+          eyebrowHref="#tarifas"
+          title="Tu web, al precio exacto."
+          subtitle="Elige el tipo, las páginas y los extras. Nuestro servidor valida cada dato y calcula tu presupuesto al instante."
+          ctaLabel="Configurar mi web"
+          ctaHref="#configurar"
+        />
 
         {/* ---------------- Configurador ---------------- */}
         <section className="seccion seccion-clara" id="configurar">
@@ -681,6 +679,27 @@ export default function App() {
           </ul>
         </section>
 
+        {/* ---------------- Packs (configuraciones listas para elegir) ---------------- */}
+        <section className="seccion seccion-blanca" id="packs">
+          <PricingSection onElegir={elegirPack} precioIdioma={tarifa("segundoIdioma") == null ? null : precio("segundoIdioma")} />
+        </section>
+
+        {/* ---------------- Mantenimiento (GET /api/mantenimiento) ---------------- */}
+        <section className="seccion seccion-clara" id="mantenimiento">
+          <Revelar className="seccion-cabecera">
+            <h2 className="titular">
+              Mantenimiento. <span className="gris">Tu web, siempre a punto.</span>
+            </h2>
+            <p className="entradilla">
+              Cuando entregamos tu web, podemos seguir cuidándola. Planes mensuales opcionales, sin permanencia y
+              fuera del presupuesto de creación.
+            </p>
+          </Revelar>
+          <Revelar>
+            <PlanesMantenimiento />
+          </Revelar>
+        </section>
+
         {/* ---------------- Cómo funciona ---------------- */}
         <section className="seccion seccion-oscura" id="como-funciona">
           <Revelar className="seccion-cabecera">
@@ -730,6 +749,10 @@ export default function App() {
             aplican descuentos ni conceptos adicionales.
           </p>
           <p>Los presupuestos no se guardan: cada cálculo se hace al momento.</p>
+          <p>
+            Los packs son configuraciones ya preparadas: su precio es el mismo que calcula el servidor para esa
+            configuración. Los planes de mantenimiento son mensuales y opcionales, y no se suman al presupuesto.
+          </p>
           <div className="pie-linea">
             <span className="pie-marca">
               <LogoJM className="logo-jm logo-jm-pie" />

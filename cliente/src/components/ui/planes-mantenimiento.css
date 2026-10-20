@@ -1,0 +1,112 @@
+/* Planes de mantenimiento (planes-mantenimiento.jsx), con el mismo estilo
+   de tarjetas que el configurador: esquinas amplias y anillo azul. */
+
+.mant-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  max-width: var(--ancho-amplio);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.mant-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px;
+  border-radius: var(--radio-grande);
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--borde);
+}
+
+.mant-plan[data-recomendado] {
+  box-shadow: inset 0 0 0 2px var(--azul);
+}
+
+.mant-plan[data-cargando] {
+  color: var(--texto-3);
+}
+
+.mant-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mant-cabecera h3 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 0.009em;
+}
+
+.mant-insignia {
+  padding: 4px 10px;
+  border-radius: 980px;
+  background: var(--azul);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.mant-descripcion {
+  min-height: 2.9em;
+  margin-top: 8px;
+  color: var(--texto-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.mant-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 20px 0 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.mant-precio strong {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mant-precio span {
+  color: var(--texto-2);
+  font-size: 17px;
+}
+
+.mant-lista {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.mant-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.mant-lista svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--azul);
+}
+
+:root[data-theme="dark"] .mant-lista svg {
+  color: var(--enlace);
+}
+
+.mant-error {
+  color: var(--rojo);
+  text-align: center;
+}

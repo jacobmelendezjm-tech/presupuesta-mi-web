@@ -1,0 +1,298 @@
+/* Sección de packs (pricing.jsx) con el estilo del resto de la landing:
+   tarjetas de esquinas amplias, anillo azul en el pack destacado, botón
+   en forma de píldora y control segmentado. */
+
+.packs {
+  max-width: var(--ancho-amplio);
+  margin: 0 auto;
+}
+
+/* ---- Cabecera ---- */
+
+.packs-cabecera {
+  display: grid;
+  gap: 32px;
+  justify-items: start;
+  max-width: var(--ancho);
+  margin: 0 auto clamp(40px, 6vw, 64px);
+}
+
+/* Entrada escalonada: aparece y sube, como el resto de secciones */
+.packs-entrada {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+.packs[data-visible] .packs-entrada {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.9s var(--curva), transform 0.9s var(--curva);
+  transition-delay: calc(var(--n) * 90ms);
+}
+
+/* ---- Control segmentado ---- */
+
+.segmentado {
+  --segmentado-fondo: #e8e8ed;
+  --segmentado-activo: #ffffff;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border-radius: 980px;
+  background: var(--segmentado-fondo);
+}
+
+:root[data-theme="dark"] .segmentado {
+  --segmentado-fondo: #2c2c2e;
+  --segmentado-activo: #636366;
+}
+
+.segmentado-pastilla {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 980px;
+  background: var(--segmentado-activo);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+  transition: transform 0.4s var(--curva);
+}
+
+.segmentado-pastilla[data-pos="1"] {
+  transform: translateX(100%);
+}
+
+.segmentado-opcion {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 22px;
+  border: 0;
+  border-radius: 980px;
+  background: none;
+  color: var(--texto-2);
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.segmentado-opcion[data-activo] {
+  color: var(--texto);
+  font-weight: 600;
+}
+
+.segmentado-nota {
+  color: var(--texto-2);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+/* ---- Tarjetas ---- */
+
+.packs-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pack {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 30px 36px;
+  border-radius: var(--radio-grande);
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--borde);
+  transition: box-shadow 0.3s var(--curva);
+}
+
+.pack[data-popular] {
+  box-shadow: inset 0 0 0 2px var(--azul);
+}
+
+.pack-etiqueta {
+  min-height: 1.4em;
+  color: #b64400;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .pack-etiqueta {
+  color: #ff9f0a;
+}
+
+.pack-nombre {
+  margin-top: 4px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.pack-descripcion {
+  min-height: 2.9em;
+  margin-top: 8px;
+  color: var(--texto-2);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.pack-precio {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  margin-top: 24px;
+}
+
+.pack-precio-valor {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+.pack-precio-nota {
+  color: var(--texto-2);
+  font-size: 15px;
+}
+
+.pack-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  margin: 24px 0 28px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.pack-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--enlace);
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.pack-enlace:hover {
+  text-decoration: underline;
+}
+
+.pack-enlace-icono {
+  width: 0.9em;
+  height: 0.9em;
+  stroke-width: 2.5;
+  transition: transform 0.2s var(--curva);
+}
+
+.pack-enlace:hover .pack-enlace-icono {
+  transform: translateX(2px);
+}
+
+.pack-caracteristicas {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 28px;
+  padding: 0;
+  list-style: none;
+  font-size: 17px;
+  font-weight: 500;
+}
+
+.pack-caracteristicas li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pack-icono {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--texto-2);
+  stroke-width: 1.6;
+}
+
+.pack-extra,
+.pack-extra .pack-icono {
+  color: var(--azul);
+}
+
+:root[data-theme="dark"] .pack-extra,
+:root[data-theme="dark"] .pack-extra .pack-icono {
+  color: var(--enlace);
+}
+
+.pack-ideal {
+  margin-top: auto;
+}
+
+.pack-ideal > p {
+  margin-bottom: 10px;
+  color: var(--texto-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pack-ideal ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.pack-ideal li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.pack-check {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  color: var(--azul);
+  stroke-width: 2.5;
+}
+
+:root[data-theme="dark"] .pack-check {
+  color: var(--enlace);
+}
+
+/* En una sola columna no hace falta reservar la línea de la etiqueta
+   para alinear las tarjetas. */
+@media (max-width: 920px) {
+  .pack:not([data-popular]) .pack-etiqueta {
+    display: none;
+  }
+}
+
+.packs-error {
+  max-width: var(--ancho);
+  margin: 0 auto 24px;
+  color: var(--rojo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packs-entrada {
+    opacity: 1;
+    transform: none;
+  }
+}

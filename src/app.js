@@ -3,6 +3,7 @@ const express = require("express");
 const { TARIFAS, DESCRIPCIONES, MONEDA } = require("./tarifas");
 const { validarSolicitud } = require("./validacion");
 const { calcularPresupuesto } = require("./calculo");
+const { PLANES_MANTENIMIENTO } = require("./mantenimiento");
 
 const app = express();
 
@@ -27,6 +28,12 @@ app.get("/api/tarifas", (req, res) => {
   }));
 
   res.json({ moneda: MONEDA, tarifas });
+});
+
+// GET /api/mantenimiento → planes de mantenimiento mensuales (opcionales,
+// se contratan tras entregar la web y no se suman al presupuesto).
+app.get("/api/mantenimiento", (req, res) => {
+  res.json({ moneda: MONEDA, periodo: "mes", planes: PLANES_MANTENIMIENTO });
 });
 
 // POST /api/presupuesto → valida la solicitud y calcula el presupuesto.

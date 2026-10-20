@@ -1,0 +1,293 @@
+/* Estilos del componente Hero (hero-1.jsx).
+   Equivalen a las clases de Tailwind del diseño original. */
+
+.hero1 {
+  position: relative;
+  isolation: isolate; /* la cuadrícula (z-index: -1) queda sobre el fondo de la sección */
+  width: 100%;
+  min-height: calc(100vh - 40px);
+  min-height: calc(100svh - 40px);
+  margin: 0 auto;
+  padding: 160px 24px 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #fff, #ffffff 50%, #e8e8e8 88%);
+  text-align: center;
+}
+
+/* Fundido inferior: el arco se disuelve en el color de la sección siguiente,
+   sin borde visible entre el hero y el configurador. */
+.hero1::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  height: 220px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--fondo-claro) 55%, transparent) 45%,
+    var(--fondo-claro)
+  );
+  pointer-events: none;
+}
+
+.hero1-cuadricula {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  height: 600px;
+  opacity: 0.8;
+  background-image: linear-gradient(to right, #f0f0f0 1px, transparent 1px),
+    linear-gradient(to bottom, #f0f0f0 1px, transparent 1px);
+  background-size: 6rem 5rem;
+  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
+}
+
+.hero1-arco {
+  position: absolute;
+  top: calc(100% - 90px);
+  left: 50%;
+  width: 700px;
+  height: 500px;
+  border-radius: 100%;
+  background: radial-gradient(closest-side, #fff 82%, #000000);
+  transform: translateX(-50%);
+  animation: hero1-subir-arco 1s ease 0.3s both;
+}
+
+.hero1-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 8px 20px;
+  border: 2px solid rgba(209, 213, 219, 0.2);
+  border-radius: 24px;
+  background: linear-gradient(to top right, rgba(212, 212, 216, 0.05), rgba(156, 163, 175, 0.05), transparent);
+  color: #4b5563;
+  font-family: "Geist", var(--fuente);
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.hero1-eyebrow:hover {
+  color: #1f2937;
+  border-color: rgba(209, 213, 219, 0.6);
+}
+
+.hero1-chevron {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  transition: transform 0.3s;
+}
+
+.hero1-eyebrow:hover .hero1-chevron {
+  transform: translateX(4px);
+}
+
+.hero1-titulo {
+  padding: 24px 0;
+  background: linear-gradient(to bottom right, #000 30%, rgba(0, 0, 0, 0.4));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+  animation: hero1-aparecer 1s ease 0.1s both;
+}
+
+.hero1-subtitulo {
+  max-width: 760px;
+  margin: 0 auto 48px;
+  color: #4b5563;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  animation: hero1-aparecer 1s ease 0.25s both;
+}
+
+.hero1-acciones {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  animation: hero1-aparecer 1s ease 0.4s both;
+}
+
+/* Equivale al <Button> por defecto de shadcn (fondo oscuro, esquinas suaves) */
+.hero1-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  height: 40px;
+  margin-top: -20px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #171717;
+  color: #fafafa;
+  font-family: "Geist", var(--fuente);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.hero1-boton:hover {
+  background: rgba(23, 23, 23, 0.9);
+}
+
+.hero1-boton:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 2px;
+}
+
+.hero1-fundido {
+  position: relative;
+  margin-top: 128px;
+  perspective: 2000px;
+  animation: hero1-subir 1s ease 0.5s both;
+}
+
+.hero1-fundido::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: linear-gradient(to top, var(--fondo) 10%, transparent);
+}
+
+@keyframes hero1-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes hero1-subir {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero1-subir-arco {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
+/* sm */
+@media (min-width: 640px) {
+  .hero1-titulo {
+    font-size: 60px;
+  }
+}
+
+/* md */
+@media (min-width: 768px) {
+  .hero1 {
+    padding-inline: 32px;
+  }
+
+  .hero1-arco {
+    width: 1100px;
+    height: 500px;
+  }
+
+  .hero1-titulo {
+    font-size: 72px;
+  }
+
+  .hero1-subtitulo {
+    font-size: 20px;
+  }
+
+  .hero1-boton {
+    width: 208px;
+  }
+}
+
+/* lg */
+@media (min-width: 1024px) {
+  .hero1-arco {
+    top: calc(100% - 150px);
+    width: 140%;
+    height: 750px;
+  }
+
+  .hero1-titulo {
+    font-size: 96px;
+  }
+}
+
+/* Modo nocturno: equivale a las variantes dark: del diseño original */
+:root[data-theme="dark"] .hero1 {
+  background: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0) 30%, #898e8e 78%, #ffffff 99%);
+}
+
+:root[data-theme="dark"] .hero1-cuadricula {
+  background-image: linear-gradient(to right, #333 1px, transparent 1px),
+    linear-gradient(to bottom, #333 1px, transparent 1px);
+}
+
+:root[data-theme="dark"] .hero1-arco {
+  background: radial-gradient(closest-side, #000 82%, #ffffff);
+}
+
+:root[data-theme="dark"] .hero1-eyebrow {
+  border-color: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+}
+
+:root[data-theme="dark"] .hero1-eyebrow:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e5e7eb;
+}
+
+:root[data-theme="dark"] .hero1-titulo {
+  background-image: linear-gradient(to bottom right, #fff 30%, rgba(255, 255, 255, 0.4));
+}
+
+:root[data-theme="dark"] .hero1-subtitulo {
+  color: #9ca3af;
+}
+
+:root[data-theme="dark"] .hero1-boton {
+  background: #fafafa;
+  color: #171717;
+}
+
+:root[data-theme="dark"] .hero1-boton:hover {
+  background: rgba(250, 250, 250, 0.9);
+}
+
+:root[data-theme="dark"] .hero1-boton:focus-visible {
+  outline-color: #fafafa;
+}
