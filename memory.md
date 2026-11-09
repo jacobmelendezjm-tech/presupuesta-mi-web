@@ -30,12 +30,11 @@ Vienen del enunciado y de decisiones ya tomadas:
 3. **El cálculo está separado de la ruta** (`src/calculo.js` no sabe nada de Express).
 4. **Las tres rutas obligatorias no se tocan:** `GET /api/estado`,
    `GET /api/tarifas` y `POST /api/presupuesto`.
-5. **CSS propio, sin Tailwind.** Los componentes que se copien de shadcn o
+5. **CSS propio, sin Tailwind** (CSS Modules en la calculadora). Los componentes que se copien de shadcn o
    21st.dev (pensados para Tailwind y TypeScript) se adaptan a JSX + CSS en
    `cliente/src/components/ui/`, sin añadir dependencias.
-6. **Estilo visual:** página de producto tipo Apple (titulares grandes,
-   secciones claras y oscuras alternas, botones en píldora, tarjetas con anillo
-   azul), con modo claro y nocturno.
+6. **Estilo visual:** corporativo sobrio, solo en claro: fondo `#F4F5F7`, superficies
+   blancas, texto `#0F172A`, bordes `#E2E8F0`, acento `#2563EB` solo en lo interactivo, Inter.
 7. **Commits solo a tu nombre**, sin coautores.
 8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
 9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
@@ -63,28 +62,26 @@ Landing que funciona como calculadora. Secciones, en orden:
 
 | Sección | Qué hace |
 | ------- | -------- |
-| Navegación | Isla flotante de cristal (glassmorphism) con logo JM, enlaces, indicador «API en línea», botón de tema y «Calcular». Se compacta al hacer scroll |
-| Hero | Componente `hero-1.jsx`: cuadrícula, titular con degradado, arco luminoso y fundido hacia la siguiente sección |
-| Configura tu web | Tipo, páginas (stepper + deslizador) y extras. Vista previa de la web y total al lado |
-| Tu presupuesto | Total animado, barra por conceptos y desglose |
-| Tarifas | Las cinco tarifas de `GET /api/tarifas`, con los precios alineados |
-| Packs | `pricing.jsx`: Esencial (300 €), Negocio (880 €) y Empresa (1.230 €). Su precio lo pide a `POST /api/presupuesto`; el control «Un idioma / Dos idiomas» los recalcula. «Elegir» carga el pack en el configurador |
-| Mantenimiento | `planes-mantenimiento.jsx`, datos de `GET /api/mantenimiento`. Las tarjetas se pueden elegir y quitar; el plan sale en «Tu presupuesto» como línea mensual aparte y no se envía a `POST /api/presupuesto` |
-| Cómo funciona | Tres pasos y la última petición y respuesta JSON reales |
-| Barra inferior | Total fijo abajo cuando no se ve el desglose |
+| Cabecera | Logo JM, Metodología, Servicios, Preguntas frecuentes y «Estimación» en directo |
+| Entrada | `EntradaPortal.jsx` + `ui/glyph-portal.jsx`: la palabra PRESUPUESTA se abre al hacer scroll y deja ver el titular |
+| Calculadora | `components/calculadora/`: 4 pasos, resumen lateral fijo y CTA de PDF |
+| Asistente IA | Propuesta con OpenAI, revisión y PDF |
+| Servicios | Tarifas de `GET /api/tarifas` |
+| Packs | `pricing.jsx`: su precio lo pide a `POST /api/presupuesto`; «Elegir» los carga en la calculadora |
+| Mantenimiento | `planes-mantenimiento.jsx`, compartido con el paso 4; es mensual y no suma al total |
+| Metodología y Preguntas | Tres pasos, última petición al servidor y preguntas frecuentes |
 
 Otros detalles:
 
-- **Fundido entre secciones:** en `index.css`, cada `.seccion` (y `.pie`) empieza
-  con el color de la anterior (`--color-anterior`) y funde en el suyo dentro del
-  relleno superior. Si se cambia el orden de las secciones, sigue funcionando
-  solo; el hero termina en `--fondo` porque debajo va el asistente.
-- **Modo nocturno:** `boton-tema.jsx`. Recuerda la elección en `localStorage`
-  (clave `tema`); si no hay, sigue al sistema. El cambio se anima con un círculo
-  (View Transitions) y un script en `index.html` evita el destello blanco.
-- **Logo JM** lineal con punto azul (`LogoJM` en `App.jsx`), también en el pie
-  y como icono de la pestaña. Está dibujado a partir de una descripción: si
-  tienes el archivo original, sustitúyelo.
+- **Calculadora:** `useCalculator.js` solo guarda qué se ha elegido; el importe viene de
+  `POST /api/estimacion` (`src/estimacion.js`). Landing y corporativa reutilizan
+  `calcularPresupuesto`, así que coinciden con la ruta obligatoria.
+- **Precios provisionales:** e-commerce, SaaS, diseño, CMS, CRM, SEO, autenticación,
+  urgencia y soporte son inventados; se cambian arriba en `src/estimacion.js`.
+- **Portal:** copia del componente Glyph Portal (MIT, © Christian Katzmann; conservar el
+  aviso), pasado a JSX y traducido. Mide la letra al montarse: la fuente debe estar
+  cargada antes, de eso se encarga `EntradaPortal.jsx`.
+- **Sin modo claro/oscuro:** se quitó el botón de tema.
 - **Responsive y navegadores:** ver el apartado 6.
 
 ### Asistente con IA y PDF (Presupuesta mi Web 2)
@@ -96,10 +93,12 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 
 - Modelo por defecto: `gpt-5.4-mini` (Responses API con JSON Schema estricto).
 - La clave está en `.env` en local y debe estar en Vercel como `OPENAI_API_KEY`.
-- PDF con **PDFKit** en el servidor. `src/pdf.js` hace `require` de las fuentes
-  `.cjs` a propósito: sin eso, Vercel no las empaqueta y el PDF falla solo en producción.
+- PDF con **PDFKit** en el servidor y la identidad de la web: logo JM, Inter,
+  cabecera azul noche, acento azul y escala sobria en el desglose. Las fuentes están en
+  `src/assets/fuentes/` (licencia OFL). `src/pdf.js` cita cada ruta entera a propósito:
+  si se construyen con variables, Vercel no las empaqueta y el PDF falla solo en producción.
 - Camarón: `cliente/public/camaron.png` (web) y `src/assets/camaron.png` (PDF).
-- 34 pruebas con `npm test`; OpenAI se simula en `test/propuesta.test.js`.
+- 45 pruebas con `npm test`; OpenAI se simula en `test/propuesta.test.js`.
 
 ### Historial de cambios importantes
 
@@ -114,6 +113,8 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 09/11/2026 | El fundido del hero termina en `--fondo`, el color del asistente (se notaba el corte) |
 | 09/11/2026 | Planes de mantenimiento seleccionables y fundido entre todas las secciones y el pie |
 | 09/11/2026 | Se probó un rediseño HUD estilo Stark Tech y se descartó por no gustar (revertido; el código sigue en el commit `e942576`) |
+| 09/11/2026 | Se probaron una web 3D con Three.js y otra Stark con React Three Fiber; ambas se descartaron sin llegar a publicarse |
+| 09/11/2026 | Calculadora corporativa de 4 pasos, `POST /api/estimacion`, portal de entrada y PDF con Inter e identidad sobria |
 
 ---
 
@@ -141,7 +142,7 @@ cd cliente && npm run dev   # terminal 2: interfaz en http://localhost:5173
 ### Probar
 
 ```bash
-npm test                    # 34 pruebas automáticas
+npm test                    # 45 pruebas automáticas
 npm run pruebas             # los casos contra la API en marcha
 ```
 
@@ -166,28 +167,33 @@ src/tarifas.js              tarifas (constantes congeladas)
 src/validacion.js           validarSolicitud()
 src/calculo.js              calcularPresupuesto()
 src/mantenimiento.js        planes de mantenimiento (ampliación)
+src/estimacion.js           catálogo y cálculo de la calculadora por pasos
+src/routes/estimacion.js    rutas de la calculadora
 src/routes/propuesta.js     rutas del asistente (equivale a un route.ts de Next.js)
 src/catalogo.js             servicios que la IA puede proponer
 src/openai.js               llamada a OpenAI e instrucciones del modelo
 src/propuesta.js            validación de la IA y de la selección; documento final
 src/pdf.js                  generación del PDF con PDFKit
-test/api.test.js            pruebas automáticas
+test/                       pruebas automáticas (api, propuesta y estimacion)
 pruebas/                    casos y script de pruebas contra la API en marcha
-cliente/index.html          metadatos, fuentes y script anti-destello del tema
+cliente/index.html          metadatos y fuentes
 cliente/src/App.jsx         página completa (estado, peticiones y secciones)
-cliente/src/index.css       estilos globales, tokens de color y modo nocturno
-cliente/src/components/ui/  hero-1, boton-tema, pricing, planes-mantenimiento
+cliente/src/index.css       estilos globales y tokens de color
+cliente/src/components/calculadora/  useCalculator, Calculadora y su CSS Module
+cliente/src/components/EntradaPortal.jsx  entrada de la web
+cliente/src/components/ui/  glyph-portal, pricing, planes-mantenimiento, asistente-ia
 vercel.json                 compila la interfaz al desplegar
 ```
 
-Los colores se cambian en los tokens del principio de `index.css`
-(`:root` para el modo claro y `:root[data-theme="dark"]` para el nocturno).
+Los colores se cambian en los tokens de `:root`, al principio de `index.css`.
 
 ---
 
 ## 6. Responsive y compatibilidad
 
-_Se completa al terminar la revisión en curso._
+Comprobado en Chrome de 320 a 1366 px de ancho, sin desbordes. La calculadora pasa a
+una columna por debajo de 1000 px y el portal respeta `prefers-reduced-motion`.
+Falta probarlo en Safari y Firefox.
 
 ---
 
@@ -195,12 +201,7 @@ _Se completa al terminar la revisión en curso._
 
 ### Mejoras pendientes de una revisión anterior
 
-- Si la API deja de responder, la tarjeta de error aún muestra el último
-  estado («El servidor respondió 200»).
 - El indicador «API en línea» y las tarifas solo se piden al cargar la página.
-- Los botones − / + saltan a 1 o 2 si el campo tiene un valor no válido (21, 2.5).
-- El total animado hace que los lectores de pantalla anuncien muchos números
-  seguidos; conviene un único aviso con el total final.
 - Algunos grises pequeños tienen poco contraste.
 
 ### Ideas para seguir
@@ -209,6 +210,5 @@ _Se completa al terminar la revisión en curso._
    Supabase + PostgreSQL, con `POST /api/presupuestos` para guardar y
    `GET /api/presupuestos/:id` para recuperar.
 2. Pasar a **Next.js**, que es la arquitectura del curso.
-3. Confirmar o cambiar los precios y el contenido de los packs y de los planes
-   de mantenimiento (son inventados).
-4. Sustituir el logo JM por el archivo original si lo tienes.
+3. Confirmar o cambiar los precios y el contenido de los packs, de los planes
+   de mantenimiento y de los servicios provisionales de `src/estimacion.js` (son inventados).

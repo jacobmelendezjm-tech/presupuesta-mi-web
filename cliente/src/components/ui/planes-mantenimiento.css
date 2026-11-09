@@ -59,7 +59,7 @@
 
 .mant-insignia {
   padding: 4px 10px;
-  border-radius: 980px;
+  border-radius: var(--radio);
   background: var(--azul);
   color: #fff;
   font-size: 12px;
@@ -116,10 +116,6 @@
   margin-top: 2px;
   flex-shrink: 0;
   color: var(--azul);
-}
-
-:root[data-theme="dark"] .mant-lista svg {
-  color: var(--enlace);
 }
 
 .mant-plan .mant-boton {

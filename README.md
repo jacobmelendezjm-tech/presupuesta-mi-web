@@ -89,6 +89,9 @@ Debe aparecer `{"status":"ok"}`.
 | GET    | `/api/tarifas`     | Devuelve las tarifas que usa el servidor      | 200        |
 | POST   | `/api/presupuesto` | Valida la solicitud y calcula el presupuesto  | 200 · 400  |
 | GET    | `/api/mantenimiento` | *Ampliación:* planes de mantenimiento mensuales | 200      |
+| GET    | `/api/estimacion/catalogo` | *Ampliación:* catálogo de la calculadora por pasos | 200 |
+| POST   | `/api/estimacion`  | *Ampliación:* calcula la selección de la calculadora | 200 · 400 |
+| POST   | `/api/estimacion/pdf` | *Ampliación:* devuelve la propuesta formal en PDF | 200 · 400 |
 
 Cualquier otra ruta responde **404** en JSON. Un fallo inesperado responde **500**.
 
@@ -202,9 +205,17 @@ presupuesta-mi-web/
 │   ├── tarifas.js        ← tarifas del servidor (constantes congeladas)
 │   ├── validacion.js     ← validarSolicitud(): comprueba el contrato
 │   ├── calculo.js        ← calcularPresupuesto(): lógica de negocio
-│   └── mantenimiento.js  ← ampliación: planes de mantenimiento mensuales
-├── test/
-│   └── api.test.js       ← pruebas automáticas (npm test)
+│   ├── mantenimiento.js  ← ampliación: planes de mantenimiento mensuales
+│   ├── estimacion.js     ← ampliación: catálogo y cálculo de la calculadora por pasos
+│   ├── catalogo.js       ← ampliación: servicios que puede proponer el asistente
+│   ├── openai.js         ← ampliación: llamada a OpenAI
+│   ├── propuesta.js      ← ampliación: valida la respuesta de la IA y la selección
+│   ├── pdf.js            ← ampliación: genera el presupuesto en PDF
+│   └── routes/           ← ampliación: rutas del asistente y de la calculadora
+├── test/                 ← pruebas automáticas (npm test)
+│   ├── api.test.js
+│   ├── propuesta.test.js
+│   └── estimacion.test.js
 ├── pruebas/
 │   ├── casos.js          ← casos de prueba (los 9 obligatorios + adicionales)
 │   └── ejecutar-pruebas.js ← prueba la API en marcha (npm run pruebas)
@@ -300,73 +311,35 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Landing en React que funciona como calculadora y consume las tres rutas de la API:
+Web en React con estilo corporativo sobrio. Consume las tres rutas de la API:
 
-- `GET /api/estado`: muestra el indicador «API en línea» en la barra de navegación.
-- `GET /api/tarifas`: muestra los precios en las opciones del configurador y en la
-  sección «Tarifas».
-- `POST /api/presupuesto`: recalcula el presupuesto en el servidor con cada cambio
-  y muestra el total, el desglose o los errores 400 (el campo erróneo se marca en
-  rojo usando la lista `campos` de la respuesta).
+- `GET /api/estado`: indicador «API en línea» del pie.
+- `GET /api/tarifas`: sección «Servicios y tarifas base».
+- `POST /api/presupuesto`: precio de los packs.
 
-**Diseño:** página de producto de estilo Apple: titulares grandes, secciones claras
-y oscuras alternas, barra de navegación translúcida, botones redondeados y un
-configurador por pasos como el de una tienda online. Secciones:
+La calculadora principal usa además las rutas de su ampliación:
+
+| Ruta | Qué hace |
+| ---- | -------- |
+| `GET /api/estimacion/catalogo` | Tipos, opciones y planes con sus precios |
+| `POST /api/estimacion` | Calcula la selección; lo mensual va aparte y no suma al total |
+| `POST /api/estimacion/pdf` | Devuelve la propuesta formal en PDF |
+
+El navegador solo envía identificadores: los precios y el cálculo están en
+[`src/estimacion.js`](src/estimacion.js), y landing y corporativa reutilizan el cálculo de
+`POST /api/presupuesto`. Los precios de e-commerce, SaaS y los servicios añadidos son
+provisionales.
 
 | Sección | Qué muestra |
 | ------- | ----------- |
-| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): cuadrícula de fondo, titular con degradado, precio mínimo, botón al configurador y fundido inferior hacia el color de la sección siguiente |
-| Configura tu web | Tipo de web, número de páginas y extras, con el total al lado |
-| Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
-| Tarifas | Las cinco tarifas que publica el servidor |
-| Packs | Componente [`pricing.jsx`](cliente/src/components/ui/pricing.jsx): tres configuraciones listas (Esencial, Negocio, Empresa) con un interruptor de uno o dos idiomas. Su precio se pide a `POST /api/presupuesto`, así que no hay precios en el cliente ni descuentos. Al elegir uno, se carga en el configurador |
-| Mantenimiento | Componente [`planes-mantenimiento.jsx`](cliente/src/components/ui/planes-mantenimiento.jsx): planes mensuales de `GET /api/mantenimiento`. Se pueden elegir y quitar; el plan elegido aparece en «Tu presupuesto» como línea mensual aparte y nunca se suma al total |
-| Cómo funciona | Los tres pasos del cálculo y la última petición y respuesta JSON reales |
+| Entrada | [`glyph-portal.jsx`](cliente/src/components/ui/glyph-portal.jsx): la palabra se abre al hacer scroll |
+| Calculadora | [`Calculadora.jsx`](cliente/src/components/calculadora/Calculadora.jsx) y [`useCalculator.js`](cliente/src/components/calculadora/useCalculator.js): 4 pasos y resumen lateral fijo |
+| Servicios, packs y mantenimiento | Tarifas, configuraciones listas y planes mensuales |
+| Metodología y preguntas | Cómo se calcula y dudas frecuentes |
 
-Las secciones no tienen un corte de color: cada una empieza con el color de la
-anterior y se funde en el suyo.
-
-Un botón en la barra de navegación ([`boton-tema.jsx`](cliente/src/components/ui/boton-tema.jsx))
-cambia entre modo claro y nocturno. Recuerda la elección y, si no hay ninguna,
-sigue la del sistema.
-
-Los componentes de `cliente/src/components/ui` vienen de diseños pensados para
-shadcn, Tailwind y TypeScript. Se han adaptado a JSX y CSS propios porque la
-actividad exige JavaScript y porque Tailwind cambiaría los estilos base del
-resto de la página. No necesitan dependencias nuevas: las animaciones se hacen
-con CSS.
-
-Es **responsive**: en escritorio el configurador tiene dos columnas (vista previa y
-total fijos a la izquierda); por debajo de 900 px pasa a una sola columna. Al salir
-del inicio aparece una barra fija abajo con el total. Respeta la opción del sistema
-de reducir el movimiento.
-
-Hacen falta **dos terminales**:
-
-```bash
-# Terminal 1: la API (en la carpeta del proyecto)
-npm start
-```
-
-```bash
-# Terminal 2: la interfaz
-cd cliente
-npm install
-npm run dev
-```
-
-Abre <http://localhost:5173>. Vite reenvía las peticiones `/api` a
-`http://localhost:3000` (ver [`cliente/vite.config.js`](cliente/vite.config.js)).
-
-El formulario no bloquea valores incorrectos (por ejemplo, `2.5` páginas) para
-que se vea cómo la validación del servidor los rechaza y la interfaz muestra el error.
-
-**Alternativa con un solo proceso:** compila la interfaz y deja que Express la sirva:
-
-```bash
-npm run build   # compila cliente/ en public/
-npm start       # interfaz y API en http://localhost:3000
-```
+Glyph Portal es un componente con licencia MIT de Christian Katzmann, adaptado a JSX y
+traducido al español. Es responsive y respeta la opción del sistema de reducir el
+movimiento.
 
 ## Ampliación: asistente con IA y presupuesto en PDF
 
@@ -417,6 +390,10 @@ comprueba en código que:
 | pdf-lib | Útil para editar PDF existentes, pero sin maquetación; sin versiones desde 2022 |
 | Puppeteer | Fiel al HTML, pero necesita Chromium: pesado y delicado en funciones serverless |
 
+El PDF lleva la identidad de la web: logo JM, tipografía Inter (incluida en
+[`src/assets/fuentes`](src/assets/fuentes), con licencia OFL), cabecera azul noche con
+Camarón, y una escala sobria de azules para cada concepto.
+
 ### Comprobaciones
 
 | Situación | Resultado |
@@ -428,7 +405,7 @@ comprueba en código que:
 | Fallo de OpenAI | 502 con mensaje y botón «Volver a intentarlo», conservando el texto |
 | Modificar servicios | Vista previa y PDF con la selección final: 630 € tras cambiar a landing, 5 páginas adicionales y sin idioma |
 
-`npm test` ejecuta 34 pruebas (con OpenAI simulado). Los casos de la tabla se
+`npm test` ejecuta 45 pruebas (con OpenAI simulado). Los casos de la tabla se
 comprobaron además en navegador con la API real.
 
 Camarón acompaña al asistente como mascota y aparece en el presupuesto.

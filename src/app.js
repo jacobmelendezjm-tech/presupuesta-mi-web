@@ -5,6 +5,7 @@ const { validarSolicitud } = require("./validacion");
 const { calcularPresupuesto } = require("./calculo");
 const { PLANES_MANTENIMIENTO } = require("./mantenimiento");
 const rutasPropuesta = require("./routes/propuesta");
+const rutasEstimacion = require("./routes/estimacion");
 
 const app = express();
 
@@ -70,6 +71,9 @@ app.post("/api/presupuesto", (req, res) => {
 
 // Rutas del asistente con IA (catálogo, propuesta, documento y PDF).
 app.use("/api", rutasPropuesta);
+
+// Rutas de la calculadora por pasos (catálogo, cálculo y PDF).
+app.use("/api", rutasEstimacion);
 
 // Cualquier otra ruta → 404 en formato JSON.
 app.use((req, res) => {

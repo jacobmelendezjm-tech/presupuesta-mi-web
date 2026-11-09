@@ -184,7 +184,7 @@ export default function PricingSection({ onElegir, precioIdioma }) {
             Packs. <span className="gris">Elegir nunca fue tan rápido.</span>
           </h2>
           <p className="entradilla">
-            Tres configuraciones listas para empezar. Elige una y la cargamos en el configurador, con el mismo precio
+            Tres configuraciones listas para empezar. Elige una y la cargamos en la calculadora, con el mismo precio
             que calcula el servidor.
           </p>
         </div>
