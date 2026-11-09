@@ -3,13 +3,11 @@ const PDFDocument = require("pdfkit");
 
 const RUTA_CAMARON = path.join(__dirname, "assets", "camaron.png");
 
-// PDFKit lee estas fuentes de disco y Vercel solo empaqueta los archivos que ve
-// citados en el código. Sin estas referencias, el PDF falla solo en producción.
-const FUENTES_PARA_VERCEL = [
-  path.join(__dirname, "../node_modules/pdfkit/js/data/Helvetica.afm"),
-  path.join(__dirname, "../node_modules/pdfkit/js/data/Helvetica-Bold.afm"),
-  path.join(__dirname, "../node_modules/pdfkit/js/data/Helvetica-Oblique.afm"),
-];
+// PDFKit carga sus fuentes con un require dinámico y Vercel solo empaqueta lo que
+// ve citado en el código. Sin estas líneas, el PDF falla solo en producción.
+require("pdfkit/standard-fonts/Helvetica");
+require("pdfkit/standard-fonts/HelveticaBold");
+require("pdfkit/standard-fonts/HelveticaOblique");
 
 const COLOR = { texto: "#1d1d1f", suave: "#6e6e73", linea: "#d2d2d7", acento: "#0071e3", fondo: "#f5f5f7" };
 const MARGEN = 50;
@@ -164,4 +162,4 @@ function generarPdf(documento) {
   });
 }
 
-module.exports = { generarPdf, FUENTES_PARA_VERCEL };
+module.exports = { generarPdf };

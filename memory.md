@@ -92,8 +92,8 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 
 - Modelo por defecto: `gpt-5.4-mini` (Responses API con JSON Schema estricto).
 - La clave está en `.env` en local y debe estar en Vercel como `OPENAI_API_KEY`.
-- PDF con **PDFKit** en el servidor. `src/pdf.js` cita las fuentes `.afm` a
-  propósito: sin eso, Vercel no las empaqueta y el PDF falla solo en producción.
+- PDF con **PDFKit** en el servidor. `src/pdf.js` hace `require` de las fuentes
+  `.cjs` a propósito: sin eso, Vercel no las empaqueta y el PDF falla solo en producción.
 - Camarón: `cliente/public/camaron.png` (web) y `src/assets/camaron.png` (PDF).
 - 34 pruebas con `npm test`; OpenAI se simula en `test/propuesta.test.js`.
 
