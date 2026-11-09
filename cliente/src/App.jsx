@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Hero } from "./components/ui/hero-1.jsx";
+import { BotonTema } from "./components/ui/boton-tema.jsx";
 import PricingSection from "./components/ui/pricing.jsx";
-import { PanelJarvis } from "./components/ui/panel-jarvis.jsx";
 import { PlanesMantenimiento } from "./components/ui/planes-mantenimiento.jsx";
 import { AsistenteIA } from "./components/ui/asistente-ia.jsx";
 
@@ -166,9 +166,20 @@ function Icono({ nombre, className = "icono" }) {
   );
 }
 
-// Logo: un pequeño reactor dibujado con CSS.
-function LogoStark() {
-  return <span className="logo-stark" aria-hidden="true" />;
+// Logo JM: letras de trazo lineal (usan el color del texto) y un punto de acento.
+function LogoJM({ className = "logo-jm" }) {
+  return (
+    <svg className={className} viewBox="0 0 46 26" fill="none" aria-hidden="true">
+      <path
+        d="M3 18a5 5 0 0 0 10 0V3M19 23V3l8 11 8-11v20"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="42" cy="21" r="2.4" className="logo-jm-punto" />
+    </svg>
+  );
 }
 
 // Hace aparecer su contenido con un fundido al entrar en la ventana.
@@ -275,15 +286,14 @@ export default function App() {
   const refAsistente = useRef(null);
   const heroEnVista = useEnVista(refHero, true);
   const asistenteEnVista = useEnVista(refAsistente);
-  const [menuAbierto, setMenuAbierto] = useState(false);
+  const [conScroll, setConScroll] = useState(false);
 
-  // El menú móvil se cierra con la tecla Escape.
+  // La isla de navegación se compacta en cuanto la página se desplaza.
   useEffect(() => {
-    const alPulsar = (e) => {
-      if (e.key === "Escape") setMenuAbierto(false);
-    };
-    document.addEventListener("keydown", alPulsar);
-    return () => document.removeEventListener("keydown", alPulsar);
+    const alDesplazar = () => setConScroll(window.scrollY > 24);
+    alDesplazar();
+    window.addEventListener("scroll", alDesplazar, { passive: true });
+    return () => window.removeEventListener("scroll", alDesplazar);
   }, []);
   const desgloseEnVista = useEnVista(refDesglose, false, { threshold: 0.15 });
 
@@ -388,49 +398,30 @@ export default function App() {
   return (
     <>
       {/* ---------------- Navegación ---------------- */}
-      <nav className="nav" aria-label="Principal">
+      <nav className="nav" aria-label="Principal" data-scroll={conScroll || undefined}>
         <div className="nav-interior">
-          <a href="#hero" className="marca" aria-label="Stark Industries, ir al inicio">
-            <LogoStark />
-            <span className="marca-texto">STARK<small>INDUSTRIES</small></span>
+          <a href="#hero" className="marca" aria-label="JM · Presupuesta, ir al inicio">
+            <LogoJM />
+            <span className="marca-separador" aria-hidden="true" />
+            Presupuesta
           </a>
-          <ul
-            id="menu-principal"
-            className="nav-enlaces"
-            data-abierto={menuAbierto || undefined}
-            onClick={(e) => {
-              if (e.target.closest("a")) setMenuAbierto(false);
-            }}
-          >
+          <ul className="nav-enlaces">
             <li><a href="#asistente">Asistente IA</a></li>
             <li><a href="#configurar">Configurar</a></li>
             <li><a href="#desglose">Desglose</a></li>
-            <li><a href="#panel">Panel</a></li>
             <li><a href="#tarifas">Tarifas</a></li>
             <li><a href="#packs">Packs</a></li>
             <li><a href="#mantenimiento">Mantenimiento</a></li>
           </ul>
           <div className="nav-acciones">
-            {/* El estado es real: sale de GET /api/estado. */}
             <span className={`estado estado-${estadoApi}`} title="GET /api/estado">
               <span className="estado-punto" aria-hidden="true" />
-              <span className="estado-etiqueta">SYSTEM STATUS: </span>
-              <strong>{estadoApi === "ok" ? "ONLINE" : estadoApi === "error" ? "OFFLINE" : "CHECKING"}</strong>
-              <span className="estado-separador" aria-hidden="true">/</span>
-              <span className="estado-etiqueta">ARC REACTOR: </span>
-              <strong>{estadoApi === "ok" ? "100%" : estadoApi === "error" ? "0%" : "…"}</strong>
+              <span className="estado-texto">
+                {estadoApi === "ok" ? "API en línea" : estadoApi === "error" ? "API sin conexión" : "Comprobando…"}
+              </span>
             </span>
-            <a href="#configurar" className="boton boton-pequeno nav-calcular">Calcular</a>
-            <button
-              type="button"
-              className="menu-toggle"
-              aria-expanded={menuAbierto}
-              aria-controls="menu-principal"
-              aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-              onClick={() => setMenuAbierto((abierto) => !abierto)}
-            >
-              <span /><span /><span />
-            </button>
+            <BotonTema />
+            <a href="#configurar" className="boton boton-pequeno">Calcular</a>
           </div>
         </div>
       </nav>
@@ -445,21 +436,15 @@ export default function App() {
           subtitle="Elige el tipo, las páginas y los extras. Nuestro servidor valida cada dato y calcula tu presupuesto al instante."
           ctaLabel="Configurar mi web"
           ctaHref="#configurar"
-          lecturas={[
-            { etiqueta: "Desde", valor: desde != null ? euros(desde) : "—" },
-            { etiqueta: "Páginas", valor: `${PAGINAS_MIN}–${PAGINAS_MAX}` },
-            { etiqueta: "Tu total", valor: hayError ? "—" : totalTexto },
-            { etiqueta: "Cálculo", valor: "Servidor" },
-          ]}
         />
 
         {/* ---------------- Asistente con IA ---------------- */}
-        <section className="seccion" id="asistente" ref={refAsistente}>
+        <section className="seccion seccion-blanca" id="asistente" ref={refAsistente}>
           <AsistenteIA />
         </section>
 
         {/* ---------------- Configurador ---------------- */}
-        <section className="seccion" id="configurar">
+        <section className="seccion seccion-clara" id="configurar">
           <Revelar className="seccion-cabecera">
             <h2 className="titular">Configura tu web.</h2>
             <p className="entradilla">Cada cambio se envía al servidor y se calcula en tiempo real.</p>
@@ -623,7 +608,7 @@ export default function App() {
         </section>
 
         {/* ---------------- Desglose ---------------- */}
-        <section className="seccion" id="desglose" ref={refDesglose} aria-live="polite">
+        <section className="seccion seccion-blanca" id="desglose" ref={refDesglose} aria-live="polite">
           <Revelar className="seccion-cabecera">
             <h2 className="titular">Tu presupuesto.</h2>
             <p className="entradilla">
@@ -702,29 +687,8 @@ export default function App() {
           )}
         </section>
 
-        {/* ---------------- Panel con datos reales de la configuración ---------------- */}
-        <section className="seccion" id="panel">
-          <Revelar className="seccion-cabecera">
-            <p className="hero-eyebrow">J.A.R.V.I.S. // Módulos en línea</p>
-            <h2 className="titular">Panel de control.</h2>
-            <p className="entradilla">Se actualiza con cada cambio que haces en el configurador.</p>
-          </Revelar>
-          <Revelar className="jarvis-rejilla">
-            <PanelJarvis
-              paginas={paginasEnRango ? numeroPaginas : 0}
-              paginasMax={PAGINAS_MAX}
-              extrasActivos={Number(formulario) + Number(segundoIdioma)}
-              extrasTotal={EXTRAS.length}
-              presupuesto={presupuesto}
-              estadoApi={estadoApi}
-              hayTarifas={Boolean(tarifas)}
-              ultimoEstado={intercambio?.estado}
-            />
-          </Revelar>
-        </section>
-
         {/* ---------------- Tarifas (GET /api/tarifas) ---------------- */}
-        <section className="seccion" id="tarifas">
+        <section className="seccion seccion-clara" id="tarifas">
           <Revelar className="seccion-cabecera">
             <h2 className="titular">
               Tarifas. <span className="gris">Claras desde el principio.</span>
@@ -747,12 +711,12 @@ export default function App() {
         </section>
 
         {/* ---------------- Packs (configuraciones listas para elegir) ---------------- */}
-        <section className="seccion" id="packs">
+        <section className="seccion seccion-blanca" id="packs">
           <PricingSection onElegir={elegirPack} precioIdioma={tarifa("segundoIdioma") == null ? null : precio("segundoIdioma")} />
         </section>
 
         {/* ---------------- Mantenimiento (GET /api/mantenimiento) ---------------- */}
-        <section className="seccion" id="mantenimiento">
+        <section className="seccion seccion-clara" id="mantenimiento">
           <Revelar className="seccion-cabecera">
             <h2 className="titular">
               Mantenimiento. <span className="gris">Tu web, siempre a punto.</span>
@@ -768,7 +732,7 @@ export default function App() {
         </section>
 
         {/* ---------------- Cómo funciona ---------------- */}
-        <section className="seccion" id="como-funciona">
+        <section className="seccion seccion-oscura" id="como-funciona">
           <Revelar className="seccion-cabecera">
             <p className="hero-eyebrow">Bajo el capó</p>
             <h2 className="titular">
@@ -820,21 +784,13 @@ export default function App() {
             Los packs son configuraciones ya preparadas: su precio es el mismo que calcula el servidor para esa
             configuración. Los planes de mantenimiento son mensuales y opcionales, y no se suman al presupuesto.
           </p>
-          <nav className="pie-enlaces" aria-label="Subsistemas">
-            <a href="#asistente">Asistente IA</a>
-            <a href="#configurar">Configurador</a>
-            <a href="#tarifas">Tarifas</a>
-            <a href="#mantenimiento">Mantenimiento</a>
-            <a href="/api/estado">Estado de la API</a>
-          </nav>
           <div className="pie-linea">
             <span className="pie-marca">
-              <LogoStark />
+              <LogoJM className="logo-jm logo-jm-pie" />
               Presupuesta mi web · 0613 · Desarrollo web en entorno servidor
             </span>
             <span>Node.js · Express · React</span>
           </div>
-          <p>© Stark Tech. Proyecto académico sin afiliación con Marvel; las marcas pertenecen a sus titulares.</p>
         </div>
       </footer>
 

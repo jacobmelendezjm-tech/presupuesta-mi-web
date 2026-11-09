@@ -3,18 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#0b0e14" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#161617" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Aplica el tema guardado (o el del sistema) antes de pintar la página,
+      // para que el modo nocturno no muestre primero un destello blanco.
+      (function () {
+        var tema = null;
+        try {
+          tema = localStorage.getItem("tema");
+        } catch (e) {}
+        if (tema !== "dark" && tema !== "light") {
+          tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = tema;
+      })();
+    </script>
     <meta name="description" content="Configura tu web y obtén su presupuesto al instante: el servidor valida los datos y aplica sus tarifas." />
     <title>Presupuesta mi web</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230b0e14'/%3E%3Ccircle cx='16' cy='16' r='12' fill='none' stroke='%23d4af37' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%2300f0ff'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%23fff'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231d1d1f'/%3E%3Cg transform='translate(4 9) scale(.52)' fill='none'%3E%3Cpath d='M3 18a5 5 0 0 0 10 0V3M19 23V3l8 11 8-11v20' stroke='%23f5f5f7' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='42' cy='21' r='3' fill='%232997ff'/%3E%3C/g%3E%3C/svg%3E"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>

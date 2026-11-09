@@ -1,5 +1,6 @@
 /* Sección de packs (pricing.jsx) con el estilo del resto de la landing:
-   tarjetas con borde neón, brillo en el pack destacado y control segmentado. */
+   tarjetas de esquinas amplias, anillo azul en el pack destacado, botón
+   en forma de píldora y control segmentado. */
 
 .packs {
   max-width: var(--ancho-amplio);
@@ -32,14 +33,19 @@
 /* ---- Control segmentado ---- */
 
 .segmentado {
-  --segmentado-fondo: rgba(0, 240, 255, 0.08);
-  --segmentado-activo: var(--acento);
+  --segmentado-fondo: #e8e8ed;
+  --segmentado-activo: #ffffff;
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
   padding: 3px;
-  border-radius: var(--radio);
+  border-radius: 980px;
   background: var(--segmentado-fondo);
+}
+
+:root[data-theme="dark"] .segmentado {
+  --segmentado-fondo: #2c2c2e;
+  --segmentado-activo: #636366;
 }
 
 .segmentado-pastilla {
@@ -48,9 +54,9 @@
   bottom: 3px;
   left: 3px;
   width: calc(50% - 3px);
-  border-radius: var(--radio);
+  border-radius: 980px;
   background: var(--segmentado-activo);
-  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
   transition: transform 0.4s var(--curva);
 }
 
@@ -67,7 +73,7 @@
   min-height: 40px;
   padding: 8px 22px;
   border: 0;
-  border-radius: var(--radio);
+  border-radius: 980px;
   background: none;
   color: var(--texto-2);
   font-size: 15px;
@@ -76,9 +82,8 @@
   transition: color 0.2s;
 }
 
-.segmentado-opcion[data-activo],
-.segmentado-opcion[data-activo] .segmentado-nota {
-  color: var(--sobre-acento);
+.segmentado-opcion[data-activo] {
+  color: var(--texto);
   font-weight: 600;
 }
 
@@ -110,21 +115,25 @@
 }
 
 .pack[data-popular] {
-  box-shadow: inset 0 0 0 1px var(--acento), 0 0 18px rgba(0, 240, 255, 0.3);
+  box-shadow: inset 0 0 0 2px var(--azul);
 }
 
 .pack-etiqueta {
   min-height: 1.4em;
-  color: var(--oro);
+  color: #b64400;
   font-size: 14px;
   font-weight: 600;
+}
+
+:root[data-theme="dark"] .pack-etiqueta {
+  color: #ff9f0a;
 }
 
 .pack-nombre {
   margin-top: 4px;
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: -0.02em;
 }
 
 .pack-descripcion {
@@ -146,7 +155,7 @@
 .pack-precio-valor {
   font-size: 44px;
   font-weight: 700;
-  letter-spacing: 0;
+  letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -218,7 +227,12 @@
 
 .pack-extra,
 .pack-extra .pack-icono {
-  color: var(--acento);
+  color: var(--azul);
+}
+
+:root[data-theme="dark"] .pack-extra,
+:root[data-theme="dark"] .pack-extra .pack-icono {
+  color: var(--enlace);
 }
 
 .pack-ideal {
@@ -254,8 +268,12 @@
   height: 18px;
   margin-top: 2px;
   flex-shrink: 0;
-  color: var(--acento);
+  color: var(--azul);
   stroke-width: 2.5;
+}
+
+:root[data-theme="dark"] .pack-check {
+  color: var(--enlace);
 }
 
 /* En una sola columna no hace falta reservar la línea de la etiqueta

@@ -33,10 +33,9 @@ Vienen del enunciado y de decisiones ya tomadas:
 5. **CSS propio, sin Tailwind.** Los componentes que se copien de shadcn o
    21st.dev (pensados para Tailwind y TypeScript) se adaptan a JSX + CSS en
    `cliente/src/components/ui/`, sin añadir dependencias.
-6. **Estilo visual:** HUD holográfico tipo Stark Tech, solo en oscuro: fondo
-   `#0B0E14` con malla, acentos cian `#00F0FF`, detalles carmesí y dorados, y
-   fuentes Orbitron, Rajdhani y Roboto Mono. El carmesí no se usa como texto (no
-   se lee) y los importes no van en Orbitron (su cero lleva barra).
+6. **Estilo visual:** página de producto tipo Apple (titulares grandes,
+   secciones claras y oscuras alternas, botones en píldora, tarjetas con anillo
+   azul), con modo claro y nocturno.
 7. **Commits solo a tu nombre**, sin coautores.
 8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
 9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
@@ -64,11 +63,10 @@ Landing que funciona como calculadora. Secciones, en orden:
 
 | Sección | Qué hace |
 | ------- | -------- |
-| Navegación | Barra fija con logo STARK INDUSTRIES, enlaces (menú desplegable por debajo de 1280 px), `SYSTEM STATUS / ARC REACTOR` (sale de `GET /api/estado`) y «Calcular» |
-| Hero | Componente `hero-1.jsx`: titular, Reactor ARC hecho con CSS, lecturas a los lados y botón con brillo neón |
+| Navegación | Isla flotante de cristal (glassmorphism) con logo JM, enlaces, indicador «API en línea», botón de tema y «Calcular». Se compacta al hacer scroll |
+| Hero | Componente `hero-1.jsx`: cuadrícula, titular con degradado, arco luminoso y fundido hacia la siguiente sección |
 | Configura tu web | Tipo, páginas (stepper + deslizador) y extras. Vista previa de la web y total al lado |
 | Tu presupuesto | Total animado, barra por conceptos y desglose |
-| Panel de control | `panel-jarvis.jsx`: tres paneles con barras y datos reales (configuración, reparto del total y estado de la API) |
 | Tarifas | Las cinco tarifas de `GET /api/tarifas`, con los precios alineados |
 | Packs | `pricing.jsx`: Esencial (300 €), Negocio (880 €) y Empresa (1.230 €). Su precio lo pide a `POST /api/presupuesto`; el control «Un idioma / Dos idiomas» los recalcula. «Elegir» carga el pack en el configurador |
 | Mantenimiento | `planes-mantenimiento.jsx`, datos de `GET /api/mantenimiento`. Las tarjetas se pueden elegir y quitar; el plan sale en «Tu presupuesto» como línea mensual aparte y no se envía a `POST /api/presupuesto` |
@@ -77,12 +75,16 @@ Landing que funciona como calculadora. Secciones, en orden:
 
 Otros detalles:
 
-- **Secciones sin corte:** ninguna tiene fondo propio; la malla de `body::before`
-  es continua, así que no hay cambio de color entre ellas.
-- **Esquinas cortadas:** los botones usan `clip-path`, que recorta también el foco
-  y lo que sobresalga. Por eso `.hero1-boton` y `.jarvis-panel` pintan el relleno
-  en pseudoelementos, y `.mant-boton` lo desactiva para que toda la tarjeta sea pulsable.
-- **Sin modo claro:** se quitó el botón de tema al pasar al estilo HUD.
+- **Fundido entre secciones:** en `index.css`, cada `.seccion` (y `.pie`) empieza
+  con el color de la anterior (`--color-anterior`) y funde en el suyo dentro del
+  relleno superior. Si se cambia el orden de las secciones, sigue funcionando
+  solo; el hero termina en `--fondo` porque debajo va el asistente.
+- **Modo nocturno:** `boton-tema.jsx`. Recuerda la elección en `localStorage`
+  (clave `tema`); si no hay, sigue al sistema. El cambio se anima con un círculo
+  (View Transitions) y un script en `index.html` evita el destello blanco.
+- **Logo JM** lineal con punto azul (`LogoJM` en `App.jsx`), también en el pie
+  y como icono de la pestaña. Está dibujado a partir de una descripción: si
+  tienes el archivo original, sustitúyelo.
 - **Responsive y navegadores:** ver el apartado 6.
 
 ### Asistente con IA y PDF (Presupuesta mi Web 2)
@@ -111,7 +113,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 09/11/2026 | Asistente con OpenAI, revisión de servicios, presupuesto en PDF y Camarón |
 | 09/11/2026 | El fundido del hero termina en `--fondo`, el color del asistente (se notaba el corte) |
 | 09/11/2026 | Planes de mantenimiento seleccionables y fundido entre todas las secciones y el pie |
-| 09/11/2026 | Rediseño HUD estilo Stark Tech: Reactor ARC, panel de control, menú móvil y un solo tema oscuro |
+| 09/11/2026 | Se probó un rediseño HUD estilo Stark Tech y se descartó por no gustar (revertido; el código sigue en el commit `e942576`) |
 
 ---
 
@@ -171,14 +173,15 @@ src/propuesta.js            validación de la IA y de la selección; documento f
 src/pdf.js                  generación del PDF con PDFKit
 test/api.test.js            pruebas automáticas
 pruebas/                    casos y script de pruebas contra la API en marcha
-cliente/index.html          metadatos y fuentes
+cliente/index.html          metadatos, fuentes y script anti-destello del tema
 cliente/src/App.jsx         página completa (estado, peticiones y secciones)
-cliente/src/index.css       estilos globales y tokens de color
-cliente/src/components/ui/  hero-1, panel-jarvis, pricing, planes-mantenimiento, asistente-ia
+cliente/src/index.css       estilos globales, tokens de color y modo nocturno
+cliente/src/components/ui/  hero-1, boton-tema, pricing, planes-mantenimiento
 vercel.json                 compila la interfaz al desplegar
 ```
 
-Los colores se cambian en los tokens de `:root`, al principio de `index.css`.
+Los colores se cambian en los tokens del principio de `index.css`
+(`:root` para el modo claro y `:root[data-theme="dark"]` para el nocturno).
 
 ---
 
@@ -208,3 +211,4 @@ _Se completa al terminar la revisión en curso._
 2. Pasar a **Next.js**, que es la arquitectura del curso.
 3. Confirmar o cambiar los precios y el contenido de los packs y de los planes
    de mantenimiento (son inventados).
+4. Sustituir el logo JM por el archivo original si lo tienes.
