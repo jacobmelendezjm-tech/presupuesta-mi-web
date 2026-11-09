@@ -4,6 +4,10 @@ const { TARIFAS, DESCRIPCIONES, MONEDA } = require("./tarifas");
 const { validarSolicitud } = require("./validacion");
 const { calcularPresupuesto } = require("./calculo");
 const { PLANES_MANTENIMIENTO } = require("./mantenimiento");
+const { CATALOGO } = require("./catalogo");
+const { pedirPropuestaIA, ErrorIA } = require("./openai");
+const { validarDescripcion, normalizarPropuesta, validarSeleccion, construirDocumento } = require("./propuesta");
+const { generarPdf } = require("./pdf");
 
 const app = express();
 
@@ -67,6 +71,70 @@ app.post("/api/presupuesto", (req, res) => {
   res.status(200).json(presupuesto);
 });
 
+// GET /api/catalogo → servicios que se pueden proponer y añadir.
+app.get("/api/catalogo", (req, res) => {
+  res.json({ moneda: MONEDA, servicios: CATALOGO });
+});
+
+// Responde 400 si la petición no es JSON o no supera la validación.
+function datosValidados(req, res, validar) {
+  if (!req.is("application/json")) {
+    res.status(400).json({
+      error: "Solicitud no válida",
+      campos: [],
+      detalles: ['La petición debe usar la cabecera "Content-Type: application/json".'],
+    });
+    return null;
+  }
+  const resultado = validar(req.body);
+  if (!resultado.valido) {
+    res.status(400).json({ error: "Solicitud no válida", campos: resultado.campos, detalles: resultado.detalles });
+    return null;
+  }
+  return resultado.datos;
+}
+
+// POST /api/propuesta → la IA interpreta la solicitud; aquí se valida lo que devuelve.
+app.post("/api/propuesta", async (req, res, next) => {
+  const datos = datosValidados(req, res, validarDescripcion);
+  if (!datos) return;
+
+  try {
+    const respuestaIA = await pedirPropuestaIA(datos);
+    res.status(200).json(normalizarPropuesta(respuestaIA));
+  } catch (error) {
+    if (!(error instanceof ErrorIA)) return next(error);
+    res.status(error.estado).json({
+      error: "No se pudo preparar la propuesta",
+      campos: [],
+      detalles: [error.message],
+      reintentable: true,
+    });
+  }
+});
+
+// POST /api/propuesta/documento → calcula los importes de la selección confirmada.
+app.post("/api/propuesta/documento", (req, res) => {
+  const datos = datosValidados(req, res, validarSeleccion);
+  if (datos) res.status(200).json(construirDocumento(datos));
+});
+
+// POST /api/propuesta/pdf → recalcula en el servidor y devuelve el PDF.
+app.post("/api/propuesta/pdf", async (req, res, next) => {
+  const datos = datosValidados(req, res, validarSeleccion);
+  if (!datos) return;
+
+  try {
+    const pdf = await generarPdf(construirDocumento(datos));
+    res.status(200);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="presupuesto.pdf"');
+    res.end(pdf);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Cualquier otra ruta → 404 en formato JSON.
 app.use((req, res) => {
   res.status(404).json({ error: `No existe la ruta ${req.method} ${req.path}` });
@@ -79,6 +147,14 @@ app.use((err, req, res, next) => {
       error: "Solicitud no válida",
       campos: [],
       detalles: ["El cuerpo de la petición no es un JSON válido."],
+    });
+  }
+
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({
+      error: "Solicitud no válida",
+      campos: [],
+      detalles: ["El texto enviado es demasiado largo."],
     });
   }
 

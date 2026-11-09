@@ -3,7 +3,8 @@ node_modules/
 
 # Compilación del cliente React (se genera con npm run build)
 cliente/dist/
-public/
+# Solo la carpeta public/ de la raíz: cliente/public/ tiene imágenes que sí se suben
+/public/
 
 # Configuración local de Vercel CLI
 .vercel/
@@ -20,3 +21,6 @@ Thumbs.db
 
 # Configuración local del editor/asistente
 .claude/
+
+# La plantilla de variables sí se sube (no contiene claves)
+!.env.example

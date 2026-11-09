@@ -3,6 +3,7 @@ import { Hero } from "./components/ui/hero-1.jsx";
 import { BotonTema } from "./components/ui/boton-tema.jsx";
 import PricingSection from "./components/ui/pricing.jsx";
 import { PlanesMantenimiento } from "./components/ui/planes-mantenimiento.jsx";
+import { AsistenteIA } from "./components/ui/asistente-ia.jsx";
 
 // ---------------------------------------------------------------------------
 // Utilidades
@@ -280,7 +281,9 @@ export default function App() {
   const peticionActual = useRef(null);
   const refHero = useRef(null);
   const refDesglose = useRef(null);
+  const refAsistente = useRef(null);
   const heroEnVista = useEnVista(refHero, true);
+  const asistenteEnVista = useEnVista(refAsistente);
   const [conScroll, setConScroll] = useState(false);
 
   // La isla de navegación se compacta en cuanto la página se desplaza.
@@ -375,7 +378,8 @@ export default function App() {
   const totalAnimado = useNumeroAnimado(presupuesto?.total);
   const totalTexto = presupuesto ? euros(totalAnimado) : "—";
   const desde = tarifas ? Math.min(tarifa("landing"), tarifa("corporativa")) : null;
-  const mostrarBarra = !heroEnVista && !desgloseEnVista;
+  // El asistente tiene su propio importe: la barra del configurador lo confundiría.
+  const mostrarBarra = !heroEnVista && !desgloseEnVista && !asistenteEnVista;
 
   const configuracion = { tipo, paginas: numeroPaginas, formulario, segundoIdioma };
 
@@ -400,6 +404,7 @@ export default function App() {
             Presupuesta
           </a>
           <ul className="nav-enlaces">
+            <li><a href="#asistente">Asistente IA</a></li>
             <li><a href="#configurar">Configurar</a></li>
             <li><a href="#desglose">Desglose</a></li>
             <li><a href="#tarifas">Tarifas</a></li>
@@ -430,6 +435,11 @@ export default function App() {
           ctaLabel="Configurar mi web"
           ctaHref="#configurar"
         />
+
+        {/* ---------------- Asistente con IA ---------------- */}
+        <section className="seccion seccion-blanca" id="asistente" ref={refAsistente}>
+          <AsistenteIA />
+        </section>
 
         {/* ---------------- Configurador ---------------- */}
         <section className="seccion seccion-clara" id="configurar">

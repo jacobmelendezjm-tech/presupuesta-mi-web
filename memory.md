@@ -1,7 +1,7 @@
 # Memoria del proyecto · Presupuesta mi web
 
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
-Última actualización: **20/10/2026**.
+Última actualización: **09/11/2026**.
 
 ---
 
@@ -37,7 +37,10 @@ Vienen del enunciado y de decisiones ya tomadas:
    secciones claras y oscuras alternas, botones en píldora, tarjetas con anillo
    azul), con modo claro y nocturno.
 7. **Commits solo a tu nombre**, sin coautores.
-8. **No subir** `node_modules`, `public/` (se genera al compilar) ni credenciales.
+8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
+9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
+   a `main`. Vercel despliega solo. Hay un hook Stop en `.claude/settings.json`
+   que lo recuerda (esa carpeta no se sube: es configuración de este equipo).
 
 ---
 
@@ -80,6 +83,20 @@ Otros detalles:
   tienes el archivo original, sustitúyelo.
 - **Responsive y navegadores:** ver el apartado 6.
 
+### Asistente con IA y PDF (Presupuesta mi Web 2)
+
+Flujo en la sección «Cuéntanos tu proyecto» (`asistente-ia.jsx`): descripción →
+propuesta de OpenAI → revisión (aceptar, eliminar, añadir, completar datos) →
+vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
+`POST /api/propuesta/documento` y `POST /api/propuesta/pdf`.
+
+- Modelo por defecto: `gpt-5.4-mini` (Responses API con JSON Schema estricto).
+- La clave está en `.env` en local y debe estar en Vercel como `OPENAI_API_KEY`.
+- PDF con **PDFKit** en el servidor. `src/pdf.js` cita las fuentes `.afm` a
+  propósito: sin eso, Vercel no las empaqueta y el PDF falla solo en producción.
+- Camarón: `cliente/public/camaron.png` (web) y `src/assets/camaron.png` (PDF).
+- 34 pruebas con `npm test`; OpenAI se simula en `test/propuesta.test.js`.
+
 ### Historial de cambios importantes
 
 | Fecha | Cambio |
@@ -89,6 +106,7 @@ Otros detalles:
 | 20/10/2026 | Rediseño como landing estilo Apple con calculadora |
 | 20/10/2026 | Logo JM, hero nuevo, modo nocturno, packs y planes de mantenimiento |
 | 20/10/2026 | Navegación en isla de cristal y revisión responsive y de navegadores |
+| 09/11/2026 | Asistente con OpenAI, revisión de servicios, presupuesto en PDF y Camarón |
 
 ---
 
@@ -116,7 +134,7 @@ cd cliente && npm run dev   # terminal 2: interfaz en http://localhost:5173
 ### Probar
 
 ```bash
-npm test                    # 21 pruebas automáticas
+npm test                    # 34 pruebas automáticas
 npm run pruebas             # los casos contra la API en marcha
 ```
 
@@ -141,6 +159,10 @@ src/tarifas.js              tarifas (constantes congeladas)
 src/validacion.js           validarSolicitud()
 src/calculo.js              calcularPresupuesto()
 src/mantenimiento.js        planes de mantenimiento (ampliación)
+src/catalogo.js             servicios que la IA puede proponer
+src/openai.js               llamada a OpenAI e instrucciones del modelo
+src/propuesta.js            validación de la IA y de la selección; documento final
+src/pdf.js                  generación del PDF con PDFKit
 test/api.test.js            pruebas automáticas
 pruebas/                    casos y script de pruebas contra la API en marcha
 cliente/index.html          metadatos, fuentes y script anti-destello del tema

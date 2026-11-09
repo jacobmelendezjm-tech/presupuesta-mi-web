@@ -365,6 +365,68 @@ npm run build   # compila cliente/ en public/
 npm start       # interfaz y API en http://localhost:3000
 ```
 
+## Ampliación: asistente con IA y presupuesto en PDF
+
+El cliente explica su proyecto y recibe una propuesta de servicios que puede
+revisar antes de descargar el presupuesto. **La IA propone y redacta; el servidor
+valida la selección y calcula los importes.** El modelo no recibe ningún precio.
+
+| Ruta | Función |
+| ---- | ------- |
+| `GET /api/catalogo` | Servicios disponibles, con los precios de `src/tarifas.js` |
+| `POST /api/propuesta` | Valida la descripción (obligatoria, máximo 2000 caracteres), llama a OpenAI y valida su respuesta |
+| `POST /api/propuesta/documento` | Valida la selección final y calcula el documento de la vista previa |
+| `POST /api/propuesta/pdf` | Recalcula con la misma selección y devuelve el PDF |
+
+### Configuración
+
+La clave solo se usa en el servidor y nunca se sube al repositorio:
+
+```bash
+cp .env.example .env   # y escribe tu OPENAI_API_KEY
+```
+
+En Vercel se añade `OPENAI_API_KEY` en **Settings → Environment Variables**.
+`OPENAI_MODEL` es opcional (por defecto `gpt-5.4-mini`).
+
+### Validación de la respuesta de la IA
+
+Se usa salida estructurada (JSON Schema estricto) y, además, `src/propuesta.js`
+comprueba en código que:
+
+- Cada identificador existe en el catálogo; lo desconocido pasa a «pendiente de valorar».
+- No hay servicios repetidos ni más de un tipo de web.
+- Las cantidades son enteros válidos; si no, el usuario debe completarlas.
+- Se eliminan las frases con importes o plazos de entrega inventados.
+
+### Librerías PDF evaluadas
+
+| Librería | Valoración |
+| -------- | ---------- |
+| **PDFKit** (elegida) | Se ejecuta en el servidor, genera texto real y es ligera en Vercel |
+| pdfmake | Buena opción declarativa, pero añade más capas para una sola plantilla |
+| @react-pdf/renderer | Cómoda con React, aunque innecesaria en una API Express |
+| jsPDF | Pensada para el navegador: el documento dependería de datos del cliente |
+| html2pdf.js | Convierte HTML en imagen: el texto no se puede seleccionar |
+| pdf-lib | Útil para editar PDF existentes, pero sin maquetación; sin versiones desde 2022 |
+| Puppeteer | Fiel al HTML, pero necesita Chromium: pesado y delicado en funciones serverless |
+
+### Comprobaciones
+
+| Situación | Resultado |
+| --------- | --------- |
+| Solicitud clara | Propone corporativa, 3 páginas adicionales, formulario y segundo idioma |
+| Solicitud ambigua | No elige tipo de web, plantea dudas y pide completar el dato |
+| Servicio no ofrecido | Tienda, pagos, área de clientes y app quedan pendientes de valorar |
+| Descripción vacía | 400 sin llamar a OpenAI |
+| Fallo de OpenAI | 502 con mensaje y botón «Volver a intentarlo», conservando el texto |
+| Modificar servicios | Vista previa y PDF con la selección final: 630 € tras cambiar a landing, 5 páginas adicionales y sin idioma |
+
+`npm test` ejecuta 34 pruebas (con OpenAI simulado). Los casos de la tabla se
+comprobaron además en navegador con la API real.
+
+Camarón acompaña al asistente como mascota y aparece en el presupuesto.
+
 ## Despliegue en Vercel
 
 El proyecto está desplegado en <https://presupuesta-mi-web.vercel.app>, conectado
