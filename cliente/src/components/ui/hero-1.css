@@ -1,91 +1,35 @@
-/* Estilos del componente Hero (hero-1.jsx).
-   Equivalen a las clases de Tailwind del diseño original. */
+/* Portada estilo HUD (hero-1.jsx) con el Reactor ARC dibujado solo con CSS. */
 
 .hero1 {
-  position: relative;
-  isolation: isolate; /* la cuadrícula (z-index: -1) queda sobre el fondo de la sección */
-  width: 100%;
-  min-height: calc(100vh - 40px);
-  min-height: calc(100svh - 40px);
-  margin: 0 auto;
-  padding: 160px 24px 0;
-  overflow: hidden;
-  background: linear-gradient(to bottom, #fff, #ffffff 50%, #e8e8e8 88%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: calc(var(--hueco-nav) + 28px) 16px 56px;
   text-align: center;
 }
 
-/* Fundido inferior: el arco se disuelve en el color de la sección siguiente
-   (el asistente, .seccion-blanca), sin borde visible entre ambas. */
-.hero1::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  height: 220px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in srgb, var(--fondo) 55%, transparent) 45%,
-    var(--fondo)
-  );
-  pointer-events: none;
-}
-
-.hero1-cuadricula {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  height: 600px;
-  opacity: 0.8;
-  background-image: linear-gradient(to right, #f0f0f0 1px, transparent 1px),
-    linear-gradient(to bottom, #f0f0f0 1px, transparent 1px);
-  background-size: 6rem 5rem;
-  -webkit-mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
-  mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, #000 70%, transparent 110%);
-}
-
-.hero1-arco {
-  position: absolute;
-  top: calc(100% - 90px);
-  left: 50%;
-  width: 700px;
-  height: 500px;
-  border-radius: 100%;
-  background: radial-gradient(closest-side, #fff 82%, #000000);
-  transform: translateX(-50%);
-  animation: hero1-subir-arco 1s ease 0.3s both;
-}
-
 .hero1-eyebrow {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: fit-content;
-  margin: 0 auto;
-  padding: 8px 20px;
-  border: 2px solid rgba(209, 213, 219, 0.2);
-  border-radius: 24px;
-  background: linear-gradient(to top right, rgba(212, 212, 216, 0.05), rgba(156, 163, 175, 0.05), transparent);
-  color: #4b5563;
-  font-family: "Geist", var(--fuente);
-  font-size: 14px;
-  line-height: 20px;
-  letter-spacing: -0.025em;
+  gap: 6px;
+  color: var(--oro);
+  font: 500 13px/1.4 var(--mono);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  transition: color 0.2s, border-color 0.2s;
+  transition: text-shadow 0.2s;
 }
 
 .hero1-eyebrow:hover {
-  color: #1f2937;
-  border-color: rgba(209, 213, 219, 0.6);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
 }
 
 .hero1-chevron {
-  width: 16px;
-  height: 16px;
-  margin-left: 8px;
+  width: 15px;
+  height: 15px;
   transition: transform 0.3s;
 }
 
@@ -94,200 +38,186 @@
 }
 
 .hero1-titulo {
-  padding: 24px 0;
-  background: linear-gradient(to bottom right, #000 30%, rgba(0, 0, 0, 0.4));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-size: 48px;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.05em;
+  font: 900 clamp(28px, 5.6vw, 58px) / 1.12 var(--titulo);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-wrap: balance;
-  animation: hero1-aparecer 1s ease 0.1s both;
+  text-shadow: 0 0 26px rgba(0, 240, 255, 0.4);
+}
+
+.hero1-centro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
 }
 
 .hero1-subtitulo {
-  max-width: 760px;
-  margin: 0 auto 48px;
-  color: #4b5563;
-  font-size: 18px;
-  line-height: 28px;
-  letter-spacing: -0.025em;
+  max-width: 660px;
+  color: var(--texto-2);
+  font-size: 20px;
+  line-height: 1.35;
   text-wrap: balance;
-  animation: hero1-aparecer 1s ease 0.25s both;
 }
 
-.hero1-acciones {
+.hero1-lecturas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
+  order: 2;
+  margin: 0;
+}
+
+.hero1-lecturas dt {
+  color: var(--texto-2);
+  font: 400 11px/1.4 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hero1-lecturas dd {
+  margin: 0;
+  color: var(--acento);
+  font: 500 17px/1.3 var(--mono);
+}
+
+/* Reactor ARC */
+.reactor {
   position: relative;
-  z-index: 20;
-  display: flex;
-  justify-content: center;
-  animation: hero1-aparecer 1s ease 0.4s both;
+  flex: none;
+  width: clamp(210px, min(68vw, 40vh), 380px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.16), transparent 68%);
 }
 
-/* Equivale al <Button> por defecto de shadcn (fondo oscuro, esquinas suaves) */
+.reactor span {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.reactor-marcas {
+  inset: 0;
+  background: repeating-conic-gradient(var(--acento) 0 2deg, transparent 2deg 12deg);
+  -webkit-mask-image: radial-gradient(farthest-side, transparent 92%, #000 93%);
+  mask-image: radial-gradient(farthest-side, transparent 92%, #000 93%);
+  animation: reactor-girar 28s linear infinite;
+}
+
+.reactor-bobinas {
+  inset: 11%;
+  background: repeating-conic-gradient(var(--acento) 0 24deg, transparent 24deg 36deg);
+  -webkit-mask-image: radial-gradient(farthest-side, transparent 72%, #000 73%);
+  mask-image: radial-gradient(farthest-side, transparent 72%, #000 73%);
+  opacity: 0.8;
+  animation: reactor-girar 16s linear infinite reverse;
+}
+
+.reactor-oro {
+  inset: 28%;
+  border: 3px solid var(--oro);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.45), inset 0 0 16px rgba(0, 240, 255, 0.35);
+}
+
+.reactor .reactor-triangulo {
+  inset: 32%;
+  border-radius: 0;
+  background: var(--acento);
+  clip-path: polygon(evenodd, 50% 2%, 98% 86%, 2% 86%, 50% 2%, 50% 24%, 21% 75%, 79% 75%, 50% 24%);
+}
+
+.reactor-nucleo {
+  inset: 42%;
+  background: radial-gradient(circle, #fff 30%, var(--acento) 62%, transparent 100%);
+  box-shadow: 0 0 30px 10px rgba(0, 240, 255, 0.6);
+  animation: reactor-pulso 2.6s ease-in-out infinite;
+}
+
+.reactor:hover .reactor-nucleo {
+  animation: reactor-pulso-fuerte 0.8s ease-in-out infinite;
+}
+
+/* Botón principal. El relleno va en pseudoelementos porque un clip-path en el
+   propio enlace recortaría el brillo neón. */
 .hero1-boton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  height: 40px;
-  margin-top: -20px;
-  padding: 8px 16px;
-  border-radius: 6px;
-  background: #171717;
-  color: #fafafa;
-  font-family: "Geist", var(--fuente);
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: -0.05em;
-  white-space: nowrap;
-  transition: background-color 0.2s;
-}
-
-.hero1-boton:hover {
-  background: rgba(23, 23, 23, 0.9);
-}
-
-.hero1-boton:focus-visible {
-  outline: 2px solid #171717;
-  outline-offset: 2px;
-}
-
-.hero1-fundido {
   position: relative;
-  margin-top: 128px;
-  perspective: 2000px;
-  animation: hero1-subir 1s ease 0.5s both;
+  isolation: isolate;
+  display: inline-block;
+  padding: 16px 34px;
+  color: var(--sobre-acento);
+  font: 700 15px/1.2 var(--titulo);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.55));
 }
 
-.hero1-fundido::after {
+.hero1-boton::before,
+.hero1-boton::after {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 50;
-  background: linear-gradient(to top, var(--fondo) 10%, transparent);
+  z-index: -1;
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
 }
 
-@keyframes hero1-aparecer {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
+.hero1-boton::before {
+  background: var(--acento);
+}
+
+.hero1-boton::after {
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.75) 50%, transparent 60%) no-repeat 160% 0 / 250% 100%;
+  transition: background-position 0.6s;
+}
+
+.hero1-boton:hover {
+  animation: hero1-brillo 1.2s ease-in-out infinite;
+}
+
+.hero1-boton:hover::after {
+  background-position: -60% 0;
+}
+
+@keyframes reactor-girar {
   to {
-    opacity: 1;
-    transform: translateY(-16px);
+    transform: rotate(360deg);
   }
 }
 
-@keyframes hero1-subir {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+@keyframes reactor-pulso {
+  50% {
+    transform: scale(1.14);
+    box-shadow: 0 0 46px 18px rgba(0, 240, 255, 0.75);
   }
 }
 
-@keyframes hero1-subir-arco {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%);
+@keyframes reactor-pulso-fuerte {
+  50% {
+    transform: scale(1.32);
+    box-shadow: 0 0 70px 30px rgba(0, 240, 255, 0.9);
   }
 }
 
-/* sm */
-@media (min-width: 640px) {
-  .hero1-titulo {
-    font-size: 60px;
+@keyframes hero1-brillo {
+  50% {
+    filter: drop-shadow(0 0 22px rgba(0, 240, 255, 0.95));
   }
 }
 
-/* md */
-@media (min-width: 768px) {
-  .hero1 {
-    padding-inline: 32px;
+@media (min-width: 1000px) {
+  .hero1-centro {
+    flex-direction: row;
+    justify-content: center;
+    gap: clamp(32px, 6vw, 88px);
   }
 
-  .hero1-arco {
-    width: 1100px;
-    height: 500px;
+  .hero1-lecturas {
+    order: 0;
+    grid-template-columns: minmax(130px, auto);
+    text-align: right;
   }
 
-  .hero1-titulo {
-    font-size: 72px;
+  .hero1-lecturas-derecha {
+    text-align: left;
   }
-
-  .hero1-subtitulo {
-    font-size: 20px;
-  }
-
-  .hero1-boton {
-    width: 208px;
-  }
-}
-
-/* lg */
-@media (min-width: 1024px) {
-  .hero1-arco {
-    top: calc(100% - 150px);
-    width: 140%;
-    height: 750px;
-  }
-
-  .hero1-titulo {
-    font-size: 96px;
-  }
-}
-
-/* Modo nocturno: equivale a las variantes dark: del diseño original */
-:root[data-theme="dark"] .hero1 {
-  background: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0) 30%, #898e8e 78%, #ffffff 99%);
-}
-
-:root[data-theme="dark"] .hero1-cuadricula {
-  background-image: linear-gradient(to right, #333 1px, transparent 1px),
-    linear-gradient(to bottom, #333 1px, transparent 1px);
-}
-
-:root[data-theme="dark"] .hero1-arco {
-  background: radial-gradient(closest-side, #000 82%, #ffffff);
-}
-
-:root[data-theme="dark"] .hero1-eyebrow {
-  border-color: rgba(255, 255, 255, 0.05);
-  color: #9ca3af;
-}
-
-:root[data-theme="dark"] .hero1-eyebrow:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #e5e7eb;
-}
-
-:root[data-theme="dark"] .hero1-titulo {
-  background-image: linear-gradient(to bottom right, #fff 30%, rgba(255, 255, 255, 0.4));
-}
-
-:root[data-theme="dark"] .hero1-subtitulo {
-  color: #9ca3af;
-}
-
-:root[data-theme="dark"] .hero1-boton {
-  background: #fafafa;
-  color: #171717;
-}
-
-:root[data-theme="dark"] .hero1-boton:hover {
-  background: rgba(250, 250, 250, 0.9);
-}
-
-:root[data-theme="dark"] .hero1-boton:focus-visible {
-  outline-color: #fafafa;
 }

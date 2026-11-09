@@ -23,13 +23,13 @@
 
 .ia-pasos li {
   padding: 5px 14px;
-  border-radius: 980px;
+  border-radius: var(--radio);
   background: var(--fondo-claro);
 }
 
 .ia-pasos li[data-activo] {
-  background: var(--azul);
-  color: #fff;
+  background: var(--acento);
+  color: var(--sobre-acento);
 }
 
 .ia-rejilla {
@@ -49,7 +49,8 @@
 .ia-tarjeta {
   padding: clamp(20px, 3vw, 32px);
   border-radius: var(--radio-grande);
-  background: var(--fondo-claro);
+  background: var(--superficie);
+  box-shadow: inset 0 0 0 1px var(--borde);
 }
 
 .ia-tarjeta h3 {
@@ -82,14 +83,14 @@
   width: 100%;
   padding: 12px 14px;
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radio);
   background: var(--superficie);
   box-shadow: inset 0 0 0 1px var(--borde);
   color: var(--texto);
   font: inherit;
   font-size: 16px;
   font-weight: 400;
-  letter-spacing: -0.016em;
+  letter-spacing: 0;
   resize: vertical;
 }
 
@@ -108,7 +109,7 @@
   min-height: 34px;
   padding: 5px 14px;
   border: 0;
-  border-radius: 980px;
+  border-radius: var(--radio);
   background: var(--superficie);
   box-shadow: inset 0 0 0 1px var(--borde);
   color: var(--texto);
@@ -123,9 +124,9 @@
 }
 
 .ia-chip[data-activo] {
-  background: var(--azul);
+  background: var(--acento);
   box-shadow: none;
-  color: #fff;
+  color: var(--sobre-acento);
 }
 
 .ia-chip-peligro {
@@ -185,7 +186,7 @@
 }
 
 .ia-servicio[data-aceptada] {
-  box-shadow: inset 0 0 0 2px var(--azul);
+  box-shadow: inset 0 0 0 2px var(--acento);
 }
 
 .ia-servicio-cabecera {
@@ -264,7 +265,7 @@
 .ia-camaron img {
   width: min(100%, 240px);
   height: auto;
-  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.22));
+  filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.35));
   transform-origin: 50% 100%;
 }
 
@@ -280,7 +281,7 @@
 .ia-bocadillo {
   position: relative;
   padding: 12px 16px;
-  border-radius: 16px;
+  border-radius: var(--radio);
   background: var(--fondo-claro);
   font-size: 14px;
   line-height: 1.35;
@@ -322,7 +323,7 @@
   }
 }
 
-/* Vista previa: siempre como papel, también en modo nocturno, igual que el PDF */
+/* Vista previa: siempre como papel, igual que el PDF */
 .ia-papel {
   display: grid;
   gap: 8px;
@@ -355,7 +356,7 @@
 .ia-papel h3 {
   font-size: 32px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .ia-papel h4 {

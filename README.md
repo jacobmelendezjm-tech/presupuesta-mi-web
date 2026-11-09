@@ -309,26 +309,26 @@ Landing en React que funciona como calculadora y consume las tres rutas de la AP
   y muestra el total, el desglose o los errores 400 (el campo erróneo se marca en
   rojo usando la lista `campos` de la respuesta).
 
-**Diseño:** página de producto de estilo Apple: titulares grandes, secciones claras
-y oscuras alternas, barra de navegación translúcida, botones redondeados y un
-configurador por pasos como el de una tienda online. Secciones:
+**Diseño:** interfaz HUD holográfica inspirada en Stark Tech, con un único tema
+oscuro: malla de fondo, acentos cian y detalles carmesí y dorados, fuentes
+Orbitron, Rajdhani y Roboto Mono, botones de esquinas cortadas con `clip-path` y un
+configurador por pasos. Es un proyecto académico sin afiliación con Marvel.
+La barra de navegación muestra `SYSTEM STATUS` y `ARC REACTOR`, que salen de
+`GET /api/estado`. Secciones:
 
 | Sección | Qué muestra |
 | ------- | ----------- |
-| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): cuadrícula de fondo, titular con degradado, precio mínimo, botón al configurador y fundido inferior hacia el color de la sección siguiente |
+| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): titular, Reactor ARC animado solo con CSS, lecturas a los lados (precio mínimo, total actual) y botón al configurador |
 | Configura tu web | Tipo de web, número de páginas y extras, con el total al lado |
 | Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
+| Panel de control | Componente [`panel-jarvis.jsx`](cliente/src/components/ui/panel-jarvis.jsx): tres paneles con barras animadas y datos reales (configuración elegida, reparto del total y estado de la API) |
 | Tarifas | Las cinco tarifas que publica el servidor |
 | Packs | Componente [`pricing.jsx`](cliente/src/components/ui/pricing.jsx): tres configuraciones listas (Esencial, Negocio, Empresa) con un interruptor de uno o dos idiomas. Su precio se pide a `POST /api/presupuesto`, así que no hay precios en el cliente ni descuentos. Al elegir uno, se carga en el configurador |
 | Mantenimiento | Componente [`planes-mantenimiento.jsx`](cliente/src/components/ui/planes-mantenimiento.jsx): planes mensuales de `GET /api/mantenimiento`. Se pueden elegir y quitar; el plan elegido aparece en «Tu presupuesto» como línea mensual aparte y nunca se suma al total |
 | Cómo funciona | Los tres pasos del cálculo y la última petición y respuesta JSON reales |
 
-Las secciones no tienen un corte de color: cada una empieza con el color de la
-anterior y se funde en el suyo.
-
-Un botón en la barra de navegación ([`boton-tema.jsx`](cliente/src/components/ui/boton-tema.jsx))
-cambia entre modo claro y nocturno. Recuerda la elección y, si no hay ninguna,
-sigue la del sistema.
+Las secciones comparten una única malla de fondo, así que no hay cortes de color
+entre ellas.
 
 Los componentes de `cliente/src/components/ui` vienen de diseños pensados para
 shadcn, Tailwind y TypeScript. Se han adaptado a JSX y CSS propios porque la
