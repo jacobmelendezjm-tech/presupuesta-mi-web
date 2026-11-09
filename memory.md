@@ -107,6 +107,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 20/10/2026 | Logo JM, hero nuevo, modo nocturno, packs y planes de mantenimiento |
 | 20/10/2026 | Navegación en isla de cristal y revisión responsive y de navegadores |
 | 09/11/2026 | Asistente con OpenAI, revisión de servicios, presupuesto en PDF y Camarón |
+| 09/11/2026 | El fundido del hero termina en `--fondo`, el color del asistente (se notaba el corte) |
 
 ---
 

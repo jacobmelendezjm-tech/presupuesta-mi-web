@@ -14,8 +14,8 @@
   text-align: center;
 }
 
-/* Fundido inferior: el arco se disuelve en el color de la sección siguiente,
-   sin borde visible entre el hero y el configurador. */
+/* Fundido inferior: el arco se disuelve en el color de la sección siguiente
+   (el asistente, .seccion-blanca), sin borde visible entre ambas. */
 .hero1::after {
   content: "";
   position: absolute;
@@ -27,8 +27,8 @@
   background: linear-gradient(
     to bottom,
     transparent,
-    color-mix(in srgb, var(--fondo-claro) 55%, transparent) 45%,
-    var(--fondo-claro)
+    color-mix(in srgb, var(--fondo) 55%, transparent) 45%,
+    var(--fondo)
   );
   pointer-events: none;
 }

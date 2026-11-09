@@ -315,7 +315,7 @@ configurador por pasos como el de una tienda online. Secciones:
 
 | Sección | Qué muestra |
 | ------- | ----------- |
-| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): cuadrícula de fondo, titular con degradado, precio mínimo y botón al configurador |
+| Inicio | Componente `Hero` ([`hero-1.jsx`](cliente/src/components/ui/hero-1.jsx)): cuadrícula de fondo, titular con degradado, precio mínimo, botón al configurador y fundido inferior hacia el color de la sección siguiente |
 | Configura tu web | Tipo de web, número de páginas y extras, con el total al lado |
 | Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
 | Tarifas | Las cinco tarifas que publica el servidor |
