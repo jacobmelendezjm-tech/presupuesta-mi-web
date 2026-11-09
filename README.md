@@ -378,6 +378,9 @@ valida la selección y calcula los importes.** El modelo no recibe ningún preci
 | `POST /api/propuesta/documento` | Valida la selección final y calcula el documento de la vista previa |
 | `POST /api/propuesta/pdf` | Recalcula con la misma selección y devuelve el PDF |
 
+Estas rutas están en [`src/routes/propuesta.js`](src/routes/propuesta.js), un router
+de Express que `src/app.js` monta en `/api`.
+
 ### Configuración
 
 La clave solo se usa en el servidor y nunca se sube al repositorio:

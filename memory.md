@@ -159,6 +159,7 @@ src/tarifas.js              tarifas (constantes congeladas)
 src/validacion.js           validarSolicitud()
 src/calculo.js              calcularPresupuesto()
 src/mantenimiento.js        planes de mantenimiento (ampliación)
+src/routes/propuesta.js     rutas del asistente (equivale a un route.ts de Next.js)
 src/catalogo.js             servicios que la IA puede proponer
 src/openai.js               llamada a OpenAI e instrucciones del modelo
 src/propuesta.js            validación de la IA y de la selección; documento final
