@@ -270,6 +270,8 @@ export default function App() {
   const [paginas, setPaginas] = useState("4");
   const [formulario, setFormulario] = useState(true);
   const [segundoIdioma, setSegundoIdioma] = useState(false);
+  // Plan mensual elegido. Nunca se envía a POST /api/presupuesto: no suma al total.
+  const [planMantenimiento, setPlanMantenimiento] = useState(null);
 
   const [estadoApi, setEstadoApi] = useState("comprobando"); // comprobando | ok | error
   const [tarifas, setTarifas] = useState(null);
@@ -671,6 +673,16 @@ export default function App() {
                   <dd>{presupuesto ? euros(presupuesto.total) : "—"}</dd>
                 </div>
               </dl>
+
+              {planMantenimiento && (
+                <div className="mant-resumen">
+                  <p className="mant-resumen-texto">
+                    <span>Mantenimiento · {planMantenimiento.nombre}</span>
+                    <span className="texto-suave">Mensual y opcional. No se suma al total.</span>
+                  </p>
+                  <p className="mant-resumen-precio">{euros(planMantenimiento.precioMensual)}/mes</p>
+                </div>
+              )}
             </Revelar>
           )}
         </section>
@@ -715,7 +727,7 @@ export default function App() {
             </p>
           </Revelar>
           <Revelar>
-            <PlanesMantenimiento />
+            <PlanesMantenimiento planElegido={planMantenimiento} onElegir={setPlanMantenimiento} />
           </Revelar>
         </section>
 

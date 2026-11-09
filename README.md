@@ -320,8 +320,11 @@ configurador por pasos como el de una tienda online. Secciones:
 | Tu presupuesto | Total, barra con el peso de cada concepto y desglose línea a línea |
 | Tarifas | Las cinco tarifas que publica el servidor |
 | Packs | Componente [`pricing.jsx`](cliente/src/components/ui/pricing.jsx): tres configuraciones listas (Esencial, Negocio, Empresa) con un interruptor de uno o dos idiomas. Su precio se pide a `POST /api/presupuesto`, así que no hay precios en el cliente ni descuentos. Al elegir uno, se carga en el configurador |
-| Mantenimiento | Componente [`planes-mantenimiento.jsx`](cliente/src/components/ui/planes-mantenimiento.jsx): planes mensuales de `GET /api/mantenimiento` |
+| Mantenimiento | Componente [`planes-mantenimiento.jsx`](cliente/src/components/ui/planes-mantenimiento.jsx): planes mensuales de `GET /api/mantenimiento`. Se pueden elegir y quitar; el plan elegido aparece en «Tu presupuesto» como línea mensual aparte y nunca se suma al total |
 | Cómo funciona | Los tres pasos del cálculo y la última petición y respuesta JSON reales |
+
+Las secciones no tienen un corte de color: cada una empieza con el color de la
+anterior y se funde en el suyo.
 
 Un botón en la barra de navegación ([`boton-tema.jsx`](cliente/src/components/ui/boton-tema.jsx))
 cambia entre modo claro y nocturno. Recuerda la elección y, si no hay ninguna,

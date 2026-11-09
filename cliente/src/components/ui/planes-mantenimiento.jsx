@@ -11,7 +11,8 @@ const formatoEuros = new Intl.NumberFormat("es-ES", {
 // Planes de mantenimiento mensuales (GET /api/mantenimiento).
 // Son un servicio aparte que se contrata tras entregar la web:
 // no se suman al presupuesto y sus precios los publica el servidor.
-export function PlanesMantenimiento() {
+// El plan elegido vive en App para poder mostrarlo también en el desglose.
+export function PlanesMantenimiento({ planElegido, onElegir }) {
   const [planes, setPlanes] = useState(null);
   const [error, setError] = useState(false);
 
@@ -27,9 +28,18 @@ export function PlanesMantenimiento() {
   }
 
   return (
-    <ul className="mant-rejilla">
-      {(planes ?? Array.from({ length: 3 }, (_, i) => ({ id: `cargando-${i}` }))).map((plan) => (
-        <li key={plan.id} className="mant-plan" data-recomendado={plan.recomendado || undefined} data-cargando={!plan.nombre || undefined}>
+    <>
+    <ul className="mant-rejilla" data-con-plan={planElegido ? true : undefined}>
+      {(planes ?? Array.from({ length: 3 }, (_, i) => ({ id: `cargando-${i}` }))).map((plan) => {
+        const elegido = planElegido?.id === plan.id;
+        return (
+        <li
+          key={plan.id}
+          className="mant-plan"
+          data-recomendado={plan.recomendado || undefined}
+          data-cargando={!plan.nombre || undefined}
+          data-elegido={elegido || undefined}
+        >
           <div className="mant-cabecera">
             <h3>{plan.nombre ?? "Cargando…"}</h3>
             {plan.recomendado && <span className="mant-insignia">Recomendado</span>}
@@ -49,8 +59,36 @@ export function PlanesMantenimiento() {
               </li>
             ))}
           </ul>
+          {/* El ::after del botón cubre la tarjeta: se puede pulsar entera. */}
+          <button
+            type="button"
+            className="boton mant-boton"
+            disabled={!plan.nombre}
+            onClick={() => onElegir(elegido ? null : plan)}
+          >
+            {elegido ? "Elegido" : "Elegir"}
+            {plan.nombre && <span className="oculto"> plan {plan.nombre}</span>}
+          </button>
         </li>
-      ))}
+        );
+      })}
     </ul>
+    {planes && (
+      <p className="mant-estado" aria-live="polite">
+        {planElegido ? (
+          <>
+            <span>
+              Plan {planElegido.nombre} elegido: {formatoEuros.format(planElegido.precioMensual)}/mes, aparte del
+              presupuesto de creación.
+            </span>
+            <a href="#desglose" className="mant-accion">Ver mi presupuesto</a>
+            <button type="button" className="mant-accion" onClick={() => onElegir(null)}>Quitar plan</button>
+          </>
+        ) : (
+          "Elige un plan o sigue sin mantenimiento: es opcional."
+        )}
+      </p>
+    )}
+    </>
   );
 }

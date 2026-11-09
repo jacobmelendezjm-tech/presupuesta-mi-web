@@ -69,12 +69,16 @@ Landing que funciona como calculadora. Secciones, en orden:
 | Tu presupuesto | Total animado, barra por conceptos y desglose |
 | Tarifas | Las cinco tarifas de `GET /api/tarifas`, con los precios alineados |
 | Packs | `pricing.jsx`: Esencial (300 €), Negocio (880 €) y Empresa (1.230 €). Su precio lo pide a `POST /api/presupuesto`; el control «Un idioma / Dos idiomas» los recalcula. «Elegir» carga el pack en el configurador |
-| Mantenimiento | `planes-mantenimiento.jsx`, datos de `GET /api/mantenimiento` |
+| Mantenimiento | `planes-mantenimiento.jsx`, datos de `GET /api/mantenimiento`. Las tarjetas se pueden elegir y quitar; el plan sale en «Tu presupuesto» como línea mensual aparte y no se envía a `POST /api/presupuesto` |
 | Cómo funciona | Tres pasos y la última petición y respuesta JSON reales |
 | Barra inferior | Total fijo abajo cuando no se ve el desglose |
 
 Otros detalles:
 
+- **Fundido entre secciones:** en `index.css`, cada `.seccion` (y `.pie`) empieza
+  con el color de la anterior (`--color-anterior`) y funde en el suyo dentro del
+  relleno superior. Si se cambia el orden de las secciones, sigue funcionando
+  solo; el hero termina en `--fondo` porque debajo va el asistente.
 - **Modo nocturno:** `boton-tema.jsx`. Recuerda la elección en `localStorage`
   (clave `tema`); si no hay, sigue al sistema. El cambio se anima con un círculo
   (View Transitions) y un script en `index.html` evita el destello blanco.
@@ -108,6 +112,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 20/10/2026 | Navegación en isla de cristal y revisión responsive y de navegadores |
 | 09/11/2026 | Asistente con OpenAI, revisión de servicios, presupuesto en PDF y Camarón |
 | 09/11/2026 | El fundido del hero termina en `--fondo`, el color del asistente (se notaba el corte) |
+| 09/11/2026 | Planes de mantenimiento seleccionables y fundido entre todas las secciones y el pie |
 
 ---
 
