@@ -3,8 +3,8 @@
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
 Última actualización: **11/11/2026**.
 
-> **El rediseño se publicó en GitHub en el commit `9c548c8` y ya se revisó visualmente.** Lee el apartado 8 para el estado actual.
-> El 11/11 se actualizaron esta memoria y el README. Vercel está conectado a `main` y despliega cada push.
+> **El tema marfil/gris se publicó en GitHub en el commit `9636d60` y Vercel ya marcó el despliegue como completado.** Lee el apartado 8 para el estado actual.
+> Vercel está conectado a `main` y despliega cada push.
 
 ---
 
@@ -266,7 +266,7 @@ Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cam
 4. El laboratorio (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`) ya no existe en este checkout.
 5. El README describe la nueva estética marfil/gris, Manrope/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
-7. El último rediseño publicado está en `origin/main` (`9c548c8`); las actualizaciones documentales del 11/11 también están publicadas. Este nuevo cambio visual queda pendiente de commit/push y de despliegue en Vercel.
+7. El tema marfil/gris y la documentación están publicados en `origin/main` (`9636d60`). GitHub informa que el despliegue de Vercel se completó y `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
 
 ### Git (importante)
 
