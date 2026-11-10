@@ -1,0 +1,166 @@
+/* Pie: cae a negro, con la marca fantasma detrás y el semicírculo verde centrado. */
+
+.pie {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px) calc(88px + env(safe-area-inset-bottom, 0px));
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 100%, rgba(0, 220, 10, 0.07), transparent 70%),
+    linear-gradient(180deg, var(--fondo) 0%, #080808 55%, #040404 100%);
+  color: var(--texto-2);
+  font-size: 13px;
+}
+
+/* «PRESUPUESTA» gigante: ocupa el ancho sin salirse; la fila de la marca la pisa un poco */
+.fantasma {
+  position: absolute;
+  top: clamp(24px, 4vw, 60px);
+  left: 50%;
+  font-size: clamp(40px, 12.4vw, 220px);
+  transform: translateX(-50%);
+}
+
+.interior {
+  position: relative;
+  display: grid;
+  gap: clamp(24px, 3vw, 36px);
+  max-width: var(--ancho-amplio);
+  margin: 0 auto;
+  padding-top: clamp(24px, 5.8vw, 110px);
+}
+
+.fila,
+.base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 32px;
+}
+
+.fila {
+  padding-bottom: clamp(22px, 3vw, 32px);
+  border-bottom: 1px solid var(--borde);
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.logo {
+  flex: none;
+  width: 34px;
+  height: auto;
+  overflow: visible;
+}
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  font-stretch: 86%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.estado[data-estado="error"] {
+  color: var(--rojo);
+}
+
+.estado[data-estado="comprobando"] {
+  color: var(--texto-2);
+}
+
+.puntoError {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rojo);
+}
+
+.nota {
+  max-width: 52ch;
+  color: var(--texto-2);
+  font-size: 13.5px;
+}
+
+/* Caja de borde fino que se desvanece hacia la izquierda, como la de la referencia */
+.caja {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 14px 24px 14px 30px;
+  border: 1.5px solid transparent;
+  border-image: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.28) 30%, rgba(255, 255, 255, 0.85) 100%) 1;
+  color: var(--texto);
+  font-size: 13.5px;
+}
+
+.caja strong {
+  font-weight: 700;
+}
+
+.separador {
+  color: var(--texto-3);
+}
+
+/* Semicírculo verde con chevron, centrado abajo: vuelve arriba */
+.arriba {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: grid;
+  place-items: start center;
+  width: 96px;
+  height: 48px;
+  padding-top: 12px;
+  border-radius: 96px 96px 0 0;
+  background: var(--verde);
+  box-shadow: 0 0 44px -6px var(--verde-brillo);
+  color: var(--texto-sobre-verde);
+  transform: translateX(-50%);
+  transition: height 0.3s var(--curva), padding-top 0.3s var(--curva), background-color 0.2s;
+}
+
+.arriba:hover {
+  height: 56px;
+  padding-top: 14px;
+  background: var(--verde-claro);
+}
+
+.arriba:focus-visible {
+  outline-color: var(--texto);
+  outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .fila,
+  .base {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .caja {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding-left: 22px;
+  }
+
+  .separador {
+    display: none;
+  }
+}

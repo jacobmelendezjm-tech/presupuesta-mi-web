@@ -1,23 +1,33 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import GlyphPortal from "./ui/glyph-portal.jsx";
+import { VistaWeb3D } from "./escena/VistaWeb3D.jsx";
 
 const PALABRA = "PRESUPUESTA";
-const FUENTE = '"Inter", Arial, sans-serif';
-const FUENTE_RESERVA = "Arial, sans-serif";
+const FUENTE = '"Saira", "Arial Black", Arial, sans-serif';
+const FUENTE_RESERVA = '"Arial Black", Arial, sans-serif';
 const ESPERA_MAXIMA = 1600;
 
-const FONDO = {
-  position: "absolute",
-  inset: 0,
-  transform: "scale(var(--gp-field-scale, 1))",
-  background:
-    "radial-gradient(circle at 20% 12%, rgba(37, 99, 235, 0.55), transparent 38%), radial-gradient(circle at 82% 78%, rgba(30, 41, 59, 0.9), transparent 46%), linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%)",
-};
+const SPECS = [
+  ["4 pasos", "Configuración"],
+  ["100 %", "Calculado en servidor"],
+  ["PDF", "Propuesta formal"],
+  ["IA", "Asistente"],
+];
 
-// Entrada de la web: el portal mide la letra al montarse, así que la fuente
-// debe estar cargada antes. Mientras tanto se reserva el alto de la pantalla.
+function Flecha() {
+  return (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true" focusable="false">
+      <path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Entrada de la web: la palabra PRESUPUESTA se abre al hacer scroll y deja ver el
+// hero. El portal mide la letra al montarse, así que Saira 900 (al ancho normal)
+// debe estar cargada antes; mientras tanto se reserva el alto de la pantalla.
 export function EntradaPortal() {
   const [fuente, setFuente] = useState(null);
+  const raiz = useRef(null);
 
   useEffect(() => {
     let terminado = false;
@@ -28,7 +38,7 @@ export function EntradaPortal() {
       }
     };
     const espera = setTimeout(() => terminar(FUENTE_RESERVA), ESPERA_MAXIMA);
-    document.fonts.load('700 100px "Inter"', PALABRA).then(
+    document.fonts.load('900 100px "Saira"', PALABRA).then(
       (caras) => terminar(caras.length > 0 ? FUENTE : FUENTE_RESERVA),
       () => terminar(FUENTE_RESERVA)
     );
@@ -38,39 +48,87 @@ export function EntradaPortal() {
     };
   }, []);
 
-  if (!fuente) return <div className="portal-reserva" role="status" aria-label="Cargando" />;
+  // El portal avisa del progreso (0 → 1) en cada fotograma. Se guarda en una variable
+  // CSS, sin setState, para apagar el neón de las letras mientras la cámara entra.
+  const alAvanzar = useCallback((progreso) => {
+    raiz.current?.style.setProperty("--entrada", progreso.toFixed(3));
+  }, []);
+
+  if (!fuente) {
+    return (
+      <div className="portal-reserva" role="status" aria-label="Cargando">
+        <span className="skeleton portal-reserva-palabra" />
+      </div>
+    );
+  }
 
   return (
-    <GlyphPortal
-      word={PALABRA}
-      fontFamily={fuente}
-      fontWeight={700}
-      scrollLength={2.4}
-      enterLabel="Entrar"
-      background={<div style={FONDO} />}
-      style={{
-        "--gp-paper": "#f4f5f7",
-        "--gp-ink": "#0f172a",
-        "--gp-field": "#0f172a",
-        "--gp-foreground": "#ffffff",
-        fontFamily: fuente,
-      }}
-      front={
-        <>
-          <p className="portal-antetitulo">Calculadora de presupuesto web</p>
-          <p className="portal-apoyo">Pasa el cursor por una letra para entrar por ella.</p>
-        </>
-      }
-    >
-      <div className="portal-contenido">
-        <h1>Calculadora de Presupuesto Web</h1>
-        <p className="portal-subtitulo">Obtén un estimado preciso para tu proyecto en 3 minutos.</p>
-        <p className="portal-texto">
-          Cada concepto tiene un precio visible y el desglose se actualiza con cada elección, para que sepas
-          exactamente qué estás pagando y por qué.
-        </p>
-        <a href="#calculadora" className="boton boton-grande">Empezar mi presupuesto</a>
-      </div>
-    </GlyphPortal>
+    <div className="entrada" ref={raiz}>
+      <GlyphPortal
+        className="portal"
+        word={PALABRA}
+        fontFamily={fuente}
+        fontWeight={900}
+        scrollLength={2.4}
+        enterLabel="Entrar"
+        onProgress={alAvanzar}
+        background={<div className="entrada-campo" />}
+        style={{
+          "--gp-paper": "#0b0b0b",
+          "--gp-ink": "#a6a6a6",
+          "--gp-field": "#070707",
+          "--gp-foreground": "#f5f5f5",
+        }}
+        front={
+          <>
+            <p className="etiqueta portal-antetitulo">Calculadora de presupuestos web</p>
+            <p className="portal-apoyo">Pasa el cursor por una letra para entrar por ella.</p>
+            <span className="portal-raton" aria-hidden="true">
+              <span />
+            </span>
+          </>
+        }
+      >
+        <div className="hero-fondo" aria-hidden="true" />
+        <div className="hero-fundido" aria-hidden="true" />
+
+        <div className="hero">
+          <div className="hero-texto">
+            <span className="fantasma hero-fantasma" aria-hidden="true">2026</span>
+            <p className="etiqueta hero-etiqueta">Presupuesto web en tiempo real</p>
+            <h1 className="titular hero-titular">
+              <span className="hero-linea">Configura</span>{" "}
+              <span className="hero-linea verde">tu web</span>
+            </h1>
+            <p className="entradilla hero-entradilla">
+              Elige el tipo, el alcance y las funciones, y mira cómo tu web se construye en 3D mientras el servidor
+              calcula el presupuesto al momento, con cada concepto a la vista.
+            </p>
+            <div className="hero-acciones">
+              <a href="#calculadora" className="boton boton-grande">
+                Empezar mi presupuesto <Flecha />
+              </a>
+              <a href="#asistente" className="boton-contorno hero-secundario">
+                Describir mi proyecto
+              </a>
+            </div>
+          </div>
+
+          {/* La maqueta 3D hace de «foto de producto»: se configura sola en bucle */}
+          <div className="hero-producto">
+            <VistaWeb3D demo />
+          </div>
+
+          <ul className="specs hero-specs">
+            {SPECS.map(([valor, etiqueta]) => (
+              <li key={etiqueta} className="spec">
+                <span className="spec-valor">{valor}</span>
+                <span className="spec-etiqueta">{etiqueta}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </GlyphPortal>
+    </div>
   );
 }

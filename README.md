@@ -311,7 +311,9 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Web en React con estilo corporativo sobrio. Consume las tres rutas de la API:
+Web React con una escena oscura, acentos verde neón y una vista previa 3D reactiva en CSS. Consume las tres rutas de la API:
+
+La maqueta de la web del cliente se construye en directo mientras se configura: muestra páginas, diseño y módulos seleccionados, con una cámara que cambia según el paso. La escena respeta la preferencia de reducir movimiento y no calcula precios; el importe siempre llega del servidor.
 
 - `GET /api/estado`: indicador «API en línea» del pie.
 - `GET /api/tarifas`: sección «Servicios y tarifas base».

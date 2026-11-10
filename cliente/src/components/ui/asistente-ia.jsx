@@ -103,20 +103,59 @@ function crearLineas(catalogo, propuesta) {
   );
 }
 
+// Iconos de trazo de los botones (decorativos: el texto del botón ya lo dice todo).
+const TRAZOS = {
+  flecha: "M5 12h14M13 6l6 6-6 6",
+  atras: "M19 12H5M11 6l-6 6 6 6",
+  mas: "M12 5v14M5 12h14",
+  descarga: "M12 4v11M7 10l5 5 5-5M5 20h14",
+};
+
+function Icono({ nombre }) {
+  return (
+    <svg className="ia-icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d={TRAZOS[nombre]} />
+    </svg>
+  );
+}
+
 function Avisos({ error, onReintentar }) {
   if (!error) return null;
   return (
     <div className="ia-error" role="alert">
+      <span className="ia-error-icono" aria-hidden="true">!</span>
       <ul>
         {error.detalles.map((d) => (
           <li key={d}>{d}</li>
         ))}
       </ul>
       {error.reintentable && onReintentar && (
-        <button type="button" className="boton boton-pequeno" onClick={onReintentar}>
+        <button type="button" className="boton-contorno ia-reintentar" onClick={onReintentar}>
           Volver a intentarlo
         </button>
       )}
+    </div>
+  );
+}
+
+// Filas skeleton mientras la IA prepara la propuesta. Es decorativo: el
+// bocadillo de Camarón (aria-live) ya anuncia que se está preparando.
+function Preparando() {
+  return (
+    <div className="ia-preparando" aria-hidden="true">
+      <p className="ia-preparando-titulo">
+        <span className="spinner" />
+        Preparando tu propuesta
+      </p>
+      <ul className="ia-esqueleto">
+        {[0, 1, 2].map((i) => (
+          <li key={i}>
+            <span className="skeleton ia-esqueleto-nombre" />
+            <span className="skeleton ia-esqueleto-precio" />
+            <span className="skeleton ia-esqueleto-texto" />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -127,7 +166,9 @@ function Camaron({ estado }) {
       <p className="ia-bocadillo" aria-live="polite">
         {MENSAJES_CAMARON[estado]}
       </p>
-      <img src="/camaron.png" alt="Figura de Camarón sentado en una silla de enea" width="260" height="424" />
+      <div className="ia-camaron-figura">
+        <img src="/camaron.png" alt="Figura de Camarón sentado en una silla de enea" width="260" height="424" />
+      </div>
     </aside>
   );
 }
@@ -357,18 +398,26 @@ export function AsistenteIA() {
 
   return (
     <div className="ia" ref={raiz}>
-      <header className="seccion-cabecera ia-cabecera">
-        <h2 className="titular">
-          Cuéntanos tu proyecto. <span className="gris">La IA propone, tú decides.</span>
+      <header className="seccion-cabecera">
+        <span className="fantasma seccion-fantasma" aria-hidden="true">IA</span>
+        <p className="etiqueta revelar">02 — Asistente IA</p>
+        <h2 className="titular revelar" id="titulo-asistente">
+          Cuéntanos tu <span className="verde">proyecto</span>
         </h2>
-        <p className="entradilla">
-          Describe lo que necesitas y recibe una propuesta con nuestros servicios. Los importes los calcula siempre el
-          servidor con sus tarifas.
+        <p className="entradilla revelar">
+          Descríbelo con tus palabras: la IA te propone servicios del catálogo y tú decides cuáles se quedan. Los
+          importes los calcula siempre el servidor con sus tarifas.
         </p>
-        <ol className="ia-pasos">
-          <li data-activo={paso === "descripcion" || undefined}>1 · Describe</li>
-          <li data-activo={paso === "revision" || undefined}>2 · Revisa</li>
-          <li data-activo={paso === "vista" || undefined}>3 · Descarga</li>
+        <ol className="ia-pasos revelar" aria-label="Pasos del asistente">
+          <li data-activo={paso === "descripcion" || undefined} data-hecho={paso !== "descripcion" || undefined} aria-current={paso === "descripcion" ? "step" : undefined}>
+            <span className="ia-paso-num" aria-hidden="true">01</span> Describe
+          </li>
+          <li data-activo={paso === "revision" || undefined} data-hecho={paso === "vista" || undefined} aria-current={paso === "revision" ? "step" : undefined}>
+            <span className="ia-paso-num" aria-hidden="true">02</span> Revisa
+          </li>
+          <li data-activo={paso === "vista" || undefined} aria-current={paso === "vista" ? "step" : undefined}>
+            <span className="ia-paso-num" aria-hidden="true">03</span> Descarga
+          </li>
         </ol>
       </header>
 
@@ -382,33 +431,37 @@ export function AsistenteIA() {
                 proponer();
               }}
               noValidate
+              aria-busy={ocupado || undefined}
             >
               <label className="ia-campo">
-                <span>Nombre del cliente o empresa</span>
+                <span className="ia-campo-titulo">Nombre del cliente o empresa</span>
                 <input
                   type="text"
+                  className="ia-entrada"
                   value={cliente}
                   onChange={(e) => setCliente(e.target.value)}
                   aria-invalid={errorEn("cliente") || undefined}
                   autoComplete="organization"
+                  placeholder="Tu nombre o el de tu empresa"
                 />
               </label>
               <label className="ia-campo">
-                <span>¿Qué necesitas?</span>
+                <span className="ia-campo-titulo">¿Qué necesitas?</span>
                 <textarea
                   rows="7"
+                  className="ia-entrada"
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
                   aria-invalid={errorEn("descripcion") || undefined}
                   placeholder="Necesito una web para un restaurante. Quiero mostrar la carta…"
                 />
-                <small className={descripcion.length > DESCRIPCION_MAX ? "texto-error" : "texto-suave"}>
+                <small className={`ia-contador ${descripcion.length > DESCRIPCION_MAX ? "texto-error" : "texto-suave"}`}>
                   {descripcion.length} / {DESCRIPCION_MAX}
                 </small>
               </label>
 
               <div className="ia-ejemplos">
-                <span className="texto-suave">Datos de ejemplo:</span>
+                <span className="ia-ejemplos-titulo">Datos de ejemplo:</span>
                 {EJEMPLOS.map((ej) => (
                   <button
                     key={ej.etiqueta}
@@ -427,9 +480,21 @@ export function AsistenteIA() {
 
               <Avisos error={error} onReintentar={proponer} />
 
-              <button type="submit" className="boton boton-grande" disabled={ocupado}>
-                {ocupado ? "Preparando la propuesta…" : "Preparar propuesta"}
+              <button type="submit" className="boton boton-grande ia-enviar" disabled={ocupado} aria-busy={ocupado || undefined}>
+                {ocupado ? (
+                  <>
+                    <span className="spinner" aria-hidden="true" />
+                    Preparando la propuesta…
+                  </>
+                ) : (
+                  <>
+                    Preparar propuesta
+                    <Icono nombre="flecha" />
+                  </>
+                )}
               </button>
+
+              {ocupado && <Preparando />}
             </form>
           )}
 
@@ -437,8 +502,8 @@ export function AsistenteIA() {
             <div className="ia-bloques">
               <div className="ia-tarjeta">
                 <label className="ia-campo">
-                  <span>Resumen del proyecto</span>
-                  <textarea rows="4" value={resumen} onChange={(e) => setResumen(e.target.value)} />
+                  <span className="ia-campo-titulo">Resumen del proyecto</span>
+                  <textarea rows="4" className="ia-entrada" value={resumen} onChange={(e) => setResumen(e.target.value)} />
                   <small className="texto-suave">Si cambias los servicios, ajusta también este texto: aparecerá en el PDF.</small>
                 </label>
               </div>
@@ -473,6 +538,7 @@ export function AsistenteIA() {
                             <span>Páginas adicionales (sin contar la primera)</span>
                             <input
                               type="number"
+                              className="ia-entrada ia-entrada-numero"
                               min="1"
                               max={CANTIDAD_MAX}
                               value={linea.cantidad}
@@ -514,7 +580,7 @@ export function AsistenteIA() {
                   <ul className="ia-lista ia-lista-compacta">
                     {disponibles.map((s) => (
                       <li key={s.id} className="ia-disponible">
-                        <div>
+                        <div className="ia-disponible-texto">
                           <strong>{s.nombre}</strong>
                           <span className="ia-precio">{precioDe(s)}</span>
                           <p className="texto-suave">
@@ -523,6 +589,7 @@ export function AsistenteIA() {
                           </p>
                         </div>
                         <button type="button" className="ia-chip" onClick={() => anadir(s)}>
+                          <Icono nombre="mas" />
                           Añadir
                         </button>
                       </li>
@@ -533,12 +600,12 @@ export function AsistenteIA() {
 
               <div className="ia-tarjeta ia-formulario">
                 <label className="ia-campo">
-                  <span>Dudas por aclarar (una por línea)</span>
-                  <textarea rows="4" value={dudas} onChange={(e) => setDudas(e.target.value)} />
+                  <span className="ia-campo-titulo">Dudas por aclarar (una por línea)</span>
+                  <textarea rows="4" className="ia-entrada" value={dudas} onChange={(e) => setDudas(e.target.value)} />
                 </label>
                 <label className="ia-campo">
-                  <span>Fuera de catálogo · pendiente de valorar (una por línea, no suma al total)</span>
-                  <textarea rows="4" value={pendientes} onChange={(e) => setPendientes(e.target.value)} />
+                  <span className="ia-campo-titulo">Fuera de catálogo · pendiente de valorar (una por línea, no suma al total)</span>
+                  <textarea rows="4" className="ia-entrada" value={pendientes} onChange={(e) => setPendientes(e.target.value)} />
                 </label>
               </div>
 
@@ -552,11 +619,28 @@ export function AsistenteIA() {
               <Avisos error={error} onReintentar={calcular} />
 
               <div className="ia-barra">
-                <button type="button" className="enlace ia-enlace" onClick={() => irA("descripcion")}>
+                <button type="button" className="boton-texto" onClick={() => irA("descripcion")}>
+                  <Icono nombre="atras" />
                   Cambiar la descripción
                 </button>
-                <button type="button" className="boton boton-grande" disabled={ocupado || faltan.length > 0} onClick={calcular}>
-                  {ocupado ? "Calculando…" : "Calcular y ver presupuesto"}
+                <button
+                  type="button"
+                  className="boton boton-grande"
+                  disabled={ocupado || faltan.length > 0}
+                  aria-busy={ocupado || undefined}
+                  onClick={calcular}
+                >
+                  {ocupado ? (
+                    <>
+                      <span className="spinner" aria-hidden="true" />
+                      Calculando…
+                    </>
+                  ) : (
+                    <>
+                      Calcular y ver presupuesto
+                      <Icono nombre="flecha" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -567,14 +651,25 @@ export function AsistenteIA() {
               <VistaDocumento documento={documento} />
               <Avisos error={error} onReintentar={descargar} />
               <div className="ia-barra">
-                <button type="button" className="enlace ia-enlace" onClick={() => irA("revision")}>
+                <button type="button" className="boton-texto" onClick={() => irA("revision")}>
+                  <Icono nombre="atras" />
                   Volver a editar
                 </button>
-                <button type="button" className="enlace ia-enlace" onClick={reiniciar}>
+                <button type="button" className="boton-texto" onClick={reiniciar}>
                   Empezar de nuevo
                 </button>
-                <button type="button" className="boton boton-grande" disabled={ocupado} onClick={descargar}>
-                  {ocupado ? "Generando…" : "Aceptar y descargar PDF"}
+                <button type="button" className="boton boton-grande" disabled={ocupado} aria-busy={ocupado || undefined} onClick={descargar}>
+                  {ocupado ? (
+                    <>
+                      <span className="spinner" aria-hidden="true" />
+                      Generando…
+                    </>
+                  ) : (
+                    <>
+                      Aceptar y descargar PDF
+                      <Icono nombre="descarga" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>

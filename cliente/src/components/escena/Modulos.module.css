@@ -1,0 +1,923 @@
+/* ==========================================================================
+   Módulos alrededor de la ventana (en em, como la maqueta)
+   La ventana mide 64 × 40 em; cada módulo flotante se coloca con
+   --x / --y (esquina superior izquierda), --w (ancho) y --fz (profundidad).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Tarjeta flotante común
+   -------------------------------------------------------------------------- */
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+  padding: 1.1em 1.2em 1.2em;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 0.9em;
+  background: linear-gradient(180deg, #252525, #161616);
+  box-shadow:
+    0 1.8em 3.4em -1em rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  color: #ececec;
+  line-height: 1.2;
+}
+
+.titulo {
+  font-family: var(--display);
+  font-size: 0.95em;
+  font-weight: 700;
+  font-stretch: 92%;
+}
+
+.campo {
+  display: flex;
+  align-items: center;
+  min-height: 2.3em;
+  padding: 0 0.85em;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 0.5em;
+  background: rgba(0, 0, 0, 0.32);
+  color: #8e8e8e;
+  font-size: 0.68em;
+}
+
+.area {
+  align-items: flex-start;
+  min-height: 4.2em;
+  padding-top: 0.7em;
+}
+
+.boton,
+.botonPeq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5em;
+  border-radius: 0.5em;
+  background: var(--luz-escena);
+  box-shadow: 0 0.6em 1.4em -0.6em var(--luz-60);
+  color: #031a04;
+  font-family: var(--display);
+  font-size: 0.7em;
+  font-weight: 800;
+  font-stretch: 90%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.botonPeq {
+  min-height: 2.2em;
+  padding: 0 1.1em;
+  border-radius: 999px;
+}
+
+/* --------------------------------------------------------------------------
+   Posiciones (alrededor de la ventana, sin taparse entre sí)
+   -------------------------------------------------------------------------- */
+
+.cms {
+  --x: 17em;
+  --y: -5.4em;
+  --w: 30em;
+  --fz: 3;
+  --avance: 3em;
+}
+
+.urgente {
+  --x: -3.5em;
+  --y: -5.6em;
+  --w: auto;
+  --fz: 2;
+  --avance: 3em;
+  --radio-flotante: 999px;
+}
+
+.serp {
+  --x: -17em;
+  --y: 3.2em;
+  --w: 21em;
+  --fz: 6;
+}
+
+.pago {
+  --x: -13.5em;
+  --y: 24em;
+  --w: 18em;
+  --fz: 8;
+}
+
+.login {
+  --x: 53.5em;
+  --y: 1.2em;
+  --w: 17.5em;
+  --fz: 7;
+}
+
+.formulario {
+  --x: 47.5em;
+  --y: 17.5em;
+  --w: 17em;
+  --fz: 5.5;
+}
+
+/* Landing y corporativa: las hojas apiladas asoman arriba a la izquierda */
+:is([data-tipo="landing"], [data-tipo="corporativa"]) .urgente {
+  --x: 46.5em;
+  --y: -6.2em;
+}
+
+:is([data-tipo="landing"], [data-tipo="corporativa"]) .cms {
+  --x: 19em;
+  --w: 26em;
+}
+
+/* E-commerce: el cajón del carrito ocupa la derecha; el acceso sube por encima de
+   la ventana, el pago se pone delante, bajo el carrito, y el formulario pasa a la izquierda */
+[data-tipo="ecommerce"] .cms {
+  --x: 12em;
+}
+
+[data-tipo="ecommerce"] .login {
+  --x: 47.5em;
+  --y: -14.8em;
+}
+
+[data-tipo="ecommerce"] .pago {
+  --x: 28.5em;
+  --y: 28.5em;
+  --fz: 9;
+}
+
+[data-tipo="ecommerce"] .formulario {
+  --x: -14.5em;
+  --y: 21.5em;
+}
+
+.chat {
+  --x: 50.5em;
+  --y: 35em;
+  --w: 15.5em;
+  --fz: 4;
+  --avance: 3.5em;
+  --radio-flotante: 1.4em;
+}
+
+/* --------------------------------------------------------------------------
+   Barra del CMS
+   -------------------------------------------------------------------------- */
+
+.barraCms {
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
+  padding: 0.55em 0.6em 0.55em 0.8em;
+  border-radius: 0.8em;
+}
+
+/* Las tres herramientas: un ::before con tres máscaras (la primera, activa, en color luz)
+   y un ::after con el recuadro de la herramienta activa */
+.herramientas {
+  position: relative;
+  flex: none;
+  width: 8em;
+  height: 2.1em;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.herramientas::before,
+.herramientas::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2.1em;
+}
+
+.herramientas::before {
+  z-index: 1;
+  width: 7em;
+  background: linear-gradient(90deg, var(--luz-90) 0 2.1em, #bdbdbd 2.1em);
+  -webkit-mask:
+    var(--i1) 0.475em 50% / 1.15em no-repeat,
+    var(--i2) 2.925em 50% / 1.15em no-repeat,
+    var(--i3) 5.375em 50% / 1.15em no-repeat;
+  mask:
+    var(--i1) 0.475em 50% / 1.15em no-repeat,
+    var(--i2) 2.925em 50% / 1.15em no-repeat,
+    var(--i3) 5.375em 50% / 1.15em no-repeat;
+}
+
+.herramientas::after {
+  width: 2.1em;
+  border-radius: 0.45em;
+  background: var(--luz-20);
+}
+
+.estadoCms {
+  flex: 1;
+  color: #8e8e8e;
+  font-size: 0.7em;
+  white-space: nowrap;
+}
+
+.estadoCms::before {
+  content: "";
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-right: 0.6em;
+  border-radius: 50%;
+  background: var(--luz-escena);
+  vertical-align: 0.05em;
+}
+
+/* --------------------------------------------------------------------------
+   Insignia de entrega prioritaria
+   -------------------------------------------------------------------------- */
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.6em 1.1em 0.6em 0.8em;
+  border: 1px solid var(--luz-60);
+  border-radius: 999px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--luz-escena) 22%, #0d0d0d), #0b0b0b);
+  box-shadow:
+    0 0 2em -0.4em var(--luz-60),
+    0 1em 2em -1em rgba(0, 0, 0, 0.9);
+  color: #fff3dc;
+  font-family: var(--display);
+  font-size: 0.95em;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.insignia i {
+  width: 1.3em;
+  height: 1.3em;
+  color: var(--luz-escena);
+}
+
+/* --------------------------------------------------------------------------
+   Resultado de buscador (SEO)
+   -------------------------------------------------------------------------- */
+
+.buscadorSerp {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  min-height: 2.3em;
+  padding: 0 0.9em;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #a9a9a9;
+  font-size: 0.66em;
+}
+
+.buscadorSerp::before,
+.loginAvatar::before,
+.lanzador::before,
+.escudo::before {
+  content: "";
+  flex: none;
+  width: 1.2em;
+  height: 1.2em;
+  background: currentColor;
+  -webkit-mask: var(--icono) center / contain no-repeat;
+  mask: var(--icono) center / contain no-repeat;
+}
+
+.serpUrl {
+  margin-top: 0.2em;
+  color: #8a8a8a;
+  font-size: 0.58em;
+}
+
+.serpTitulo {
+  color: var(--luz-90);
+  font-family: var(--display);
+  font-size: 0.92em;
+  font-weight: 700;
+  font-stretch: 92%;
+}
+
+/* Dos líneas de descripción */
+.serpLineas {
+  height: 1.7em;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.13)) 0 0 / 100% 0.5em no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.09)) 0 100% / 72% 0.5em no-repeat;
+}
+
+.anilloSeo {
+  position: absolute;
+  top: -2.6em;
+  right: -2.4em;
+  z-index: 2;
+  display: grid;
+  place-content: center;
+  width: 5.4em;
+  height: 5.4em;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #111 0 57%, transparent 58%),
+    conic-gradient(var(--luz-escena) 0 98%, rgba(255, 255, 255, 0.1) 98%);
+  box-shadow:
+    0 0 2em -0.4em var(--luz-60),
+    0 1em 2em -1em rgba(0, 0, 0, 0.9);
+  color: #cfcfcf;
+  font-family: var(--display);
+  font-size: 0.62em;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-align: center;
+}
+
+.anilloSeo::before {
+  content: attr(data-valor);
+  display: block;
+  margin-bottom: 0.15em;
+  color: var(--luz-90);
+  font-size: 2.3em;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Pago + nodo CRM unidos por una línea discontinua animada
+   -------------------------------------------------------------------------- */
+
+.tarjetaPago {
+  gap: 0.9em;
+  background:
+    radial-gradient(ellipse 90% 80% at 100% 0%, var(--luz-20), transparent 70%),
+    linear-gradient(150deg, #2a2a2a, #141414);
+}
+
+.pagoCabeza {
+  position: relative;
+  height: 1.8em;
+}
+
+/* Chip dorado a la izquierda y ondas del pago sin contacto a la derecha */
+.pagoCabeza::before,
+.pagoCabeza::after {
+  content: "";
+  position: absolute;
+  top: 0;
+}
+
+.pagoCabeza::before {
+  left: 0;
+  width: 2.4em;
+  height: 1.8em;
+  border-radius: 0.35em;
+  background:
+    linear-gradient(90deg, transparent 32%, rgba(0, 0, 0, 0.25) 32% 36%, transparent 36% 64%, rgba(0, 0, 0, 0.25) 64% 68%, transparent 68%),
+    linear-gradient(135deg, #e9d9a6, #b59a52);
+}
+
+/* Ondas del pago sin contacto */
+.pagoCabeza::after {
+  top: 0.2em;
+  right: 0;
+  width: 1.4em;
+  height: 1.4em;
+  border: 0.14em solid transparent;
+  border-right-color: #9a9a9a;
+  border-radius: 50%;
+  box-shadow: inset -0.35em 0 0 -0.22em #9a9a9a;
+}
+
+.numero {
+  color: #f2f2f2;
+  font-family: var(--mono);
+  font-size: 0.95em;
+  letter-spacing: 0.12em;
+}
+
+.crm {
+  position: absolute;
+  top: -4.4em;
+  left: -5.6em;
+  display: grid;
+  place-items: center;
+  width: 5em;
+  height: 5em;
+  border: 1px solid var(--luz-60);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #2c2c2c, #101010);
+  box-shadow: 0 0 2.2em -0.4em var(--luz-35);
+  color: var(--luz-90);
+  font-family: var(--display);
+  font-size: 0.8em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.conector {
+  position: absolute;
+  top: -0.6em;
+  left: -2.2em;
+  width: 5.6em;
+  height: 2px;
+  overflow: hidden;
+  rotate: 40deg;
+  transform-origin: left center;
+}
+
+.conector i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -1.2em;
+  width: calc(100% + 1.2em);
+  background: repeating-linear-gradient(90deg, var(--luz-escena) 0 0.6em, transparent 0.6em 1.2em);
+  animation: flujo 0.9s linear infinite;
+}
+
+@keyframes flujo {
+  to {
+    transform: translateX(1.2em);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Acceso de usuarios
+   -------------------------------------------------------------------------- */
+
+.loginAvatar {
+  display: grid;
+  place-items: center;
+  width: 3em;
+  height: 3em;
+  margin: 0.2em auto 0.1em;
+  border: 1px solid var(--luz-60);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #333, #141414);
+  color: var(--luz-90);
+}
+
+.login .titulo {
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Chat de soporte
+   -------------------------------------------------------------------------- */
+
+.burbuja {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7em;
+  margin-right: 4.2em;
+  padding: 0.75em 1em;
+  border-radius: 1.2em 1.2em 0.3em 1.2em;
+}
+
+.chatAvatar {
+  flex: none;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--luz-90), color-mix(in srgb, var(--luz-escena) 40%, #111));
+}
+
+.chatTexto {
+  display: grid;
+  gap: 0.2em;
+  color: #bdbdbd;
+  font-size: 0.68em;
+  white-space: nowrap;
+}
+
+.chatTexto b {
+  color: #f2f2f2;
+}
+
+.lanzador {
+  position: absolute;
+  right: 0;
+  bottom: -0.4em;
+  display: grid;
+  place-items: center;
+  width: 3.4em;
+  height: 3.4em;
+  border-radius: 50%;
+  background: var(--luz-escena);
+  box-shadow:
+    0 0 2em -0.4em var(--luz-60),
+    0 1em 2em -1em rgba(0, 0, 0, 0.9);
+  color: #031a04;
+}
+
+.lanzador::before,
+.loginAvatar::before {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+/* --------------------------------------------------------------------------
+   Hojas apiladas (una por página adicional)
+   -------------------------------------------------------------------------- */
+
+.hojas {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Cada hoja k se aparta k veces el desplazamiento del paso; en el paso 2 se abren
+   en abanico girando sobre su esquina inferior izquierda */
+.hoja,
+.chapa {
+  transform: translate3d(calc(var(--k) * var(--hoja-dx)), calc(var(--k) * var(--hoja-dy)), calc(var(--k) * var(--hoja-dz) * -1 - 1.2em))
+    rotateZ(calc(var(--k) * var(--hoja-giro))) rotateY(calc(var(--k) * var(--hoja-giro-y)));
+  transform-origin: 0% 100%;
+  transition: transform 1.3s var(--curva-camara);
+}
+
+.hoja {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.3em;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)) 2em 5em / 40% 1.2em no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) 2em 8em / 60% 0.7em no-repeat,
+    linear-gradient(180deg, #1c1c1c 0 2.6em, #121212 2.6em);
+  box-shadow:
+    0 1em 3em -1em rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Nombre de la página en la franja que asoma */
+.hoja::after {
+  content: attr(data-nombre);
+  position: absolute;
+  top: 0.32em;
+  left: 1.3em;
+  color: #9a9a9a;
+  font-family: var(--display);
+  font-size: 0.62em;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Brillo de la hoja recién añadida */
+.hoja::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--luz-escena);
+  border-radius: inherit;
+  box-shadow: 0 0 2.4em -0.4em var(--luz-60);
+  opacity: 0;
+}
+
+.hoja[data-fase="construyendo"] {
+  animation: hojaEntra 0.7s var(--curva) both;
+}
+
+.hoja[data-fase="construyendo"]::before,
+.hoja[data-fase="marcado"]::before {
+  animation: marcaHoja 2.4s ease-out both;
+}
+
+.hoja[data-fase="inicial"] {
+  animation: hojaEntra 0.6s var(--curva) both;
+  animation-delay: calc(var(--k) * 50ms);
+}
+
+.hoja[data-fase="saliendo"] {
+  animation: hojaSale 0.38s var(--curva) both;
+}
+
+.chapa {
+  position: absolute;
+  top: -1.2em;
+  left: -1.6em;
+  display: grid;
+  place-items: center;
+  min-width: 3.4em;
+  height: 2.2em;
+  padding: 0 0.8em;
+  border-radius: 999px;
+  background: var(--luz-escena);
+  box-shadow: 0 0 2em -0.3em var(--luz-60);
+  color: #031a04;
+  font-family: var(--display);
+  font-size: 1.05em;
+  font-weight: 800;
+  font-stretch: 90%;
+  letter-spacing: 0.04em;
+  animation: hojaEntra 0.5s var(--curva) both;
+}
+
+@keyframes hojaEntra {
+  from {
+    opacity: 0;
+    translate: -4em -2.2em 0;
+  }
+}
+
+@keyframes hojaSale {
+  to {
+    opacity: 0;
+    translate: -4em -1.6em 0;
+  }
+}
+
+@keyframes marcaHoja {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Gemela «EN» (Multidioma)
+   -------------------------------------------------------------------------- */
+
+.gemela {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--luz-35);
+  border-radius: 1.3em;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.06)) right 2.2em top 9.5em / 6.5em 0.7em no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.04)) right 2.2em top 11.2em / 5em 0.7em no-repeat,
+    linear-gradient(180deg, #1d1d1d 0 2.6em, #111 2.6em);
+  box-shadow:
+    0 1em 3em -1em rgba(0, 0, 0, 0.9),
+    0 0 3em -1em var(--luz-35);
+  transform: translate3d(9em, 2.4em, -3.6em);
+  transition: transform 1.3s var(--curva-camara);
+}
+
+.gemelaChip {
+  position: absolute;
+  top: 4.2em;
+  right: 2em;
+  display: grid;
+  place-items: center;
+  width: 3.1em;
+  height: 2.1em;
+  border: 1px solid var(--luz-60);
+  border-radius: 0.5em;
+  background: var(--luz-20);
+  color: var(--luz-90);
+  font-family: var(--display);
+  font-size: 1.3em;
+  font-weight: 800;
+  font-stretch: 100%;
+  letter-spacing: 0.06em;
+}
+
+.gemela[data-fase="construyendo"],
+.gemela[data-fase="inicial"] {
+  animation: gemelaEntra 0.8s var(--curva) both;
+}
+
+.gemela[data-fase="saliendo"] {
+  animation: gemelaSale 0.38s var(--curva) both;
+}
+
+@keyframes gemelaEntra {
+  from {
+    opacity: 0;
+    translate: -9em -2.4em 0;
+  }
+}
+
+@keyframes gemelaSale {
+  to {
+    opacity: 0;
+    translate: -6em -1.6em 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Mantenimiento: anillo en el suelo + escudo con el nombre del plan
+   -------------------------------------------------------------------------- */
+
+.mantenimiento {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.anillo {
+  position: absolute;
+  top: calc(100% + 2.2em);
+  left: 50%;
+  width: 84em;
+  height: 84em;
+  margin: -42em 0 0 -42em;
+  border: 0.2em solid var(--luz-60);
+  border-radius: 50%;
+  box-shadow:
+    0 0 1.8em var(--luz-35),
+    inset 0 0 1.8em var(--luz-35);
+  transform: rotateX(90deg);
+}
+
+/* Segundo anillo interior, discontinuo */
+.anillo::before {
+  content: "";
+  position: absolute;
+  inset: 3.2em;
+  border: 1px dashed var(--luz-35);
+  border-radius: 50%;
+}
+
+/* Puntos de luz que orbitan: un degradado por punto en un ::after que gira */
+.anillo::after {
+  --punto: #fff 0 0.2em, var(--luz-90) 0.4em, var(--luz-60) 0.66em, var(--luz-20) 1.15em, transparent 1.6em;
+  content: "";
+  position: absolute;
+  inset: -0.2em;
+  background: radial-gradient(circle 2.2em at 42em 0.1em, var(--punto));
+  animation: giroAnillo 9s linear infinite;
+}
+
+.anillo[data-puntos="2"]::after {
+  background:
+    radial-gradient(circle 2.2em at 42em 0.1em, var(--punto)),
+    radial-gradient(circle 2.2em at 42em 83.9em, var(--punto));
+}
+
+.anillo[data-puntos="3"]::after {
+  background:
+    radial-gradient(circle 2.2em at 42em 0.1em, var(--punto)),
+    radial-gradient(circle 2.2em at 78.29em 62.95em, var(--punto)),
+    radial-gradient(circle 2.2em at 5.71em 62.95em, var(--punto));
+}
+
+@keyframes giroAnillo {
+  to {
+    rotate: 360deg;
+  }
+}
+
+.escudo {
+  position: absolute;
+  top: calc(100% - 0.6em);
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.6em 1.2em 0.6em 0.8em;
+  border: 1px solid var(--luz-60);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(22, 22, 22, 0.96), rgba(8, 8, 8, 0.96));
+  box-shadow:
+    0 0 2.2em -0.5em var(--luz-35),
+    0 1em 2em -1em rgba(0, 0, 0, 0.9);
+  color: #d5d5d5;
+  font-family: var(--display);
+  font-size: 0.95em;
+  font-weight: 600;
+  font-stretch: 85%;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: pre; /* conserva el espacio entre «Plan» y el nombre (son dos elementos flex) */
+  transform: translateX(-50%) translateZ(9em);
+}
+
+.escudo b {
+  color: #fff;
+  font-weight: 800;
+}
+
+.escudo::before {
+  width: 1.5em;
+  height: 1.5em;
+  margin-right: 0.25em;
+  color: var(--luz-escena);
+}
+
+.mantenimiento[data-fase="construyendo"] .anillo,
+.mantenimiento[data-fase="inicial"] .anillo {
+  animation: anilloEntra 1s var(--curva) both;
+}
+
+.mantenimiento[data-fase="construyendo"] .escudo,
+.mantenimiento[data-fase="inicial"] .escudo {
+  animation: escudoEntra 0.6s var(--curva) 0.25s both;
+}
+
+.mantenimiento[data-fase="saliendo"] .anillo,
+.mantenimiento[data-fase="saliendo"] .escudo {
+  animation: desvanecer 0.38s var(--curva) both;
+}
+
+@keyframes anilloEntra {
+  from {
+    opacity: 0;
+    scale: 0.55 0.55 0.55;
+  }
+}
+
+@keyframes escudoEntra {
+  from {
+    opacity: 0;
+    translate: 0 1.2em;
+  }
+}
+
+@keyframes desvanecer {
+  to {
+    opacity: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Estelas de velocidad (2D, detrás de la cámara)
+   -------------------------------------------------------------------------- */
+
+.estelas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.estelas i {
+  --linea: linear-gradient(90deg, var(--luz-90), var(--luz-35) 40%, transparent);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 64cqw;
+  background:
+    var(--linea) 0 27% / 68% 3px no-repeat,
+    var(--linea) 30% 45% / 90% 3px no-repeat,
+    var(--linea) 10% 63% / 55% 3px no-repeat;
+  opacity: 0.85;
+  animation: estela 1.2s linear infinite;
+}
+
+.estelas i:nth-child(2) {
+  background:
+    var(--linea) 20% 36% / 50% 2px no-repeat,
+    var(--linea) 0 54% / 72% 2px no-repeat,
+    var(--linea) 40% 71% / 45% 2px no-repeat;
+  animation-duration: 0.9s;
+  animation-delay: -0.45s;
+}
+
+@keyframes estela {
+  from {
+    transform: translateX(105cqw);
+  }
+  to {
+    transform: translateX(-68cqw);
+  }
+}
+
+.estelas[data-fase="construyendo"],
+.estelas[data-fase="inicial"] {
+  animation: estelasEntran 0.6s var(--curva) both;
+}
+
+.estelas[data-fase="saliendo"] {
+  animation: desvanecer 0.38s var(--curva) both;
+}
+
+@keyframes estelasEntran {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estelas i {
+    animation: none;
+    transform: translateX(18cqw);
+  }
+
+  .hoja,
+  .chapa,
+  .gemela {
+    transition: none;
+  }
+}

@@ -5,6 +5,8 @@ import { AsistenteIA } from "./components/ui/asistente-ia.jsx";
 import { EntradaPortal } from "./components/EntradaPortal.jsx";
 import { Calculadora } from "./components/calculadora/Calculadora.jsx";
 import { useCalculator } from "./components/calculadora/useCalculator.js";
+import { Cabecera } from "./components/layout/Cabecera.jsx";
+import { Pie } from "./components/layout/Pie.jsx";
 
 const euros = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" });
 
@@ -22,12 +24,35 @@ const PREGUNTAS = [
   ["¿Y si no sé qué necesito?", "Describe tu proyecto en el asistente: propone servicios del catálogo y tú decides cuáles confirmar."],
 ];
 
-function LogoJM({ className = "logo" }) {
+// Nombre corto de cada tarifa para la etiqueta verde (el texto largo lo manda el servidor)
+const NOMBRE_TARIFA = {
+  landing: "Landing",
+  corporativa: "Web corporativa",
+  paginaAdicional: "Página extra",
+  formulario: "Formulario",
+  segundoIdioma: "Segundo idioma",
+};
+
+const dosCifras = (n) => String(n).padStart(2, "0");
+
+function Flecha() {
   return (
-    <svg className={className} viewBox="0 0 46 26" fill="none" aria-hidden="true">
-      <path d="M3 18a5 5 0 0 0 10 0V3M19 23V3l8 11 8-11v20" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="42" cy="21" r="2.4" fill="var(--azul)" />
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true" focusable="false">
+      <path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+// Cabecera de sección como la referencia: antetítulo verde numerado, titular
+// pesado con una palabra en verde y una palabra fantasma gigante detrás.
+function CabeceraSeccion({ id, etiqueta, fantasma, entradilla, children }) {
+  return (
+    <header className="seccion-cabecera">
+      <span className="fantasma seccion-fantasma" aria-hidden="true">{fantasma}</span>
+      <p className="etiqueta revelar">{etiqueta}</p>
+      <h2 className="titular revelar" id={id}>{children}</h2>
+      {entradilla && <p className="entradilla revelar">{entradilla}</p>}
+    </header>
   );
 }
 
@@ -44,7 +69,7 @@ export default function App() {
       .catch(() => setEstadoApi("error"));
     fetch("/api/tarifas")
       .then((r) => r.json())
-      .then((d) => setTarifas(d.tarifas))
+      .then((d) => setTarifas(d.tarifas ?? []))
       .catch(() => setTarifas([]));
   }, []);
 
@@ -57,120 +82,162 @@ export default function App() {
 
   return (
     <>
-      <header className="cabecera">
-        <div className="cabecera-interior">
-          <a href="#inicio" className="marca" aria-label="Presupuesta, ir al inicio">
-            <LogoJM />
-            Presupuesta
-          </a>
-          <nav aria-label="Secundaria">
-            <ul className="cabecera-enlaces">
-              <li><a href="#metodologia">Metodología</a></li>
-              <li><a href="#servicios">Servicios</a></li>
-              <li><a href="#preguntas">Preguntas frecuentes</a></li>
-            </ul>
-          </nav>
-          <p className="cabecera-estimacion">
-            Estimación: <strong>{euros.format(c.estimacion?.total ?? 0)}</strong>
-          </p>
-        </div>
-      </header>
+      <Cabecera total={c.estimacion?.total ?? null} calculando={Boolean(c.calculando)} />
 
       <main>
         <div id="inicio">
           <EntradaPortal />
         </div>
 
-        <section className="seccion" id="calculadora" aria-label="Calculadora">
+        <section className="seccion seccion-configurador" id="calculadora" aria-label="Configurador">
           <Calculadora c={c} />
           <p className="alternativa">
-            ¿Prefieres contarlo con tus palabras? <a href="#asistente" className="enlace">Describe tu proyecto al asistente</a>
+            <span className="alternativa-icono" aria-hidden="true">IA</span>
+            <span>¿Prefieres contarlo con tus palabras?</span>
+            <a href="#asistente" className="enlace alternativa-enlace">
+              Describe tu proyecto al asistente <Flecha />
+            </a>
           </p>
         </section>
 
-        <section className="seccion seccion-blanca" id="asistente">
+        <section className="seccion seccion-alterna" id="asistente">
           <AsistenteIA />
         </section>
 
-        <section className="seccion" id="servicios">
-          <div className="seccion-cabecera">
-            <h2 className="titular">Servicios y tarifas base</h2>
-            <p className="entradilla">Publicadas por el servidor en <code>GET /api/tarifas</code>.</p>
+        <section className="seccion" id="servicios" aria-labelledby="titulo-servicios">
+          <div className="seccion-interior">
+            <CabeceraSeccion
+              id="titulo-servicios"
+              etiqueta="03 — Servicios"
+              fantasma="Tarifas"
+              entradilla={
+                <>
+                  Publicadas por el servidor en <code>GET /api/tarifas</code>. El navegador solo las muestra: nunca
+                  calcula un importe.
+                </>
+              }
+            >
+              Servicios y <span className="verde">tarifas</span>
+            </CabeceraSeccion>
+
+            {tarifas == null ? (
+              <ul className="tarifas" aria-busy="true" aria-label="Cargando tarifas">
+                {Array.from({ length: 5 }, (_, i) => (
+                  <li key={i} className="tarifa">
+                    <span className="skeleton tarifa-hueco-valor" />
+                    <span className="skeleton tarifa-hueco-etiqueta" />
+                    <span className="skeleton tarifa-hueco-texto" />
+                  </li>
+                ))}
+              </ul>
+            ) : tarifas.length === 0 ? (
+              <p className="texto-error">No se pudieron cargar las tarifas. ¿Está la API en marcha?</p>
+            ) : (
+              <ul className="tarifas">
+                {tarifas.map((t) => (
+                  <li key={t.concepto} className="tarifa revelar">
+                    <strong className="tarifa-valor">{euros.format(t.precio)}</strong>
+                    <span className="tarifa-etiqueta">{NOMBRE_TARIFA[t.concepto] ?? t.concepto}</span>
+                    <p className="tarifa-descripcion">{t.descripcion}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          <ul className="rejilla-tarifas">
-            {(tarifas ?? []).map((t) => (
-              <li key={t.concepto} className="tarifa">
-                <p>{t.descripcion}</p>
-                <strong>{euros.format(t.precio)}</strong>
-              </li>
-            ))}
-          </ul>
         </section>
 
-        <section className="seccion seccion-blanca" id="packs">
+        <section className="seccion seccion-alterna" id="packs">
           <PricingSection onElegir={elegirPack} precioIdioma={precioIdioma == null ? null : euros.format(precioIdioma)} />
         </section>
 
-        <section className="seccion" id="mantenimiento">
-          <div className="seccion-cabecera">
-            <h2 className="titular">Mantenimiento</h2>
-            <p className="entradilla">Planes mensuales opcionales, sin permanencia y fuera del presupuesto de creación.</p>
+        <section className="seccion" id="mantenimiento" aria-labelledby="titulo-mantenimiento">
+          <div className="seccion-interior">
+            <CabeceraSeccion
+              id="titulo-mantenimiento"
+              etiqueta="05 — Mantenimiento"
+              fantasma="Soporte"
+              entradilla="Planes mensuales opcionales, sin permanencia y fuera del presupuesto de creación."
+            >
+              Mantenimiento <span className="verde">mensual</span>
+            </CabeceraSeccion>
+            <PlanesMantenimiento planElegido={c.plan} onElegir={(plan) => c.setPlanId(plan?.id ?? null)} />
           </div>
-          <PlanesMantenimiento planElegido={c.plan} onElegir={(plan) => c.setPlanId(plan?.id ?? null)} />
         </section>
 
-        <section className="seccion seccion-blanca" id="metodologia">
-          <div className="seccion-cabecera">
-            <h2 className="titular">Metodología</h2>
-            <p className="entradilla">Un proceso transparente de principio a fin.</p>
-          </div>
-          <ol className="metodologia">
-            {METODOLOGIA.map((p, i) => (
-              <li key={p.titulo}>
-                <span className="metodologia-numero">{i + 1}</span>
-                <h3>{p.titulo}</h3>
-                <p>{p.texto}</p>
-              </li>
-            ))}
-          </ol>
-          {c.intercambio && (
-            <details className="tecnico">
-              <summary>Ver la última petición al servidor (HTTP {c.intercambio.estado})</summary>
-              <pre>{JSON.stringify({ solicitud: c.intercambio.solicitud, respuesta: c.intercambio.datos }, null, 2)}</pre>
-            </details>
-          )}
-        </section>
+        <section className="seccion seccion-alterna" id="metodologia" aria-labelledby="titulo-metodologia">
+          <div className="seccion-interior">
+            <CabeceraSeccion
+              id="titulo-metodologia"
+              etiqueta="06 — Metodología"
+              fantasma="Proceso"
+              entradilla="Un proceso transparente de principio a fin."
+            >
+              Cómo se <span className="verde">calcula</span>
+            </CabeceraSeccion>
 
-        <section className="seccion" id="preguntas">
-          <div className="seccion-cabecera">
-            <h2 className="titular">Preguntas frecuentes</h2>
-          </div>
-          <div className="preguntas">
-            {PREGUNTAS.map(([pregunta, respuesta]) => (
-              <details key={pregunta}>
-                <summary>{pregunta}</summary>
-                <p>{respuesta}</p>
+            <ol className="metodo-lista">
+              {METODOLOGIA.map((p, i) => (
+                <li key={p.titulo} className="metodo revelar">
+                  <span className="metodo-numero" aria-hidden="true">{dosCifras(i + 1)}</span>
+                  <h3 className="metodo-titulo">{p.titulo}</h3>
+                  <p className="metodo-texto">{p.texto}</p>
+                </li>
+              ))}
+            </ol>
+
+            {c.intercambio ? (
+              <details className="tecnico">
+                <summary className="tecnico-resumen">
+                  <span className="tecnico-titulo">Ver la última petición al servidor</span>
+                  <code className="tecnico-ruta">POST /api/estimacion</code>
+                  <span className="tecnico-http" data-error={c.intercambio.estado >= 400 || undefined}>
+                    HTTP {c.intercambio.estado}
+                  </span>
+                  <span className="tecnico-chevron" aria-hidden="true" />
+                </summary>
+                <pre className="tecnico-codigo">
+                  {JSON.stringify({ solicitud: c.intercambio.solicitud, respuesta: c.intercambio.datos }, null, 2)}
+                </pre>
               </details>
-            ))}
+            ) : (
+              <p className="tecnico tecnico-vacio">
+                <span className="tecnico-punto" aria-hidden="true" />
+                Aún no hay peticiones. Elige un tipo de proyecto en el{" "}
+                <a href="#calculadora" className="enlace">configurador</a> y aquí verás lo que se envía y lo que responde el
+                servidor.
+              </p>
+            )}
+          </div>
+        </section>
+
+        <section className="seccion" id="preguntas" aria-labelledby="titulo-preguntas">
+          <div className="seccion-interior preguntas-distribucion">
+            <CabeceraSeccion
+              id="titulo-preguntas"
+              etiqueta="07 — Preguntas"
+              fantasma="FAQ"
+              entradilla="Lo esencial antes de pedir tu presupuesto."
+            >
+              Preguntas <span className="verde">frecuentes</span>
+            </CabeceraSeccion>
+
+            <div className="preguntas">
+              {PREGUNTAS.map(([pregunta, respuesta], i) => (
+                <details key={pregunta} className="pregunta revelar" name="preguntas">
+                  <summary className="pregunta-resumen">
+                    <span className="pregunta-numero" aria-hidden="true">{dosCifras(i + 1)}</span>
+                    <span className="pregunta-texto">{pregunta}</span>
+                    <span className="pregunta-icono" aria-hidden="true" />
+                  </summary>
+                  <p className="pregunta-respuesta">{respuesta}</p>
+                </details>
+              ))}
+            </div>
           </div>
         </section>
       </main>
 
-      <footer className="pie">
-        <div className="pie-interior">
-          <p>Precios sin impuestos y tarifas ficticias de la actividad. Los presupuestos no se guardan.</p>
-          <div className="pie-linea">
-            <span className="pie-marca">
-              <LogoJM className="logo logo-pie" />
-              Presupuesta mi web · 0613 · Desarrollo web en entorno servidor
-            </span>
-            <span className={`estado estado-${estadoApi}`} title="GET /api/estado">
-              <span className="estado-punto" aria-hidden="true" />
-              {estadoApi === "ok" ? "API en línea" : estadoApi === "error" ? "API sin conexión" : "Comprobando…"}
-            </span>
-          </div>
-        </div>
-      </footer>
+      <Pie estadoApi={estadoApi} />
     </>
   );
 }

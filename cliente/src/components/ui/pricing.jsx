@@ -178,17 +178,19 @@ export default function PricingSection({ onElegir, precioIdioma }) {
 
   return (
     <div className="packs" ref={ref} data-visible={visible || undefined}>
-      <div className="packs-cabecera">
-        <div className="packs-entrada" style={{ "--n": 0 }}>
-          <h2 className="titular">
-            Packs. <span className="gris">Elegir nunca fue tan rápido.</span>
+      <header className="seccion-cabecera packs-cabecera">
+        <span className="fantasma seccion-fantasma" aria-hidden="true">Packs</span>
+        <div>
+          <p className="etiqueta revelar">04 — Packs</p>
+          <h2 className="titular revelar" id="titulo-packs">
+            Elegir nunca fue tan <span className="verde">rápido</span>
           </h2>
-          <p className="entradilla">
-            Tres configuraciones listas para empezar. Elige una y la cargamos en la calculadora, con el mismo precio
+          <p className="entradilla revelar">
+            Tres configuraciones listas para empezar. Elige una y la cargamos en el configurador, con el mismo precio
             que calcula el servidor.
           </p>
         </div>
-        <div className="packs-entrada" style={{ "--n": 1 }}>
+        <div className="revelar">
           <Segmentado
             etiqueta="Idiomas de la web"
             valor={segundoIdioma}
@@ -199,7 +201,7 @@ export default function PricingSection({ onElegir, precioIdioma }) {
             ]}
           />
         </div>
-      </div>
+      </header>
 
       {error && <p className="packs-error">No se pudieron calcular los packs. ¿Está la API en marcha?</p>}
 
@@ -208,21 +210,32 @@ export default function PricingSection({ onElegir, precioIdioma }) {
           <li
             key={pack.nombre}
             className="pack packs-entrada"
-            style={{ "--n": 2 + i }}
+            style={{ "--n": i }}
             data-popular={pack.popular || undefined}
             aria-labelledby={`pack-${i}`}
           >
-            <p className="pack-etiqueta">{pack.popular ? "Más elegido" : " "}</p>
+            {pack.popular && <p className="pack-etiqueta">Más elegido</p>}
             <h3 id={`pack-${i}`} className="pack-nombre">{pack.nombre}</h3>
             <p className="pack-descripcion">{pack.descripcion}</p>
 
+            {/* Precio con aspecto de especificación («998 CC / CAPACITY»); skeleton hasta que responde el servidor */}
             <p className="pack-precio">
-              <Precio valor={precios[pack.nombre]} />
+              {precios[pack.nombre] == null && !error ? (
+                <span className="skeleton pack-precio-esqueleto">
+                  <span className="oculto">Calculando el precio…</span>
+                </span>
+              ) : (
+                <Precio valor={precios[pack.nombre]} />
+              )}
               <span className="pack-precio-nota">pago único¹</span>
             </p>
 
             <div className="pack-acciones">
-              <button type="button" className="boton" onClick={() => elegir(pack, "desglose")}>
+              <button
+                type="button"
+                className={pack.popular ? "boton" : "boton pack-boton-secundario"}
+                onClick={() => elegir(pack, "desglose")}
+              >
                 Elegir
               </button>
               <button type="button" className="pack-enlace" onClick={() => elegir(pack, "configurar")}>

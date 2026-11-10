@@ -1,0 +1,344 @@
+/* Resumen del presupuesto (#desglose): total grande, líneas y PDF. */
+
+.resumen {
+  margin-top: clamp(48px, 8vh, 80px);
+}
+
+/* En móvil la escena queda fija arriba: el resumen se para debajo de ella
+   (html ya reserva la cabecera con scroll-padding-top) */
+@media (max-width: 999.98px) {
+  .resumen {
+    scroll-margin-top: calc(var(--alto-escena-movil, 0px) + 8px);
+  }
+}
+
+@media (max-width: 999.98px) and (max-height: 560px) {
+  .resumen {
+    scroll-margin-top: 0;
+  }
+}
+
+/* «── TU PRESUPUESTO ──» */
+.cabecera {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 16px;
+  font: inherit;
+}
+
+.cabecera::before,
+.cabecera::after {
+  content: "";
+  height: 1px;
+  background: var(--borde-fuerte);
+}
+
+.cabecera::before {
+  width: 28px;
+  flex: none;
+}
+
+.cabecera::after {
+  flex: 1;
+  background: linear-gradient(90deg, var(--borde-fuerte), transparent);
+}
+
+.cabecera:focus-visible {
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+
+.caja {
+  position: relative;
+  padding: clamp(20px, 5.5cqi, 34px);
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-grande);
+  background:
+    radial-gradient(90% 60% at 100% 0%, rgba(0, 220, 10, 0.07), transparent 65%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+}
+
+.totalFila {
+  min-height: clamp(46px, 13cqi, 80px);
+}
+
+/* Total en Saira pesada, como el «H2 R» de la referencia */
+.total {
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: clamp(52px, 16cqi, 92px);
+  font-weight: 800;
+  font-stretch: 100%;
+  line-height: 0.9;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.total[data-apagado] {
+  color: var(--texto-3);
+}
+
+/* Hueco del total mientras llega la primera respuesta */
+.totalFila .totalEsqueleto {
+  display: block;
+  width: min(240px, 60%);
+  height: clamp(46px, 13cqi, 80px);
+  border-radius: 10px;
+}
+
+.nota {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 20px;
+  margin-top: 14px;
+  color: var(--texto-3);
+  font-size: 13px;
+}
+
+.nota[data-calculando] {
+  color: var(--verde);
+}
+
+/* Líneas del desglose */
+.lineas {
+  display: grid;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  transition: opacity 0.25s;
+}
+
+.lineas[data-desactualizado] {
+  opacity: 0.5;
+}
+
+.linea,
+.lineaEsqueleto,
+.lineaVacia {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 46px;
+  padding: 12px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.linea {
+  animation: entrarLinea 0.5s var(--curva) backwards;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+@keyframes entrarLinea {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+}
+
+.lineaNombre {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  color: var(--texto);
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.lineaDetalle {
+  color: var(--texto-3);
+  font-size: 12.5px;
+}
+
+.importe {
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Filas de carga mientras llega la primera respuesta */
+.lineaEsqueleto {
+  align-items: center;
+}
+
+.lineaEsqueleto span {
+  display: block;
+  height: 12px;
+}
+
+.lineaEsqueleto span:last-child {
+  flex: none;
+  width: 64px;
+}
+
+/* Estado vacío: la estructura del desglose en alambre */
+.vacio > p {
+  margin-top: 18px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+.vacio .lineas {
+  margin-top: 12px;
+}
+
+.lineaVacia {
+  align-items: center;
+}
+
+.lineaVacia span {
+  display: block;
+  height: 10px;
+  border: 1px dashed var(--borde-fuerte);
+  border-radius: 4px;
+}
+
+.lineaVacia span:last-child {
+  flex: none;
+  width: 56px;
+}
+
+/* Servicios mensuales, aparte */
+.mensual {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--borde-fuerte);
+}
+
+.subtitulo {
+  color: var(--verde);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.mensual .lineas {
+  margin-top: 10px;
+}
+
+.totalMensual {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borde);
+  color: var(--texto-2);
+  font-size: 13.5px;
+}
+
+.totalMensual strong {
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 700;
+  font-stretch: 85%;
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+  border-radius: var(--radio);
+  background: var(--fondo-error);
+  color: var(--rojo);
+  font-size: 14px;
+}
+
+.reintentar {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 107, 107, 0.55);
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.reintentar:hover {
+  border-color: var(--rojo);
+  background: rgba(255, 107, 107, 0.12);
+}
+
+/* Formulario del PDF: píldora con borde verde + botón verde */
+.formulario {
+  display: grid;
+  gap: 10px;
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid var(--borde);
+}
+
+.campoEtiqueta {
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.formulario .botonPdf {
+  width: 100%;
+  margin-top: 4px;
+  padding-inline: 18px;
+  white-space: normal;
+  text-align: center;
+}
+
+.formulario .botonPdf[aria-busy="true"] {
+  cursor: progress;
+}
+
+.flecha {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Spinner oscuro sobre el botón verde */
+.botonPdf .spinnerBoton {
+  --tam: 16px;
+  border-color: rgba(2, 23, 3, 0.25);
+  border-top-color: var(--texto-sobre-verde);
+}
+
+.pista {
+  color: var(--texto-3);
+  font-size: 13px;
+}
+
+.listo {
+  color: var(--verde);
+  font-size: 14px;
+}

@@ -1,4 +1,10 @@
-/* Asistente con IA: formulario, revisión de servicios y vista previa del presupuesto. */
+/* Asistente con IA (sección 02), con la estética de escena oscura y verde neón:
+   pasos como la navegación de la referencia (activo en blanco con barra verde),
+   tarjetas oscuras, campos cuyo borde se vuelve verde al enfocar, chips de borde
+   fino, skeletons mientras la IA prepara la propuesta y Camarón con un brillo verde.
+   La vista previa (.ia-papel) sigue siendo papel blanco, igual que el PDF.
+   Ojo: index.css se carga después que este archivo, así que para cambiar una
+   clase global (.boton, .boton-contorno…) hace falta más especificidad. */
 
 .ia {
   max-width: var(--ancho-amplio);
@@ -6,36 +12,80 @@
   scroll-margin-top: var(--hueco-nav);
 }
 
-.ia-cabecera {
-  margin-left: 0;
-}
+/* ---------- Cabecera ----------
+   La cabecera usa las clases comunes de la página (.seccion-cabecera, .seccion-fantasma
+   y .revelar, en index.css) para verse y entrar igual que las demás secciones.
+   Aquí solo van los pasos. */
 
+/* Pasos 01 · 02 · 03 en mayúsculas; el activo, blanco con la barra verde debajo */
 .ia-pasos {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 24px 0 0;
+  gap: clamp(22px, 4vw, 48px);
+  margin: clamp(28px, 4vw, 40px) 0 0;
   padding: 0;
+  border-bottom: 1px solid var(--borde);
   list-style: none;
-  font-size: 14px;
-  color: var(--texto-2);
 }
 
 .ia-pasos li {
-  padding: 5px 14px;
-  border-radius: var(--radio);
-  background: var(--fondo-claro);
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 14px;
+  color: var(--texto-3);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: 85%;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.3s var(--curva);
+}
+
+.ia-paso-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ia-pasos li[data-hecho] {
+  color: var(--texto-2);
+}
+
+.ia-pasos li[data-hecho] .ia-paso-num {
+  color: var(--verde);
 }
 
 .ia-pasos li[data-activo] {
-  background: var(--azul);
-  color: #fff;
+  color: var(--texto);
 }
+
+.ia-pasos li::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--verde);
+  box-shadow: 0 0 12px var(--verde-brillo);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--curva);
+}
+
+.ia-pasos li[data-activo]::after {
+  transform: scaleX(1);
+}
+
+/* ---------- Rejilla y tarjetas ---------- */
 
 .ia-rejilla {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
-  gap: clamp(24px, 4vw, 56px);
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: clamp(24px, 4vw, 64px);
   align-items: start;
 }
 
@@ -47,117 +97,332 @@
 }
 
 .ia-tarjeta {
-  padding: clamp(20px, 3vw, 32px);
+  padding: clamp(20px, 3vw, 34px);
+  border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: var(--fondo-claro);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 38%),
+    var(--superficie);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), var(--sombra);
+  animation: aparecer 0.45s var(--curva);
 }
 
 .ia-tarjeta h3 {
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: 0.011em;
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  font-stretch: 90%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
+
+/* ---------- Campos ---------- */
 
 .ia-formulario {
   display: grid;
-  gap: 20px;
-  justify-items: stretch;
+  gap: 22px;
 }
 
 .ia-campo {
   display: grid;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 500;
+  gap: 10px;
+}
+
+.ia-campo-titulo,
+.ia-ejemplos-titulo {
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.18em;
+  line-height: 1.35;
+  text-transform: uppercase;
 }
 
 .ia-campo small {
-  justify-self: end;
-  font-weight: 400;
+  font-size: 13px;
 }
 
-.ia input[type="text"],
-.ia input[type="number"],
-.ia textarea {
+.ia-campo .ia-contador {
+  justify-self: end;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ia-entrada {
+  display: block;
   width: 100%;
-  padding: 12px 14px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--superficie);
-  box-shadow: inset 0 0 0 1px var(--borde);
+  border: 1.5px solid var(--borde-fuerte);
+  background: rgba(0, 0, 0, 0.35);
   color: var(--texto);
   font: inherit;
-  font-size: 16px;
-  font-weight: 400;
-  letter-spacing: -0.016em;
+  font-size: 16px; /* con 16px, iOS no amplía la página al enfocar */
+  line-height: 1.55;
+  transition: border-color 0.2s, box-shadow 0.25s var(--curva), background-color 0.2s;
+}
+
+/* Una línea: píldora, como el buscador de la referencia */
+input.ia-entrada {
+  min-height: 52px;
+  padding: 0 24px;
+  border-radius: var(--radio-pildora);
+}
+
+textarea.ia-entrada {
+  padding: 16px 20px;
+  border-radius: var(--radio-grande);
   resize: vertical;
 }
 
-.ia [aria-invalid] {
-  box-shadow: inset 0 0 0 2px var(--rojo) !important;
+.ia-entrada::placeholder {
+  color: var(--texto-3);
 }
+
+.ia-entrada:hover {
+  border-color: var(--verde-borde);
+}
+
+/* El borde verde y el halo son el indicador de foco */
+.ia-entrada:focus {
+  outline: none;
+  border-color: var(--verde);
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 4px var(--verde-suave);
+}
+
+.ia-entrada[aria-invalid] {
+  border-color: var(--rojo);
+}
+
+.ia-entrada[aria-invalid]:focus {
+  box-shadow: 0 0 0 4px var(--fondo-error);
+}
+
+input.ia-entrada-numero {
+  min-height: 46px;
+  padding: 0 10px 0 20px;
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Chips ---------- */
 
 .ia-ejemplos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.ia-ejemplos-titulo {
+  margin-right: 6px;
+  color: var(--texto-3);
 }
 
 .ia-chip {
-  min-height: 34px;
-  padding: 5px 14px;
-  border: 0;
-  border-radius: var(--radio);
-  background: var(--superficie);
-  box-shadow: inset 0 0 0 1px var(--borde);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-pildora);
+  background: rgba(255, 255, 255, 0.02);
   color: var(--texto);
-  font-size: 14px;
+  font-family: var(--display);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-stretch: 88%;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
-  transition: box-shadow 0.2s var(--curva), background-color 0.2s var(--curva);
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s;
 }
 
 .ia-chip:hover {
-  box-shadow: inset 0 0 0 1px var(--texto-3);
+  border-color: var(--verde-borde);
+  background: var(--verde-suave);
 }
 
 .ia-chip[data-activo] {
-  background: var(--azul);
-  box-shadow: none;
-  color: #fff;
+  border-color: var(--verde);
+  background: var(--verde-suave);
+  color: var(--verde);
 }
 
 .ia-chip-peligro {
+  border-color: rgba(255, 107, 107, 0.35);
   color: var(--rojo);
 }
 
-.ia .boton:disabled {
-  opacity: 0.45;
-  cursor: default;
+.ia-chip-peligro:hover {
+  border-color: var(--rojo);
+  background: var(--fondo-error);
 }
+
+.ia-chip .ia-icono {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---------- Errores ---------- */
 
 .ia-error {
   display: grid;
-  justify-items: start;
-  gap: 12px;
-  padding: 16px 20px;
-  border-radius: var(--radio);
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px 14px;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 107, 107, 0.32);
+  border-radius: 14px;
   background: var(--fondo-error);
   color: var(--rojo);
   font-size: 15px;
+  animation: aparecer 0.35s var(--curva);
 }
 
-.ia-error ul,
-.ia-faltan {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.ia-faltan {
-  color: var(--texto-2);
+.ia-error-icono {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  font-family: var(--display);
   font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
 }
+
+.ia-error ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Reintentar: el contorno de la base, en rojo para que case con el aviso */
+.ia-error .ia-reintentar {
+  grid-column: 2;
+  justify-self: start;
+  min-height: 42px;
+  padding: 0 20px;
+  border-color: rgba(255, 107, 107, 0.5);
+  font-size: 12.5px;
+}
+
+.ia-error .ia-reintentar:hover {
+  border-color: var(--rojo);
+  background: rgba(255, 107, 107, 0.14);
+}
+
+/* ---------- Botones, spinner y skeleton ---------- */
+
+.ia-icono {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.ia-formulario .ia-enviar {
+  justify-self: end;
+}
+
+/* Spinner sobre el botón verde: en oscuro para que se vea */
+.ia .boton .spinner {
+  border-color: rgba(2, 23, 3, 0.22);
+  border-top-color: var(--texto-sobre-verde);
+}
+
+/* Mientras trabaja, el botón no se apaga: el spinner indica que sigue en marcha */
+.ia .boton[aria-busy="true"] {
+  opacity: 1;
+  cursor: progress;
+}
+
+.ia-preparando {
+  display: grid;
+  gap: 14px;
+  padding-top: 22px;
+  border-top: 1px solid var(--borde);
+  /* Con un pequeño retraso: si el servidor responde al instante, no parpadea */
+  animation: aparecer 0.4s var(--curva) 0.15s both;
+}
+
+.ia-preparando-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--verde);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.ia-esqueleto {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Cada fila imita un servicio de la propuesta: nombre, precio y una línea de texto */
+.ia-esqueleto li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 12px 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  animation: aparecer 0.4s var(--curva) 0.25s both;
+}
+
+.ia-esqueleto li:nth-child(2) {
+  animation-delay: 0.35s;
+}
+
+.ia-esqueleto li:nth-child(3) {
+  animation-delay: 0.45s;
+}
+
+.ia-esqueleto .skeleton {
+  height: 11px;
+}
+
+.ia-esqueleto .ia-esqueleto-nombre {
+  width: 46%;
+  height: 14px;
+}
+
+.ia-esqueleto li:nth-child(2) .ia-esqueleto-nombre {
+  width: 60%;
+}
+
+.ia-esqueleto li:nth-child(3) .ia-esqueleto-nombre {
+  width: 36%;
+}
+
+.ia-esqueleto .ia-esqueleto-precio {
+  height: 14px;
+}
+
+.ia-esqueleto .ia-esqueleto-texto {
+  grid-column: 1 / -1;
+  width: 82%;
+}
+
+/* ---------- Revisión de servicios ---------- */
 
 .ia-titulo-fila {
   display: flex;
@@ -170,48 +435,76 @@
 .ia-lista {
   display: grid;
   gap: 12px;
-  margin: 16px 0 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .ia-servicio {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   padding: 18px 20px;
-  border-radius: var(--radio);
-  background: var(--superficie);
-  box-shadow: inset 0 0 0 1px var(--borde);
+  border: 1px solid var(--borde);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.25s, background-color 0.25s, box-shadow 0.35s var(--curva);
 }
 
+/* Aceptado: borde verde y brillo interior, como las tarjetas del configurador */
 .ia-servicio[data-aceptada] {
-  box-shadow: inset 0 0 0 2px var(--azul);
+  border-color: var(--verde);
+  background: rgba(0, 220, 10, 0.04);
+  box-shadow: inset 0 0 36px -16px var(--verde-brillo);
 }
 
 .ia-servicio-cabecera {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 4px 12px;
+  gap: 4px 16px;
 }
 
+.ia-servicio-cabecera strong,
+.ia-disponible strong {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+  font-stretch: 95%;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Precio informativo del catálogo, en verde condensado («+80 €» del configurador) */
 .ia-precio {
-  color: var(--texto-2);
-  font-size: 14px;
+  color: var(--verde);
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
+/* Explicación de la IA, como una cita */
 .ia-justificacion {
-  font-size: 15px;
+  padding-left: 12px;
+  border-left: 2px solid var(--verde-borde);
+  color: var(--texto);
+  font-size: 14.5px;
   font-style: italic;
 }
 
 .ia-cantidad {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px;
+  grid-template-columns: minmax(0, 1fr) 104px;
   align-items: center;
-  gap: 6px 12px;
-  margin-top: 6px;
+  gap: 8px 14px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--borde-fuerte);
+  color: var(--texto-2);
   font-size: 14px;
 }
 
@@ -223,6 +516,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 6px;
+}
+
+.ia-lista-compacta {
+  gap: 0;
   margin-top: 8px;
 }
 
@@ -230,41 +528,118 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--borde);
+}
+
+.ia-disponible:first-child {
+  border-top: 0;
+}
+
+.ia-disponible-texto {
+  min-width: 0;
 }
 
 .ia-disponible strong {
-  margin-right: 8px;
+  margin-right: 10px;
+}
+
+.ia-disponible .texto-suave {
+  margin-top: 4px;
+}
+
+/* Lo que falta para poder calcular */
+.ia-faltan {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 16px 20px;
+  border: 1px dashed var(--borde-fuerte);
+  border-radius: 14px;
+  color: var(--texto-2);
+  font-size: 14px;
+  list-style: none;
+}
+
+.ia-faltan li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ia-faltan li::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--texto-3);
+  border-radius: 50%;
 }
 
 .ia-barra {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px 20px;
+  gap: 12px 24px;
+  padding-top: 4px;
 }
 
-.ia-enlace {
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
+.ia-barra .boton {
+  margin-left: auto;
 }
 
-/* Camarón */
+/* ---------- Camarón ---------- */
+
 .ia-camaron {
+  --brillo-camaron: var(--verde-brillo);
   position: sticky;
-  top: calc(var(--hueco-nav) + 16px);
+  top: calc(var(--hueco-nav) + 24px);
   display: grid;
   justify-items: center;
-  gap: 14px;
+  gap: 20px;
+}
+
+.ia-camaron[data-estado="error"] {
+  --brillo-camaron: rgba(255, 107, 107, 0.3);
+}
+
+.ia-camaron-figura {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+/* Brillo verde suave detrás, como el foco de luz de la escena */
+.ia-camaron-figura::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 4% -18% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--brillo-camaron), transparent);
+  opacity: 0.7;
+}
+
+/* Sombra de contacto en el suelo */
+.ia-camaron-figura::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: 14%;
+  bottom: -3%;
+  left: 14%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.8), transparent);
 }
 
 .ia-camaron img {
-  width: min(100%, 240px);
+  width: min(100%, 236px);
   height: auto;
-  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.22));
+  filter: drop-shadow(0 22px 26px rgba(0, 0, 0, 0.6));
   transform-origin: 50% 100%;
 }
 
@@ -272,39 +647,48 @@
   animation: ia-compas 0.9s ease-in-out infinite alternate;
 }
 
+.ia-camaron[data-estado="cargando"] .ia-camaron-figura::before {
+  animation: ia-pulso 1.4s ease-in-out infinite alternate;
+}
+
 .ia-camaron[data-estado="revision"] img,
 .ia-camaron[data-estado="vista"] img {
   animation: ia-ole 0.7s var(--curva);
 }
 
+/* Bocadillo oscuro; el pico hereda el fondo y el borde */
 .ia-bocadillo {
   position: relative;
-  padding: 12px 16px;
+  max-width: 270px;
+  padding: 14px 18px;
+  border: 1px solid var(--borde-fuerte);
   border-radius: 16px;
-  background: var(--fondo-claro);
+  background: var(--superficie-2);
+  box-shadow: var(--sombra);
+  color: var(--texto);
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1.4;
   text-align: center;
-}
-
-.ia-camaron[data-estado="error"] .ia-bocadillo {
-  background: var(--fondo-error);
+  text-wrap: balance;
 }
 
 .ia-bocadillo::after {
   content: "";
   position: absolute;
-  bottom: -8px;
+  bottom: -7px;
   left: 50%;
-  border: 8px solid transparent;
-  border-top-color: inherit;
-  border-top-color: var(--fondo-claro);
-  border-bottom: 0;
-  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border: solid;
+  border-width: 0 1px 1px 0;
+  border-color: inherit;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
 }
 
-.ia-camaron[data-estado="error"] .ia-bocadillo::after {
-  border-top-color: var(--fondo-error);
+.ia-camaron[data-estado="error"] .ia-bocadillo {
+  border-color: rgba(255, 107, 107, 0.45);
+  background: color-mix(in srgb, var(--rojo) 12%, var(--superficie-2));
 }
 
 @keyframes ia-compas {
@@ -322,16 +706,38 @@
   }
 }
 
-/* Vista previa: siempre como papel, también en modo nocturno, igual que el PDF */
+@keyframes ia-pulso {
+  from {
+    opacity: 0.4;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* ---------- Vista previa: papel blanco, igual que el PDF ---------- */
+
 .ia-papel {
   display: grid;
   gap: 8px;
   padding: clamp(22px, 5vw, 52px);
   border-radius: 6px;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 24px 60px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 40px 90px -36px rgba(0, 0, 0, 0.95);
   color: #1d1d1f;
   font-size: 15px;
+  transform-origin: 50% 0;
+  animation: ia-papel-entrar 0.8s var(--curva) both;
+}
+
+/* La hoja entra inclinada y se endereza, como si se posara sobre la mesa */
+@keyframes ia-papel-entrar {
+  from {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(12deg) translateY(32px) scale(0.98);
+  }
 }
 
 .ia-papel-cabecera {
@@ -423,30 +829,73 @@
   font-weight: 700;
 }
 
+/* ---------- Tablet y móvil ---------- */
+
 @media (max-width: 900px) {
   .ia-rejilla {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* En móvil, Camarón va arriba y en horizontal para no empujar el formulario. */
+  /* Camarón va arriba y en horizontal para no empujar el formulario */
   .ia-camaron {
     position: static;
     order: -1;
-    grid-template-columns: minmax(0, 1fr) 84px;
+    grid-template-columns: minmax(0, 1fr) 88px;
     align-items: center;
+    justify-items: stretch;
+    gap: 16px;
   }
 
   .ia-camaron img {
-    width: 84px;
+    width: 88px;
   }
 
+  .ia-bocadillo {
+    max-width: none;
+    text-align: left;
+  }
+
+  /* El pico apunta a Camarón, a la derecha */
   .ia-bocadillo::after {
-    display: none;
+    top: 50%;
+    right: -7px;
+    bottom: auto;
+    left: auto;
+    transform: translateY(-50%) rotate(-45deg);
   }
 }
 
 @media (max-width: 600px) {
-  .ia-barra .boton-grande {
+  .ia-formulario .ia-enviar,
+  .ia-barra .boton {
     width: 100%;
+    margin-left: 0;
+  }
+
+  /* Los textos largos de los botones pueden partirse en dos líneas */
+  .ia .boton-grande {
+    padding-inline: 20px;
+    line-height: 1.2;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .ia-pasos {
+    gap: 16px;
+  }
+
+  .ia-pasos li {
+    gap: 6px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+}
+
+/* Táctil: objetivos de 44px como mínimo */
+@media (pointer: coarse) {
+  .ia-chip {
+    min-height: 44px;
   }
 }

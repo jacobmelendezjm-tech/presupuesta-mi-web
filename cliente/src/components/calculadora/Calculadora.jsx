@@ -1,239 +1,338 @@
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { VistaWeb3D } from "../escena/VistaWeb3D.jsx";
+import { NumeroAnimado } from "../ui/numero-animado.jsx";
+import { useEstadoMinimo } from "../ui/use-estado-minimo.js";
+import { CONTENIDO_PASOS, EsqueletoPaso } from "./Pasos.jsx";
+import { Resumen } from "./Resumen.jsx";
+import { cuentaPaginas, dosCifras, euros, paginasEnTexto } from "./formato.js";
+import { useReducirMovimiento } from "../ui/use-reducir-movimiento.js";
 import s from "./Calculadora.module.css";
 
-const euros = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" });
-const precioDe = (o) => `+${euros.format(o.precio)}${o.periodo ? "/mes" : ""}`;
+// Configurador por pasos con la distribución de la referencia: a la izquierda,
+// la escena 3D con la web del cliente (fija mientras se desplaza el panel), la
+// paginación de puntos y la fila de specs; a la derecha, el panel del paso y el
+// resumen. El importe SIEMPRE llega del servidor (useCalculator).
 
-const PASOS = ["Tipo de proyecto", "Alcance y diseño", "Funcionalidades", "Mantenimiento y plazos"];
+const PASOS = [
+  {
+    corto: "Tipo",
+    nombre: "Tipo de proyecto",
+    clave: "Tipo",
+    resto: "de proyecto",
+    texto: "Elige la base de tu web. La vista previa se monta al instante y el servidor calcula el precio con sus propias tarifas.",
+  },
+  {
+    corto: "Alcance",
+    nombre: "Alcance y diseño",
+    clave: "Alcance",
+    resto: "y diseño",
+    texto: "Decide cómo se verá y cuántas páginas tendrá. Cada elección se construye en la maqueta antes de llegar a tu presupuesto.",
+  },
+  {
+    corto: "Funciones",
+    nombre: "Funcionalidades",
+    clave: "Funciones",
+    resto: "a medida",
+    texto: "Añade solo lo que necesitas: cada módulo aparece en la vista previa con su precio de catálogo.",
+  },
+  {
+    corto: "Plazos",
+    nombre: "Plazos y mantenimiento",
+    clave: "Plazos",
+    resto: "y mantenimiento",
+    texto: "Ajusta la entrega y, si quieres, un plan mensual. Lo mensual va aparte y nunca se suma al total.",
+  },
+];
+const TOTAL_PASOS = PASOS.length;
 
-function Check() {
+// Lo que tarda en desvanecerse el paso anterior antes de entrar el nuevo.
+const SALIDA_MS = 220;
+
+const NOMBRE_DISENO = { plantilla: "Plantilla", uiCustom: "UI Custom", inmersivo: "3D inmersivo" };
+
+// Paso que se ve en el panel. Va un poco por detrás de `paso` para que el
+// anterior pueda salir con un fundido antes de que entre el nuevo.
+function useTransicionPaso(paso, reducido) {
+  const [vista, setVista] = useState({ paso, fase: "quieto", direccion: "adelante" });
+
+  useEffect(() => {
+    if (paso === vista.paso) return undefined;
+    const direccion = paso > vista.paso ? "adelante" : "atras";
+    if (reducido) {
+      setVista({ paso, fase: "quieto", direccion });
+      return undefined;
+    }
+    setVista((v) => ({ ...v, fase: "saliendo", direccion }));
+    const espera = setTimeout(() => setVista({ paso, fase: "entrando", direccion }), SALIDA_MS);
+    return () => clearTimeout(espera);
+  }, [paso, vista.paso, reducido]);
+
+  return vista;
+}
+
+// Desplaza hasta un elemento solo si ha quedado por encima de la zona visible:
+// la cabecera (scroll-padding-top de html) y, en móvil, la escena fija
+// (scroll-margin-top del elemento).
+function traerAVista(elemento, reducido) {
+  if (!elemento) return;
+  const cabecera = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+  const margen = parseFloat(getComputedStyle(elemento).scrollMarginTop) || 0;
+  if (elemento.getBoundingClientRect().top < cabecera + margen - 2) {
+    elemento.scrollIntoView({ block: "start", behavior: reducido ? "auto" : "smooth" });
+  }
+}
+
+function Flecha({ direccion = "derecha" }) {
+  const trazo = { derecha: "M5 12h14m0 0-5-5m5 5-5 5", izquierda: "M19 12H5m0 0 5-5m-5 5 5 5", abajo: "M12 5v14m0 0-5-5m5 5 5-5" }[direccion];
   return (
-    <svg className={s.check} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="m5 12.5 4.5 4.5L19 7.5" />
+    <svg className={s.flecha} data-direccion={direccion} viewBox="0 0 24 24" aria-hidden="true">
+      <path d={trazo} />
     </svg>
   );
 }
 
-function Tarjeta({ tipo = "checkbox", nombreGrupo, activa, alCambiar, titulo, descripcion, precio }) {
+// Una spec de la fila inferior («05 PÁG / PÁGINAS»). El valor se remonta al
+// cambiar (key) y hace un destello verde. `lector` es el texto para lectores.
+function Spec({ etiqueta, valor, lector }) {
   return (
-    <label className={s.tarjeta} data-activa={activa || undefined}>
-      <input type={tipo} name={nombreGrupo} checked={activa} onChange={alCambiar} className="oculto" />
-      <span className={s.tarjetaCabecera}>
-        <span className={s.tarjetaTitulo}>{titulo}</span>
-        <span className={s.marca} data-radio={tipo === "radio" || undefined}>{activa && <Check />}</span>
-      </span>
-      {descripcion && <span className={s.tarjetaTexto}>{descripcion}</span>}
-      {precio && <span className={s.tarjetaPrecio}>{precio}</span>}
-    </label>
-  );
-}
-
-function Rejilla({ children }) {
-  return <div className={s.rejilla}>{children}</div>;
-}
-
-function PasoTipo({ c }) {
-  return (
-    <Rejilla>
-      {c.catalogo.tipos.map((t) => (
-        <Tarjeta
-          key={t.id}
-          tipo="radio"
-          nombreGrupo="tipo-proyecto"
-          activa={c.tipo === t.id}
-          alCambiar={() => c.setTipo(t.id)}
-          titulo={t.nombre}
-          descripcion={t.descripcion}
-          precio={`Desde ${euros.format(t.precio)}`}
-        />
-      ))}
-    </Rejilla>
-  );
-}
-
-function PasoAlcance({ c }) {
-  const { opciones: todas, paginasMax } = c.catalogo;
-  const porPaginas = c.tipo === "landing" || c.tipo === "corporativa";
-
-  return (
-    <>
-      <h4 className={s.subtitulo}>Enfoque de diseño</h4>
-      <Rejilla>
-        {todas.filter((o) => o.grupo === "diseno").map((o) => (
-          <Tarjeta key={o.id} activa={c.opciones.includes(o.id)} alCambiar={() => c.alternarOpcion(o.id)} titulo={o.nombre} descripcion={o.descripcion} precio={precioDe(o)} />
-        ))}
-      </Rejilla>
-
-      <h4 className={s.subtitulo}>Contenidos</h4>
-      <Rejilla>
-        {todas.filter((o) => o.grupo === "contenido").map((o) => (
-          <Tarjeta key={o.id} activa={c.opciones.includes(o.id)} alCambiar={() => c.alternarOpcion(o.id)} titulo={o.nombre} descripcion={o.descripcion} precio={precioDe(o)} />
-        ))}
-      </Rejilla>
-
-      {porPaginas && (
-        <>
-          <h4 className={s.subtitulo} id="titulo-paginas">Número de páginas</h4>
-          <div className={s.stepper} role="group" aria-labelledby="titulo-paginas">
-            <button type="button" className={s.stepperBoton} disabled={c.paginas <= 1} onClick={() => c.setPaginas(c.paginas - 1)} aria-label="Quitar una página">−</button>
-            <output className={s.stepperValor}>{c.paginas}</output>
-            <button type="button" className={s.stepperBoton} disabled={c.paginas >= paginasMax} onClick={() => c.setPaginas(c.paginas + 1)} aria-label="Añadir una página">+</button>
-            <span className={s.stepperNota}>La primera está incluida en el tipo de proyecto.</span>
-          </div>
-        </>
-      )}
-    </>
-  );
-}
-
-function PasoFunciones({ c }) {
-  return (
-    <Rejilla>
-      {c.catalogo.opciones.filter((o) => o.grupo === "funcion").map((o) => (
-        <Tarjeta key={o.id} activa={c.opciones.includes(o.id)} alCambiar={() => c.alternarOpcion(o.id)} titulo={o.nombre} descripcion={o.descripcion} precio={precioDe(o)} />
-      ))}
-    </Rejilla>
-  );
-}
-
-function PasoPlazos({ c }) {
-  return (
-    <>
-      <h4 className={s.subtitulo}>Plazos y soporte</h4>
-      <Rejilla>
-        {c.catalogo.opciones.filter((o) => o.grupo === "plazo").map((o) => (
-          <Tarjeta key={o.id} activa={c.opciones.includes(o.id)} alCambiar={() => c.alternarOpcion(o.id)} titulo={o.nombre} descripcion={o.descripcion} precio={precioDe(o)} />
-        ))}
-      </Rejilla>
-
-      <h4 className={s.subtitulo}>Mantenimiento mensual</h4>
-      <Rejilla>
-        <Tarjeta tipo="radio" nombreGrupo="plan" activa={c.planId === null} alCambiar={() => c.setPlanId(null)} titulo="Sin mantenimiento" descripcion="Podrás contratarlo más adelante." />
-        {c.catalogo.planes.map((p) => (
-          <Tarjeta key={p.id} tipo="radio" nombreGrupo="plan" activa={c.planId === p.id} alCambiar={() => c.setPlanId(p.id)} titulo={p.nombre} descripcion={p.descripcion} precio={`${euros.format(p.precioMensual)}/mes`} />
-        ))}
-      </Rejilla>
-    </>
-  );
-}
-
-const CONTENIDO = [PasoTipo, PasoAlcance, PasoFunciones, PasoPlazos];
-
-function Resumen({ c }) {
-  const [cliente, setCliente] = useState("");
-  const [estado, setEstado] = useState({ cargando: false, error: null });
-  const { estimacion } = c;
-
-  const solicitarPdf = async (evento) => {
-    evento.preventDefault();
-    setEstado({ cargando: true, error: null });
-    try {
-      await c.descargarPdf(cliente);
-      setEstado({ cargando: false, error: null });
-    } catch (error) {
-      setEstado({ cargando: false, error: error.message });
-    }
-  };
-
-  return (
-    <aside className={s.resumen} aria-label="Resumen del presupuesto">
-      <p className={s.resumenEtiqueta}>Estimación total</p>
-      <p className={s.resumenTotal} aria-live="polite">{euros.format(estimacion?.total ?? 0)}</p>
-      <p className={s.nota}>Sin impuestos · calculado por el servidor</p>
-
-      {estimacion ? (
-        <ul className={s.lineas}>
-          {estimacion.lineas.map((l) => (
-            <li key={l.id} className={s.linea}>
-              <span>
-                {l.nombre}
-                {l.unidad && <small className={s.lineaDetalle}> · {l.cantidad} × {euros.format(l.precioUnitario)}</small>}
-              </span>
-              <strong>{euros.format(l.importe)}</strong>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={s.vacio}>Elige un tipo de proyecto para empezar.</p>
-      )}
-
-      {estimacion?.mensual.length > 0 && (
-        <div className={s.mensual}>
-          <p className={s.resumenEtiqueta}>Servicios mensuales (no incluidos)</p>
-          <ul className={s.lineas}>
-            {estimacion.mensual.map((m) => (
-              <li key={m.id} className={s.linea}>
-                <span>{m.nombre}</span>
-                <strong>{euros.format(m.importe)}/mes</strong>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {c.error && <p className="texto-error" role="alert">{c.error}</p>}
-
-      <form className={s.formulario} onSubmit={solicitarPdf}>
-        <label className={s.campo}>
-          Nombre o empresa
-          <input value={cliente} onChange={(e) => setCliente(e.target.value)} maxLength={120} required placeholder="Empresa S.L." />
-        </label>
-        <button type="submit" className="boton boton-grande" disabled={!estimacion || estado.cargando}>
-          {estado.cargando ? "Generando…" : "Solicitar propuesta formal (PDF)"}
-        </button>
-        {estado.error && <p className="texto-error" role="alert">{estado.error}</p>}
-      </form>
-    </aside>
+    <div className="spec">
+      <dt className="spec-etiqueta">{etiqueta}</dt>
+      <dd className="spec-valor">
+        <span key={valor} className={s.specCambio} aria-hidden={lector ? "true" : undefined}>
+          {valor}
+        </span>
+        {lector && <span className="oculto">{lector}</span>}
+      </dd>
+    </div>
   );
 }
 
 export function Calculadora({ c }) {
-  if (!c.catalogo) {
-    return <p className={c.error ? "texto-error" : "texto-suave"}>{c.error ?? "Cargando el catálogo…"}</p>;
-  }
+  const reducido = useReducirMovimiento();
+  // Spinner visible al menos 450 ms para que no parpadee con respuestas rápidas.
+  const ocupado = useEstadoMinimo(c.calculando, 450);
+  const vista = useTransicionPaso(c.paso, reducido);
+  const idPista = useId();
 
-  const Contenido = CONTENIDO[c.paso - 1];
+  const pestanasRef = useRef(null);
+  const tituloRef = useRef(null);
+  const resumenRef = useRef(null);
+  const enfocarAlEntrar = useRef(false);
+
+  // Tras un cambio de paso pedido por el usuario, el foco pasa al titular nuevo
+  // (así el lector de pantalla lee el paso; con el ratón no se ve el anillo).
+  useEffect(() => {
+    if (!enfocarAlEntrar.current || vista.fase === "saliendo" || vista.paso !== c.paso) return;
+    enfocarAlEntrar.current = false;
+    tituloRef.current?.focus({ preventScroll: true });
+  }, [vista, c.paso]);
+
+  const bloqueado = (n) => n > 1 && !c.tipo;
+
+  const irAPaso = (n) => {
+    if (n === c.paso || n < 1 || n > TOTAL_PASOS || bloqueado(n)) return;
+    enfocarAlEntrar.current = true;
+    c.setPaso(n);
+    traerAVista(pestanasRef.current, reducido);
+  };
+
+  const verResumen = (evento) => {
+    evento.preventDefault();
+    document.getElementById("desglose")?.scrollIntoView({ block: "start", behavior: reducido ? "auto" : "smooth" });
+    resumenRef.current?.focus({ preventScroll: true });
+  };
+
+  // Datos de la fila de specs (solo nombres y recuentos: el importe es del servidor).
+  const grupoDe = (id) => c.catalogo?.opciones.find((o) => o.id === id)?.grupo;
+  const disenoId = c.opciones.find((id) => grupoDe(id) === "diseno") ?? null;
+  const modulos = c.opciones.filter((id) => grupoDe(id) === "funcion").length;
+  const porPaginas = cuentaPaginas(c.tipo);
+
+  const datos = PASOS[vista.paso - 1];
+  const Contenido = CONTENIDO_PASOS[vista.paso - 1];
   const puedeAvanzar = c.paso > 1 || Boolean(c.tipo);
 
+  let contenido;
+  if (c.catalogo) {
+    contenido = <Contenido c={c} ocupado={ocupado} />;
+  } else if (c.error) {
+    contenido = (
+      <div className={s.errorCatalogo} role="alert">
+        <p>{c.error}</p>
+        <button type="button" className="boton-contorno" onClick={c.recargarCatalogo}>
+          Reintentar
+        </button>
+      </div>
+    );
+  } else {
+    contenido = (
+      <>
+        <p className="oculto" role="status">
+          Cargando el catálogo…
+        </p>
+        <EsqueletoPaso />
+      </>
+    );
+  }
+
   return (
-    <div className={s.distribucion}>
-      <div className={s.principal}>
-        <div className={s.progreso} role="progressbar" aria-label="Progreso" aria-valuemin={1} aria-valuemax={PASOS.length} aria-valuenow={c.paso}>
-          <span className={s.progresoRelleno} style={{ transform: `scaleX(${c.paso / PASOS.length})` }} />
+    <div className={s.configurador}>
+      <h2 className="oculto">Configurador de tu presupuesto</h2>
+
+      {/* Escena: la web del cliente en 3D, fija mientras se desplaza el panel */}
+      <div className={s.escena}>
+        <div className={s.lienzo}>
+          <VistaWeb3D
+            tipo={c.tipo}
+            paginas={c.paginas}
+            opciones={c.opciones}
+            plan={c.plan}
+            paso={c.paso}
+            calculando={c.calculando}
+            catalogo={c.catalogo}
+          />
         </div>
 
-        <ol className={s.pasos}>
-          {PASOS.map((nombre, i) => (
-            <li key={nombre}>
-              <button
-                type="button"
-                className={s.paso}
-                data-actual={c.paso === i + 1 || undefined}
-                aria-current={c.paso === i + 1 ? "step" : undefined}
-                disabled={i > 0 && !c.tipo}
-                onClick={() => c.setPaso(i + 1)}
-              >
-                <span className={s.pasoNumero}>{i + 1}</span>
-                <span className={s.pasoNombre}>{nombre}</span>
-              </button>
-            </li>
-          ))}
-        </ol>
+        <nav className={s.puntos} aria-label="Pasos (vista previa)">
+          <ol>
+            {PASOS.map((paso, i) => {
+              const n = i + 1;
+              return (
+                <li key={paso.corto}>
+                  <button
+                    type="button"
+                    className={s.punto}
+                    aria-label={`Paso ${n}: ${paso.nombre}`}
+                    aria-current={c.paso === n ? "step" : undefined}
+                    disabled={bloqueado(n)}
+                    onClick={() => irAPaso(n)}
+                  >
+                    <span className={s.puntoMarca} aria-hidden="true" />
+                    <span className={s.puntoTexto} aria-hidden="true">
+                      {dosCifras(n)} {paso.corto}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
-        <div key={c.paso} className={s.contenido}>
-          <h3 className={s.tituloPaso}>{PASOS[c.paso - 1]}</h3>
-          <Contenido c={c} />
-        </div>
-
-        <div className={s.navegacion}>
-          <button type="button" className={s.atras} disabled={c.paso === 1} onClick={() => c.setPaso(c.paso - 1)}>Atrás</button>
-          {c.paso < PASOS.length && (
-            <button type="button" className="boton" disabled={!puedeAvanzar} onClick={() => c.setPaso(c.paso + 1)}>Continuar</button>
-          )}
+        <div className={s.pieEscena}>
+          <dl className={`specs ${s.specs}`}>
+            <Spec
+              etiqueta="Páginas"
+              valor={porPaginas ? `${dosCifras(c.paginas)} pág` : "—"}
+              lector={porPaginas ? paginasEnTexto(c.paginas) : "No se cobran por páginas"}
+            />
+            <Spec etiqueta="Diseño" valor={NOMBRE_DISENO[disenoId] ?? "Sin definir"} />
+            <Spec etiqueta="Funciones" valor={`${modulos} ${modulos === 1 ? "módulo" : "módulos"}`} />
+            <div className="spec">
+              <dt className="spec-etiqueta">Estimación</dt>
+              <dd className={`spec-valor ${s.specTotal}`} data-apagado={c.error ? true : undefined}>
+                <NumeroAnimado valor={c.estimacion?.total ?? null} formato={euros.format} />
+                <span className={`spinner ${s.specSpinner}`} data-visible={ocupado || undefined} aria-hidden="true" />
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
 
-      <Resumen c={c} />
+      {/* Panel: pestañas, paso actual, navegación y resumen */}
+      <div className={s.panel}>
+        <nav className={s.pestanas} aria-label="Pasos del configurador" ref={pestanasRef}>
+          <ol className={s.pestanasLista}>
+            {PASOS.map((paso, i) => {
+              const n = i + 1;
+              return (
+                <li key={paso.corto}>
+                  <button
+                    type="button"
+                    className={s.pestana}
+                    aria-current={c.paso === n ? "step" : undefined}
+                    data-hecho={n < c.paso || undefined}
+                    disabled={bloqueado(n)}
+                    onClick={() => irAPaso(n)}
+                  >
+                    <span className={s.pestanaNumero}>{dosCifras(n)}</span>
+                    <span className={s.pestanaNombre}>{paso.corto}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+
+        <div key={vista.paso} className={s.bloque} data-fase={vista.fase} data-direccion={vista.direccion}>
+          <header className={s.cabeceraPaso}>
+            <span className={`fantasma ${s.numeroFantasma}`} aria-hidden="true">
+              {dosCifras(vista.paso)}
+            </span>
+            <p className={`etiqueta ${s.etiquetaPaso}`} aria-hidden="true" data-anima style={{ "--orden": 0 }}>
+              Paso {dosCifras(vista.paso)} / {dosCifras(TOTAL_PASOS)}
+            </p>
+            <h3
+              className={`titular ${s.tituloPaso}`}
+              ref={tituloRef}
+              tabIndex={-1}
+              data-anima
+              style={{ "--orden": 1, "--largo": Math.max(datos.clave.length, datos.resto.length) }}
+            >
+              <span className="oculto">
+                Paso {vista.paso} de {TOTAL_PASOS}:{" "}
+              </span>
+              <span className="verde">{datos.clave}</span> <span>{datos.resto}</span>
+            </h3>
+            <p className={`entradilla ${s.entradillaPaso}`} data-anima style={{ "--orden": 2 }}>
+              {datos.texto}
+            </p>
+          </header>
+
+          <div className={s.contenido}>{contenido}</div>
+        </div>
+
+        <div className={s.navegacion}>
+          <button
+            type="button"
+            className="boton-texto"
+            aria-disabled={c.paso === 1 || undefined}
+            onClick={() => irAPaso(c.paso - 1)}
+          >
+            <Flecha direccion="izquierda" />
+            Atrás
+          </button>
+
+          <span className={s.contador} aria-hidden="true">
+            <strong>{dosCifras(c.paso)}</strong> / {dosCifras(TOTAL_PASOS)}
+          </span>
+
+          {c.paso < TOTAL_PASOS ? (
+            <button
+              type="button"
+              className="boton"
+              aria-disabled={!puedeAvanzar || undefined}
+              aria-describedby={puedeAvanzar ? undefined : idPista}
+              onClick={() => irAPaso(c.paso + 1)}
+            >
+              Continuar
+              <Flecha />
+            </button>
+          ) : (
+            <a href="#desglose" className="boton" onClick={verResumen}>
+              Ver mi presupuesto
+              <Flecha direccion="abajo" />
+            </a>
+          )}
+
+          {!puedeAvanzar && (
+            <p className={s.pista} id={idPista}>
+              Elige un tipo de proyecto para continuar.
+            </p>
+          )}
+        </div>
+
+        <Resumen c={c} ocupado={ocupado} tituloRef={resumenRef} />
+      </div>
     </div>
   );
 }

@@ -1,0 +1,523 @@
+/* Cabecera fija como la referencia: logo a la izquierda, navegación centrada en
+   mayúsculas con barra verde bajo el activo, píldora con borde verde y hamburguesa. */
+
+.cabecera {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Fondo translúcido con desenfoque en una capa propia: si el desenfoque estuviera
+   en la cabecera, el menú (position: fixed) quedaría encerrado dentro de ella. */
+.cabecera::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-bottom: 1px solid var(--borde);
+  background: rgba(8, 8, 8, 0.62);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  backdrop-filter: blur(18px) saturate(150%);
+  transition: background-color 0.3s;
+}
+
+.cabecera[data-menu]::before {
+  background: rgba(6, 6, 6, 0.97);
+}
+
+/* Enlace para saltar el portal con el teclado: solo aparece al enfocarlo */
+.saltar {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 16px;
+  z-index: 3;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--verde);
+  color: var(--texto-sobre-verde);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transform: translateY(-180%);
+  transition: transform 0.2s var(--curva);
+}
+
+.saltar:focus-visible {
+  outline-color: var(--texto);
+  transform: none;
+}
+
+/* ---- Barra ---- */
+
+/* Columnas laterales iguales: la navegación queda centrada y no se mueve cuando
+   cambia el importe de la píldora. */
+.barra {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  grid-template-areas: "marca nav acciones";
+  align-items: center;
+  column-gap: clamp(16px, 2.2vw, 36px);
+  height: var(--alto-nav);
+  max-width: var(--ancho-escena);
+  margin: 0 auto;
+  padding-inline: clamp(16px, 3.4vw, 56px);
+}
+
+.marca {
+  grid-area: marca;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.logo {
+  flex: none;
+  width: 38px;
+  height: auto;
+  overflow: visible;
+}
+
+.nav {
+  grid-area: nav;
+}
+
+.enlaces {
+  display: flex;
+  gap: clamp(20px, 2.4vw, 40px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.enlace {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  border-radius: 4px;
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+/* Barra verde bajo el activo: crece desde la izquierda */
+.enlace::after {
+  content: "";
+  position: absolute;
+  right: 0.18em; /* compensa el espaciado tras la última letra */
+  bottom: 4px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--verde);
+  box-shadow: 0 0 12px var(--verde-brillo);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--curva);
+}
+
+.enlace:hover,
+.enlace[aria-current] {
+  color: var(--texto);
+}
+
+.enlace[aria-current]::after {
+  transform: scaleX(1);
+}
+
+.enlace:focus-visible {
+  outline-offset: 6px;
+}
+
+/* ---- Estimación y hamburguesa ---- */
+
+.acciones {
+  grid-area: acciones;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 14px);
+}
+
+/* Píldora con borde verde (el buscador de la referencia) */
+.estimacion {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 0 16px 0 22px;
+  border: 1.5px solid var(--verde-borde);
+  border-radius: var(--radio-pildora);
+  background: rgba(0, 0, 0, 0.32);
+  transition: border-color 0.25s, background-color 0.25s, box-shadow 0.35s var(--curva);
+}
+
+.estimacion:hover {
+  border-color: var(--verde);
+  background: var(--verde-suave);
+}
+
+/* Mientras el servidor recalcula, la píldora se enciende */
+.estimacion[data-calculando] {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 4px var(--verde-suave), 0 0 24px -6px var(--verde-brillo);
+}
+
+.estimacionEtiqueta {
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.estimacionValor {
+  min-width: 4.6ch;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 700;
+  font-stretch: 92%;
+  letter-spacing: 0.02em;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.estimacionEstado {
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+}
+
+.estimacionPunto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--texto-3);
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.estimacionPunto[data-activo] {
+  background: var(--verde);
+  box-shadow: 0 0 10px var(--verde-brillo);
+}
+
+.destello {
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 var(--verde-brillo);
+  pointer-events: none;
+  animation: destello 0.9s var(--curva);
+}
+
+@keyframes destello {
+  from {
+    box-shadow: 0 0 0 0 rgba(0, 220, 10, 0.55);
+  }
+  to {
+    box-shadow: 0 0 0 12px rgba(0, 220, 10, 0);
+  }
+}
+
+/* Tres líneas que se cruzan en una X al abrir */
+.hamburguesa {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-right: -6px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--texto);
+  cursor: pointer;
+}
+
+.hamburguesa:hover {
+  color: var(--verde-claro);
+}
+
+.lineas {
+  position: relative;
+  width: 28px;
+  height: 18px;
+}
+
+.lineas span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.4s var(--curva), opacity 0.2s;
+}
+
+.lineas span:nth-child(1) {
+  top: 0;
+}
+
+.lineas span:nth-child(2) {
+  top: 8px;
+}
+
+.lineas span:nth-child(3) {
+  top: 16px;
+}
+
+.hamburguesa[aria-expanded="true"] .lineas span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+
+.hamburguesa[aria-expanded="true"] .lineas span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguesa[aria-expanded="true"] .lineas span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* ---- Menú desplegable a pantalla completa ---- */
+
+.menu {
+  position: fixed;
+  inset: var(--hueco-nav) 0 0;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  background:
+    radial-gradient(ellipse 48% 60% at 86% 26%, rgba(0, 220, 10, 0.08), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(255, 255, 255, 0.035), transparent 70%),
+    #060606;
+  animation: menu-entrar 0.3s var(--curva);
+}
+
+@keyframes menu-entrar {
+  from {
+    opacity: 0;
+  }
+}
+
+.menuFantasma {
+  position: absolute;
+  top: clamp(20px, 5vh, 56px);
+  right: -0.04em;
+  font-size: min(15vw, 26vh);
+}
+
+.menuInterior {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, auto);
+  align-items: start;
+  gap: 40px 64px;
+  max-width: var(--ancho-escena);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: clamp(28px, 6vh, 72px) clamp(16px, 3.4vw, 56px) clamp(32px, 6vh, 64px);
+}
+
+.menuEtiqueta {
+  margin-bottom: clamp(10px, 2vh, 22px);
+}
+
+.menuLista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Entrada escalonada de los enlaces cada vez que se abre */
+.menuLista li {
+  animation: menu-subir 0.55s var(--curva) backwards;
+  animation-delay: calc(var(--i) * 40ms + 40ms);
+}
+
+@keyframes menu-subir {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.menuEnlace {
+  display: inline-flex;
+  align-items: baseline;
+  gap: clamp(14px, 2vw, 26px);
+  min-height: 44px;
+  padding-block: clamp(5px, 1.2vh, 11px);
+  color: var(--texto-2);
+  font-family: var(--display);
+  font-size: clamp(24px, min(5.4vh, 7.6vw), 56px); /* cabe a lo ancho y a lo alto */
+  font-weight: 800;
+  font-stretch: 104%;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: color 0.2s, transform 0.35s var(--curva);
+}
+
+.menuEnlace:hover,
+.menuEnlace:focus-visible {
+  color: var(--texto);
+  transform: translateX(10px);
+}
+
+.menuEnlace[aria-current] {
+  color: var(--texto);
+}
+
+.menuNumero {
+  min-width: 2.6em;
+  color: var(--verde);
+  font-size: 12px;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: 0.2em;
+  transform: translateY(-1.2em);
+}
+
+.menuEnlace[aria-current] .menuNumero::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: var(--verde);
+  box-shadow: 0 0 10px var(--verde-brillo);
+}
+
+.menuLateral {
+  align-self: end;
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.menuSinTotal {
+  color: var(--texto-2);
+  font-size: clamp(24px, 3.4vh, 32px);
+  font-weight: 700;
+  font-stretch: 88%;
+  text-transform: uppercase;
+}
+
+.menuTotal {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--texto);
+  font-family: var(--display);
+  font-size: clamp(40px, 6vh, 64px);
+  font-weight: 800;
+  font-stretch: 92%;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.menuNota {
+  max-width: 30ch;
+  margin-bottom: 10px;
+  color: var(--texto-2);
+  font-size: 14px;
+}
+
+/* ---- Responsive ---- */
+
+/* Sin sitio para la barra: la navegación vive en el menú */
+@media (max-width: 1099px) {
+  .nav {
+    display: none;
+  }
+
+  .barra {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .menuInterior {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    align-items: start;
+    gap: 28px;
+  }
+
+  .menuLateral {
+    padding-top: 24px;
+    border-top: 1px solid var(--borde);
+  }
+
+  .menuLateral :global(.boton) {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .marca {
+    gap: 10px;
+    font-size: 15px;
+    letter-spacing: 0.05em;
+  }
+
+  .logo {
+    width: 32px;
+  }
+
+  .estimacion {
+    gap: 9px;
+    min-height: 44px;
+    padding: 0 12px 0 16px;
+  }
+
+  /* La palabra «Estimación» se oculta a la vista; el nombre accesible ya la incluye */
+  .estimacionEtiqueta {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 379px) {
+  .marcaTexto {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .destello {
+    display: none;
+  }
+
+  .menuEnlace:hover,
+  .menuEnlace:focus-visible {
+    transform: none;
+  }
+}
