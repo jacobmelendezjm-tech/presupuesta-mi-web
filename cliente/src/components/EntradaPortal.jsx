@@ -3,8 +3,8 @@ import GlyphPortal from "./ui/glyph-portal.jsx";
 import { VistaWeb3D } from "./escena/VistaWeb3D.jsx";
 
 const PALABRA = "PRESUPUESTA";
-const FUENTE = '"Saira", "Arial Black", Arial, sans-serif';
-const FUENTE_RESERVA = '"Arial Black", Arial, sans-serif';
+const FUENTE = '"Manrope", "Inter", Arial, sans-serif';
+const FUENTE_RESERVA = '"Arial", sans-serif';
 const ESPERA_MAXIMA = 1600;
 
 const SPECS = [
@@ -23,7 +23,7 @@ function Flecha() {
 }
 
 // Entrada de la web: la palabra PRESUPUESTA se abre al hacer scroll y deja ver el
-// hero. El portal mide la letra al montarse, así que Saira 900 (al ancho normal)
+// hero. El portal mide la letra al montarse, así que Manrope 800
 // debe estar cargada antes; mientras tanto se reserva el alto de la pantalla.
 export function EntradaPortal() {
   const [fuente, setFuente] = useState(null);
@@ -38,7 +38,7 @@ export function EntradaPortal() {
       }
     };
     const espera = setTimeout(() => terminar(FUENTE_RESERVA), ESPERA_MAXIMA);
-    document.fonts.load('900 100px "Saira"', PALABRA).then(
+    document.fonts.load('800 100px "Manrope"', PALABRA).then(
       (caras) => terminar(caras.length > 0 ? FUENTE : FUENTE_RESERVA),
       () => terminar(FUENTE_RESERVA)
     );
@@ -74,10 +74,10 @@ export function EntradaPortal() {
         onProgress={alAvanzar}
         background={<div className="entrada-campo" />}
         style={{
-          "--gp-paper": "#0b0b0b",
-          "--gp-ink": "#a6a6a6",
-          "--gp-field": "#070707",
-          "--gp-foreground": "#f5f5f5",
+          "--gp-paper": "#f1f0ed",
+          "--gp-ink": "#171716",
+          "--gp-field": "#d1d0cc",
+          "--gp-foreground": "#171716",
         }}
         front={
           <>

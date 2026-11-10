@@ -311,7 +311,7 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Web React con una escena oscura, acentos verde neón y una vista previa 3D reactiva en CSS. Consume las tres rutas de la API:
+Web React con una interfaz clara en marfil y grises cálidos, tipografía Manrope e Inter, superficies suaves y acciones en negro. La vista previa 3D conserva el contraste de un panel de grafito y responde a las opciones seleccionadas. Consume las tres rutas de la API:
 
 La maqueta de la web del cliente se construye en directo mientras se configura: muestra páginas, diseño y módulos seleccionados, con una cámara que cambia según el paso. La escena respeta la preferencia de reducir movimiento y no calcula precios; el importe siempre llega del servidor.
 

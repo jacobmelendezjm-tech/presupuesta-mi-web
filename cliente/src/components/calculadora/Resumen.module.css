@@ -54,9 +54,8 @@
   padding: clamp(20px, 5.5cqi, 34px);
   border: 1px solid var(--borde-fuerte);
   border-radius: var(--radio-grande);
-  background:
-    radial-gradient(90% 60% at 100% 0%, rgba(0, 220, 10, 0.07), transparent 65%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01));
+  background: var(--superficie);
+  box-shadow: 0 24px 60px -42px rgba(20, 20, 18, 0.35);
 }
 
 .totalFila {

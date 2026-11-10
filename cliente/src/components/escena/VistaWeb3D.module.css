@@ -22,10 +22,21 @@
 @property --luz-escena {
   syntax: "<color>";
   inherits: true;
-  initial-value: #00dc0a;
+  initial-value: #d4d1ca;
 }
 
 .escena {
+  --texto: #f4f3f0;
+  --texto-2: #b7b5af;
+  --texto-3: #92908a;
+  --borde: rgba(255, 255, 255, 0.12);
+  --borde-fuerte: rgba(255, 255, 255, 0.24);
+  --verde: #d4d1ca;
+  --verde-claro: #f5f3ed;
+  --verde-borde: rgba(245, 243, 237, 0.42);
+  --verde-suave: rgba(245, 243, 237, 0.11);
+  --verde-brillo: rgba(245, 243, 237, 0.16);
+  --texto-sobre-verde: #171716;
   /* Cámara del paso 1 (presentación del producto, plano 3/4) */
   --rx: 10deg;
   --ry: -22deg;
@@ -41,7 +52,7 @@
   --fantasma-x: 0%;
   --foco-x: 0%;
 
-  --luz-escena: var(--verde);
+  --luz-escena: #d4d1ca;
   --luz-90: color-mix(in srgb, var(--luz-escena) 90%, white);
   --luz-60: color-mix(in srgb, var(--luz-escena) 60%, transparent);
   --luz-35: color-mix(in srgb, var(--luz-escena) 35%, transparent);

@@ -15,14 +15,14 @@
   position: absolute;
   inset: 0;
   border-bottom: 1px solid var(--borde);
-  background: rgba(8, 8, 8, 0.62);
+  background: rgba(248, 247, 244, 0.78);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
   transition: background-color 0.3s;
 }
 
 .cabecera[data-menu]::before {
-  background: rgba(6, 6, 6, 0.97);
+  background: rgba(241, 240, 237, 0.97);
 }
 
 /* Enlace para saltar el portal con el teclado: solo aparece al enfocarlo */
@@ -76,9 +76,9 @@
   color: var(--texto);
   font-family: var(--display);
   font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: none;
 }
 
 .logo {
@@ -105,14 +105,14 @@
   display: inline-flex;
   align-items: center;
   height: 44px;
-  border-radius: 4px;
+  border-radius: var(--radio-pildora);
   color: var(--texto-2);
   font-family: var(--display);
   font-size: 13px;
-  font-weight: 600;
-  font-stretch: 86%;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-weight: 500;
+  font-stretch: normal;
+  letter-spacing: normal;
+  text-transform: none;
   white-space: nowrap;
   transition: color 0.2s;
 }
@@ -166,7 +166,7 @@
   padding: 0 16px 0 22px;
   border: 1.5px solid var(--verde-borde);
   border-radius: var(--radio-pildora);
-  background: rgba(0, 0, 0, 0.32);
+  background: rgba(255, 255, 255, 0.68);
   transition: border-color 0.25s, background-color 0.25s, box-shadow 0.35s var(--curva);
 }
 
@@ -186,9 +186,9 @@
   font-family: var(--display);
   font-size: 11px;
   font-weight: 600;
-  font-stretch: 86%;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
+  font-stretch: normal;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 .estimacionValor {
@@ -235,10 +235,10 @@
 
 @keyframes destello {
   from {
-    box-shadow: 0 0 0 0 rgba(0, 220, 10, 0.55);
+    box-shadow: 0 0 0 0 rgba(23, 23, 22, 0.55);
   }
   to {
-    box-shadow: 0 0 0 12px rgba(0, 220, 10, 0);
+    box-shadow: 0 0 0 12px rgba(23, 23, 22, 0);
   }
 }
 
@@ -309,9 +309,9 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   background:
-    radial-gradient(ellipse 48% 60% at 86% 26%, rgba(0, 220, 10, 0.08), transparent 70%),
-    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(255, 255, 255, 0.035), transparent 70%),
-    #060606;
+    radial-gradient(ellipse 48% 60% at 86% 26%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(255, 255, 255, 0.6), transparent 70%),
+    #f1f0ed;
   animation: menu-entrar 0.3s var(--curva);
 }
 
@@ -372,10 +372,10 @@
   color: var(--texto-2);
   font-family: var(--display);
   font-size: clamp(24px, min(5.4vh, 7.6vw), 56px); /* cabe a lo ancho y a lo alto */
-  font-weight: 800;
-  font-stretch: 104%;
+  font-weight: 650;
+  font-stretch: normal;
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: none;
   transition: color 0.2s, transform 0.35s var(--curva);
 }
 
@@ -422,8 +422,8 @@
   color: var(--texto-2);
   font-size: clamp(24px, 3.4vh, 32px);
   font-weight: 700;
-  font-stretch: 88%;
-  text-transform: uppercase;
+  font-stretch: normal;
+  text-transform: none;
 }
 
 .menuTotal {
@@ -433,8 +433,8 @@
   color: var(--texto);
   font-family: var(--display);
   font-size: clamp(40px, 6vh, 64px);
-  font-weight: 800;
-  font-stretch: 92%;
+  font-weight: 700;
+  font-stretch: normal;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }

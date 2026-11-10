@@ -36,12 +36,12 @@ Vienen del enunciado y de decisiones ya tomadas:
 5. **CSS propio, sin Tailwind** (CSS Modules en la calculadora). Los componentes que se copien de shadcn o
    21st.dev (pensados para Tailwind y TypeScript) se adaptan a JSX + CSS en
    `cliente/src/components/ui/`, sin añadir dependencias.
-6. **Estilo visual (nuevo desde el 10/11/2026):** escena oscura con acento verde neón, inspirada en una
-   interfaz de referencia de Kawasaki H2R (`videos/referencia-kawasaki.png`) y en un vídeo de una landing
-   de moto con cámara 3D (`videos/animacion dinamica .mp4`). Fondo `#0B0B0B` → gris carbón `#3D3D3D` en el
-   centro, texto `#F5F5F5`, verde `#00DC0A` (muestreado de la referencia) solo en lo importante, titulares
-   en **Saira** (variable: ancho y peso) y texto en **Inter**. Los tokens están en `:root` de `index.css`.
-   (El estilo anterior, corporativo en claro con azul `#2563EB`, queda sustituido.)
+6. **Estilo visual (actualizado el 11/11/2026):** superficies claras marfil y gris cálido (`#F1F0ED`,
+   `#E9E8E5`, `#FBFAF8`), texto tinta (`#171716`), botones y estados seleccionados negros, tarjetas
+   redondeadas con sombras suaves y desenfoque de cristal. **Manrope** para titulares y controles, **Inter**
+   para lectura. La vista 3D conserva un panel de grafito con controles en grises claros. Este sistema toma
+   como referencia la captura de dashboard compartida el 11/11 y sustituye el tema oscuro/neón del 10/11.
+   Los tokens están en `:root` de `cliente/src/index.css`.
 7. **Commits solo a tu nombre**, sin coautores.
 8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
 9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
@@ -124,6 +124,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 09/11/2026 | Calculadora corporativa de 4 pasos, `POST /api/estimacion`, portal de entrada y PDF con Inter e identidad sobria |
 | 10/11/2026 | Rediseño oscuro/verde y vista previa 3D reactiva publicados en GitHub en `9c548c8`; revisión visual completada (ver apartado 8) |
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
+| 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
 
 ---
 
@@ -224,7 +225,7 @@ Falta probarlo en Safari y Firefox.
 
 ---
 
-## 8. Rediseño oscuro/verde con vista previa 3D (10-11/11/2026)
+## 8. Rediseño de interfaz y vista previa 3D (10-11/11/2026)
 
 ### Qué pidió el usuario
 
@@ -249,23 +250,23 @@ Dinámico, interactivo y reactivo.
 
 | Parte | Archivos | Estado |
 | ----- | -------- | ------ |
-| Base compartida | `cliente/index.html` (fuentes Saira + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha |
+| Base compartida | `cliente/index.html` (fuentes Manrope + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha; tema claro marfil/gris |
 | Escena 3D | `components/escena/` (`VistaWeb3D`, `Maquetas`, `Modulos`, `piezas`, `usePresencia`, `useEscena`, `useDemo` y sus CSS) | Revisada en Chrome; los tipos y módulos seleccionados aparecen en la maqueta, y urgencia cambia la luz a ámbar |
 | Configurador | `calculadora/` (`Calculadora`, `Pasos`, `Resumen` y sus CSS, `formato.js`, `useCalculator.js`) | Revisado en Chrome en los cuatro pasos y a 1440, 1024, 390 y 320 px; el servidor devolvió los importes esperados |
-| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Revisado; portal y menú caben en móvil, el menú responde a Escape y no se observó desbordamiento horizontal |
-| Secciones | `ui/asistente-ia`, `ui/pricing`, `ui/planes-mantenimiento` (jsx + css) | Asistente, packs, mantenimiento, preguntas y pie revisados en escritorio y móvil |
+| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Se aplicó la nueva paleta y tipografía; captura inicial revisada en Chrome a 1440 px y el viewport se midió a 390 px sin scroll horizontal |
+| Secciones | `ui/asistente-ia`, `ui/pricing`, `ui/planes-mantenimiento` (jsx + css) | Reestilizadas en marfil y superficies claras; queda una revisión visual completa de todos los pasos y secciones después del cambio |
 
-Comprobado el 10/11: `npx vite build` compiló sin errores en la sesión anterior. En la revisión visual se usaron los servidores de desarrollo y la API local, con las opciones del catálogo reales; no se observaron errores de consola ni scroll horizontal. También se comprobó `prefers-reduced-motion`. El servidor (`src/`) no se modificó. El endpoint de estado de producción respondió `{"status":"ok"}` el 11/11.
+Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cambio visual. El 11/11 la interfaz y la API se abrieron con servidores locales; Vite aplicó los cambios sin mostrar errores y se revisó el portal en Chrome. El nuevo tema se midió a 390 px CSS: `scrollWidth` y `clientWidth` fueron 390. No se han vuelto a recorrer todos los flujos ni a compilar el proyecto. El servidor (`src/`) no se modificó. El endpoint de estado de producción respondió `{"status":"ok"}` el 11/11.
 
 ### Estado y pendientes
 
-1. La revisión visual está **completada**: se verificaron los cuatro tipos de web, los tres diseños, las funciones, urgencia, soporte, planes mensuales y el menú móvil. Los importes mensuales se mantuvieron fuera del total.
+1. La revisión funcional anterior sigue vigente: se verificaron los cuatro tipos de web, los tres diseños, las funciones, urgencia, soporte y planes mensuales. Falta revisar visualmente todas esas vistas con el tema marfil/gris nuevo.
 2. Los hooks de movimiento reducido ya comparten `cliente/src/components/ui/use-reducir-movimiento.js`.
 3. Los alias temporales `--azul`, `--azul-hover`, `--enlace` y `--fondo-claro` ya no están en `index.css`.
 4. El laboratorio (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`) ya no existe en este checkout.
-5. El README ya describe la estética oscura/verde y la vista previa 3D; se añadió el resultado de la revisión visual.
+5. El README describe la nueva estética marfil/gris, Manrope/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
-7. El rediseño está en `origin/main` (`9c548c8`). El 11/11 se publicaron en `main` las actualizaciones de documentación. No se volvió a ejecutar `npm run build` localmente porque `REDISENO.md` indica que escribe en `../public`; el build ya se había comprobado y el despliegue de Vercel compila desde GitHub.
+7. El último rediseño publicado está en `origin/main` (`9c548c8`); las actualizaciones documentales del 11/11 también están publicadas. Este nuevo cambio visual queda pendiente de commit/push y de despliegue en Vercel.
 
 ### Git (importante)
 

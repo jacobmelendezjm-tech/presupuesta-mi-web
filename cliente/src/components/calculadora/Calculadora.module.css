@@ -31,13 +31,26 @@
    -------------------------------------------------------------------------- */
 
 .escena {
+  --fondo: #111110;
+  --texto: #f4f3f0;
+  --texto-2: #b7b5af;
+  --texto-3: #92908a;
+  --borde: rgba(255, 255, 255, 0.12);
+  --borde-fuerte: rgba(255, 255, 255, 0.24);
+  --verde: #d4d1ca;
+  --verde-claro: #f5f3ed;
+  --verde-borde: rgba(245, 243, 237, 0.42);
+  --verde-suave: rgba(245, 243, 237, 0.11);
+  --verde-brillo: rgba(245, 243, 237, 0.16);
+  --texto-sobre-verde: #171716;
+  --luz: #d4d1ca;
   position: sticky;
   top: var(--hueco-nav);
   z-index: 1;
   height: var(--alto-escena);
   min-height: 480px;
   overflow: hidden;
-  background: #050505;
+  background: #111110;
   container-type: inline-size;
 }
 
