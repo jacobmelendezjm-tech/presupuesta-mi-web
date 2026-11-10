@@ -1,10 +1,10 @@
 # Memoria del proyecto · Presupuesta mi web
 
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
-Última actualización: **10/11/2026**.
+Última actualización: **11/11/2026**.
 
-> **⚠ HAY UN REDISEÑO A MEDIAS (10/11/2026). Lee primero el apartado 8, «Trabajo en curso».**
-> Se subió a GitHub (y Vercel lo desplegó) el 10/11 **sin terminar de revisar**: puede haber fallos, sobre todo en móvil.
+> **El rediseño se publicó en GitHub en el commit `9c548c8` y ya se revisó visualmente.** Lee el apartado 8 para el estado actual.
+> El 11/11 se actualizaron esta memoria y el README. Vercel está conectado a `main` y despliega cada push.
 
 ---
 
@@ -122,7 +122,8 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 09/11/2026 | Se probó un rediseño HUD estilo Stark Tech y se descartó por no gustar (revertido; el código sigue en el commit `e942576`) |
 | 09/11/2026 | Se probaron una web 3D con Three.js y otra Stark con React Three Fiber; ambas se descartaron sin llegar a publicarse |
 | 09/11/2026 | Calculadora corporativa de 4 pasos, `POST /api/estimacion`, portal de entrada y PDF con Inter e identidad sobria |
-| 10/11/2026 | **Publicado sin revisar del todo:** rediseño oscuro/verde y vista previa 3D en directo de la web que configura el cliente (ver apartado 8) |
+| 10/11/2026 | Rediseño oscuro/verde y vista previa 3D reactiva publicados en GitHub en `9c548c8`; revisión visual completada (ver apartado 8) |
+| 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 
 ---
 
@@ -223,7 +224,7 @@ Falta probarlo en Safari y Firefox.
 
 ---
 
-## 8. Trabajo en curso (10/11/2026): rediseño oscuro/verde con vista previa 3D
+## 8. Rediseño oscuro/verde con vista previa 3D (10-11/11/2026)
 
 ### Qué pidió el usuario
 
@@ -244,41 +245,34 @@ Dinámico, interactivo y reactivo.
   componentes, cámara por paso, tabla «opción → módulo 3D» y maquetación. Sus rutas `<SP>/referencias/…`
   eran temporales: la imagen está ahora en `videos/referencia-kawasaki.png`.
 
-### Estado de cada parte (lo hicieron 4 agentes; se pararon antes de terminar su revisión)
+### Estado de cada parte
 
 | Parte | Archivos | Estado |
 | ----- | -------- | ------ |
 | Base compartida | `cliente/index.html` (fuentes Saira + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha |
-| Escena 3D | `components/escena/` (`VistaWeb3D`, `Maquetas`, `Modulos`, `piezas`, `usePresencia`, `useEscena`, `useDemo` y sus CSS) + laboratorio `cliente/laboratorio.html` y `src/laboratorio.jsx` | Escrita y funcionando en escritorio; **falta revisarla** |
-| Configurador | `calculadora/` (`Calculadora`, `Pasos`, `Resumen` y sus CSS, `formato.js`, `use-movimiento-reducido.js`, `useCalculator.js` con el nuevo `calculando`) | Funciona en escritorio; **falta revisarlo** |
-| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Escrito; **falta revisarlo** |
-| Secciones | `ui/asistente-ia`, `ui/pricing`, `ui/planes-mantenimiento` (jsx + css) | Escrito; **falta revisarlo** |
+| Escena 3D | `components/escena/` (`VistaWeb3D`, `Maquetas`, `Modulos`, `piezas`, `usePresencia`, `useEscena`, `useDemo` y sus CSS) | Revisada en Chrome; los tipos y módulos seleccionados aparecen en la maqueta, y urgencia cambia la luz a ámbar |
+| Configurador | `calculadora/` (`Calculadora`, `Pasos`, `Resumen` y sus CSS, `formato.js`, `useCalculator.js`) | Revisado en Chrome en los cuatro pasos y a 1440, 1024, 390 y 320 px; el servidor devolvió los importes esperados |
+| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Revisado; portal y menú caben en móvil, el menú responde a Escape y no se observó desbordamiento horizontal |
+| Secciones | `ui/asistente-ia`, `ui/pricing`, `ui/planes-mantenimiento` (jsx + css) | Asistente, packs, mantenimiento, preguntas y pie revisados en escritorio y móvil |
 
-Comprobado el 10/11: `npx vite build` compila sin errores. El servidor (`src/`) no se ha tocado.
+Comprobado el 10/11: `npx vite build` compiló sin errores en la sesión anterior. En la revisión visual se usaron los servidores de desarrollo y la API local, con las opciones del catálogo reales; no se observaron errores de consola ni scroll horizontal. También se comprobó `prefers-reduced-motion`. El servidor (`src/`) no se modificó. El endpoint de estado de producción respondió `{"status":"ok"}` el 11/11.
 
-### Pendiente, en orden
+### Estado y pendientes
 
-1. **Revisar en el navegador** (`npm run dev` en la raíz + `cd cliente && npm run dev`) a 1440, 1024, 390 y
-   320 px, y con «reducir movimiento». Que cada opción se vea en la maqueta, que no haya errores de consola
-   y que no haya scroll horizontal. Revisar también el portal y el hero, la cabecera en móvil (menú
-   hamburguesa), el asistente, los packs, el mantenimiento y el pie.
-2. **Unificar** los dos hooks de «reducir movimiento» (`escena/useEscena.js` y `calculadora/use-movimiento-reducido.js`).
-3. **Quitar los alias temporales** `--azul`, `--azul-hover`, `--enlace` y `--fondo-claro` del `:root` de
-   `index.css`. Antes, comprobar con una búsqueda que nadie los usa.
-4. **Borrar el laboratorio** (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`). No entra en el
-   build, pero sobra en el repositorio.
-5. **README:** cambiar «estilo corporativo sobrio» por el estilo nuevo y explicar la vista previa 3D.
-6. `REDISENO.md` ya está subido (documentación del rediseño). Al terminar, actualizar la tabla de historial.
-7. **Publicar las correcciones:** `npm test` (45 pruebas), `npm run build`, commit y `git push`. Vercel despliega solo.
+1. La revisión visual está **completada**: se verificaron los cuatro tipos de web, los tres diseños, las funciones, urgencia, soporte, planes mensuales y el menú móvil. Los importes mensuales se mantuvieron fuera del total.
+2. Los hooks de movimiento reducido ya comparten `cliente/src/components/ui/use-reducir-movimiento.js`.
+3. Los alias temporales `--azul`, `--azul-hover`, `--enlace` y `--fondo-claro` ya no están en `index.css`.
+4. El laboratorio (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`) ya no existe en este checkout.
+5. El README ya describe la estética oscura/verde y la vista previa 3D; se añadió el resultado de la revisión visual.
+6. Se actualizó el historial de este archivo.
+7. El rediseño está en `origin/main` (`9c548c8`). El 11/11 se publicaron en `main` las actualizaciones de documentación. No se volvió a ejecutar `npm run build` localmente porque `REDISENO.md` indica que escribe en `../public`; el build ya se había comprobado y el despliegue de Vercel compila desde GitHub.
 
 ### Git (importante)
 
-- La carpeta se descargó como ZIP. El 10/11 se convirtió en repositorio git sin tocar archivos
-  (`git init` + `git fetch` + `git reset --mixed origin/main`). Ya sigue a `origin/main` desde el commit
-  `b2395af`, así que `git status` muestra solo los cambios del rediseño.
+- La carpeta se reconstruyó como repositorio Git el 11/11 (`git init`, `git fetch origin main` y `git reset --mixed origin/main`) sin sobrescribir archivos. `origin/main` estaba en `9c548c8` antes de publicar la actualización documental.
 - Identidad configurada en este repositorio: `jacobmelendezjm-tech <jacobmelendez.jm@gmail.com>`.
   Los commits van **sin coautores**.
-- `videos/` está excluida en `.git/info/exclude`: el vídeo, la imagen de referencia y el arnés **no se suben**.
+- La carpeta `videos/` no está en este checkout; el commit documental solo incluye `README.md` y `memory.md`.
 - El push usa el Git Credential Manager de Windows: puede abrir una ventana para iniciar sesión en GitHub.
 
 ### Herramienta de capturas (opcional)

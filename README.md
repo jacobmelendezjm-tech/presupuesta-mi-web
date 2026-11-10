@@ -343,6 +343,11 @@ Glyph Portal es un componente con licencia MIT de Christian Katzmann, adaptado a
 traducido al español. Es responsive y respeta la opción del sistema de reducir el
 movimiento.
 
+El 10/11/2026 se revisó el rediseño visualmente en Chrome a 1440, 1024, 390 y 320 px, también con
+«reducir movimiento». Se recorrieron los cuatro tipos de web, los diseños y módulos,
+los planes mensuales, el menú móvil y las secciones principales. La API local calculó
+los importes y no se observó scroll horizontal ni errores de consola.
+
 ## Ampliación: asistente con IA y presupuesto en PDF
 
 El cliente explica su proyecto y recibe una propuesta de servicios que puede
