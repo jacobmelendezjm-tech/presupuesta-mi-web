@@ -13,8 +13,26 @@ const app = express();
 app.use(express.json());
 
 // Interfaz React compilada (solo existe tras `npm run build`).
-// En Vercel, la carpeta public/ la sirve directamente su CDN.
-app.use(express.static(path.join(__dirname, "..", "public")));
+// Caché: el ETag de express.static sale del tamaño y la fecha del archivo, y en Vercel
+// todos los archivos tienen la misma fecha. Un index.html nuevo del mismo tamaño
+// recibía 304 y el navegador seguía con el viejo, que pide assets que ya no existen
+// (página en blanco). Por eso el HTML va sin ETag ni Last-Modified y se pide siempre;
+// los assets llevan una huella en el nombre y pueden guardarse un año.
+app.use(
+  express.static(path.join(__dirname, "..", "public"), {
+    etag: false,
+    lastModified: false,
+    setHeaders(res, ruta) {
+      if (ruta.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      } else if (/[\\/]assets[\\/]/.test(ruta)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      } else {
+        res.setHeader("Cache-Control", "public, max-age=3600");
+      }
+    },
+  })
+);
 
 // GET /api/estado → confirma que el servicio funciona.
 app.get("/api/estado", (req, res) => {

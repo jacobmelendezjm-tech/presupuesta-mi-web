@@ -131,6 +131,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 | 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
 | 11/11/2026 | Píldora dinámica en la cabecera para alternar entre claro y oscuro, con preferencia persistente y colores coordinados para el portal y el menú |
+| 12/11/2026 | Arreglada la página en blanco para quien ya había visitado la web (caché del index.html con ETag repetido) |
 | 12/11/2026 | Paleta de pasteles cálidos «Melocotón y salvia» en web, escena 3D, vista previa y PDF (Playfair + Inter, cabecera melocotón → rosa, desglose en tríada pastel); README con RA5 · CE 5.1 y 5.8 |
 | 12/11/2026 | Se probó Aquire (descartada) y se pasó a Playfair Display + Inter (tras probar Cormorant Garamond); arreglado el modo oscuro: tarjetas, campos y luz de los titulares tenían blancos fijos |
 | 12/11/2026 | Letras de PRESUPUESTA con contraste propio (`--portal-letra`) en los dos modos, y web más fluida: precio y maqueta 3D casi al momento, sin `blur` en los cambios de paso y sombras y desenfoques más ligeros |
@@ -299,6 +300,7 @@ tiempos puestos a propósito. Valores actuales (no volver a alargarlos sin motiv
   Los commits van **sin coautores**.
 - La carpeta `videos/` no está en este checkout; el commit documental solo incluye `README.md` y `memory.md`.
 - El push usa el Git Credential Manager de Windows: puede abrir una ventana para iniciar sesión en GitHub.
+- **Página en blanco tras desplegar (arreglado el 12/11):** Express servía `index.html` con un ETag de tamaño + fecha, y en Vercel todas las fechas son iguales; si el HTML nuevo medía lo mismo, el navegador recibía 304, se quedaba con el viejo y pedía assets que ya no existen. `src/app.js` sirve ahora el HTML sin ETag (`no-cache`) y `/assets/` como `immutable`. No quitar esas opciones de `express.static`.
 - Desde Git Bash el push falla con «unable to get local issuer certificate»: usar `git -c http.sslBackend=schannel push`.
 
 ### Herramienta de capturas (opcional)
