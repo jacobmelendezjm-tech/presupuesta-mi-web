@@ -1,5 +1,28 @@
 /* Presupuesta mi web · superficies cálidas, cristal mate y contraste tinta */
 
+/* Aquire · Sesohq · freeware de uso no comercial (ver public/fuentes/LICENCIA-aquire.txt).
+   Solo tiene mayúsculas y le faltan €, ¿, ¡, + y /: esos caracteres salen de Inter. */
+@font-face {
+  font-family: "Aquire";
+  src: url("/fuentes/aquire-light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aquire";
+  src: url("/fuentes/aquire-regular.woff2") format("woff2");
+  font-weight: 400 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Aquire";
+  src: url("/fuentes/aquire-bold.woff2") format("woff2");
+  font-weight: 600 900;
+  font-display: swap;
+}
+
 :root {
   /* Lino, porcelana y vidrio esmerilado */
   --fondo: #f1f0ed;
@@ -51,7 +74,7 @@
 
   /* Tipografía sans limpia y redonda */
   --fuente: "Inter", "Segoe UI", system-ui, sans-serif;
-  --display: "Manrope", "Inter", "Segoe UI", system-ui, sans-serif;
+  --display: "Aquire", "Inter", "Segoe UI", system-ui, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   /* Forma y medidas */
