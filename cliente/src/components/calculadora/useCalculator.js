@@ -69,7 +69,7 @@ export function useCalculator() {
   }
 
   // `calculando` es verdadero desde que cambia la selección (incluida la espera
-  // de 150 ms) hasta que el servidor responde a ESA selección, con éxito o error.
+  // de 40 ms) hasta que el servidor responde a ESA selección, con éxito o error.
   const [respondida, setRespondida] = useState(null);
   const [intento, setIntento] = useState(0);
   const calculando = Boolean(tipo) && respondida !== solicitud;
@@ -108,7 +108,7 @@ export function useCalculator() {
         setError(ERROR_RED);
       }
       setRespondida(solicitud);
-    }, 150);
+    }, 40);
     return () => {
       clearTimeout(espera);
       controlador.abort();

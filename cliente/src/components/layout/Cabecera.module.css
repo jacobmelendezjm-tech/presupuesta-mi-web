@@ -15,9 +15,9 @@
   position: absolute;
   inset: 0;
   border-bottom: 1px solid var(--borde);
-  background: color-mix(in srgb, var(--fondo) 84%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  backdrop-filter: blur(18px) saturate(150%);
+  background: color-mix(in srgb, var(--fondo) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   transition: background-color 0.3s;
 }
 

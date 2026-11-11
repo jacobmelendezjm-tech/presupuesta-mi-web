@@ -11,7 +11,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 //
 // Cada fase dura lo que diga `tiempos` (en ms); «listo» no caduca.
 
-export const TIEMPOS = { inicial: 700, construyendo: 900, marcado: 1600, saliendo: 380 };
+export const TIEMPOS = { inicial: 450, construyendo: 320, marcado: 900, saliendo: 260 };
 
 const SIGUIENTE = { inicial: "listo", construyendo: "marcado", marcado: "listo" };
 

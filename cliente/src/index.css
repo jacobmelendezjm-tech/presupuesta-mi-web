@@ -42,6 +42,9 @@
   --portal-surface-deep: #c1c0bc;
   --portal-sheen: rgba(255, 255, 255, 0.42);
   --portal-halo: rgba(255, 255, 255, 0.2);
+  /* Relleno de las letras de PRESUPUESTA: contrasta con --portal-paper */
+  --portal-letra: #2b2a28;
+  --portal-letra-hondo: #121211;
 
   /* Luz de la escena 3D (pasa a ámbar con «Despliegue urgente») */
   --luz: var(--verde);
@@ -107,6 +110,8 @@
   --portal-surface-deep: #242422;
   --portal-sheen: rgba(255, 255, 255, 0.18);
   --portal-halo: rgba(255, 255, 255, 0.09);
+  --portal-letra: #e6e5e1;
+  --portal-letra-hondo: #b9b8b3;
 
   --scrollbar-thumb: #55544f;
   --sombra: 0 24px 56px -30px rgba(0, 0, 0, 0.7);
@@ -674,7 +679,7 @@ html.menu-abierto {
     radial-gradient(ellipse 36% 30% at 22% 47%, var(--portal-sheen), var(--portal-halo) 52%, transparent 78%),
     radial-gradient(ellipse 34% 30% at 78% 45%, var(--portal-sheen), var(--portal-halo) 52%, transparent 80%),
     radial-gradient(ellipse 70% 30% at 50% 52%, var(--portal-halo), transparent 82%),
-    linear-gradient(180deg, var(--portal-surface) 22%, var(--portal-surface-deep) 46%, var(--portal-surface) 66%, var(--portal-surface-deep) 84%);
+    linear-gradient(180deg, var(--portal-letra) 22%, var(--portal-letra-hondo) 46%, var(--portal-letra) 66%, var(--portal-letra-hondo) 84%);
   opacity: clamp(0, calc((0.66 - var(--entrada, 0)) * 3.6), 1);
 }
 
@@ -707,7 +712,7 @@ html.menu-abierto {
   width: 22px;
   height: 36px;
   margin-left: -11px;
-  border: 1.5px solid rgba(255, 255, 255, 0.32);
+  border: 1.5px solid color-mix(in srgb, var(--portal-ink) 40%, transparent);
   border-radius: 12px;
 }
 

@@ -46,7 +46,7 @@ const PASOS = [
 const TOTAL_PASOS = PASOS.length;
 
 // Lo que tarda en desvanecerse el paso anterior antes de entrar el nuevo.
-const SALIDA_MS = 220;
+const SALIDA_MS = 160;
 
 const NOMBRE_DISENO = { plantilla: "Plantilla", uiCustom: "UI Custom", inmersivo: "3D inmersivo" };
 
@@ -110,7 +110,7 @@ function Spec({ etiqueta, valor, lector }) {
 export function Calculadora({ c }) {
   const reducido = useReducirMovimiento();
   // Spinner visible al menos 450 ms para que no parpadee con respuestas rápidas.
-  const ocupado = useEstadoMinimo(c.calculando, 450);
+  const ocupado = useEstadoMinimo(c.calculando, 200);
   const vista = useTransicionPaso(c.paso, reducido);
   const idPista = useId();
 

@@ -39,9 +39,9 @@ const NOMBRES_HUD = {
 };
 
 // Duraciones de cada fase en ms (constantes: usePresencia las usa como dependencia)
-const TIEMPOS_MAQUETA = { inicial: 900, construyendo: 1300, marcado: 2300, saliendo: 380 };
-const TIEMPOS_HOJA = { inicial: 900, construyendo: 700, marcado: 1700, saliendo: 380 };
-const TIEMPOS_FANTASMA = { inicial: 1100, construyendo: 1100, marcado: 0, saliendo: 700 };
+const TIEMPOS_MAQUETA = { inicial: 500, construyendo: 420, marcado: 1100, saliendo: 260 };
+const TIEMPOS_HOJA = { inicial: 500, construyendo: 280, marcado: 900, saliendo: 260 };
+const TIEMPOS_FANTASMA = { inicial: 600, construyendo: 500, marcado: 0, saliendo: 400 };
 
 const formatoEuros = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0, useGrouping: "always" });
 const enObra = (fase) => fase === "construyendo" || fase === "marcado";
@@ -106,7 +106,7 @@ export function VistaWeb3D(props) {
   const plan = fuente.plan?.id ? fuente.plan : null;
   const paso = demo ? 1 : limitar(Math.round(Number(props.paso) || 1), 1, 4);
   const catalogo = demo ? null : props.catalogo ?? null;
-  const calculando = useEstadoMinimo(!demo && Boolean(props.calculando) && Boolean(tipo), 450);
+  const calculando = useEstadoMinimo(!demo && Boolean(props.calculando) && Boolean(tipo), 200);
 
   const diseno = opciones.find((id) => DISENOS.has(id)) ?? "ninguno";
   const funciones = FUNCIONES.filter((id) => opciones.includes(id));
@@ -176,18 +176,19 @@ export function VistaWeb3D(props) {
     etiqueta,
   };
 
-  // Al cambiar de paso: desenfoque breve en las capas 2D y un ligero «dolly»
+  // Al cambiar de paso: un ligero «dolly» de cámara y un parpadeo de opacidad en
+  // las capas 2D. Sin filter: blur, que obliga a repintar capas enteras en cada fotograma.
   const pasoPrevio = useRef(paso);
   useEffect(() => {
     if (pasoPrevio.current === paso) return undefined;
     pasoPrevio.current = paso;
     if (reducido) return undefined;
-    const desenfoque = [{ filter: "blur(0px)" }, { filter: "blur(4px)", offset: 0.4 }, { filter: "blur(0px)" }];
+    const parpadeo = [{ opacity: 1 }, { opacity: 0.55, offset: 0.4 }, { opacity: 1 }];
     const animaciones = [
-      fantasmasRef.current?.animate(desenfoque, { duration: 700, easing: "ease-in-out" }),
-      focoRef.current?.animate(desenfoque, { duration: 700, easing: "ease-in-out" }),
-      camaraRef.current?.animate([{ scale: 1 }, { scale: 0.955, offset: 0.45 }, { scale: 1 }], {
-        duration: 1300,
+      fantasmasRef.current?.animate(parpadeo, { duration: 420, easing: "ease-in-out" }),
+      focoRef.current?.animate(parpadeo, { duration: 420, easing: "ease-in-out" }),
+      camaraRef.current?.animate([{ scale: 1 }, { scale: 0.97, offset: 0.45 }, { scale: 1 }], {
+        duration: 650,
         easing: "cubic-bezier(0.65, 0, 0.2, 1)",
       }),
     ];

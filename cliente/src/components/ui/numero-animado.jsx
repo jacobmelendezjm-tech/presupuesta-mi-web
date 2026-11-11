@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 // Número que pasa suavemente de un valor al siguiente (por ejemplo, el total
 // del presupuesto). Solo anima lo que ya ha calculado el servidor: no calcula nada.
 // Con «reducir movimiento» el cambio es inmediato.
-export function NumeroAnimado({ valor, formato = String, duracion = 600, className }) {
+export function NumeroAnimado({ valor, formato = String, duracion = 350, className }) {
   const [mostrado, setMostrado] = useState(valor);
   const actual = useRef(valor);
 

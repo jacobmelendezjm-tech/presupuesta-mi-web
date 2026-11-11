@@ -244,7 +244,7 @@
 
 /* El texto llega con un destello del color de la luz */
 [data-texto="marcado"] .t {
-  animation: textoMarca 1.6s ease-out both;
+  animation: textoMarca 0.9s ease-out both;
 }
 
 @keyframes barraLatido {
@@ -1250,7 +1250,7 @@
 [data-entrada] .barras i,
 [data-obra="inicial"] .barras i,
 [data-obra="marcado"] .barras i {
-  animation: barraCrece 0.9s var(--curva) both;
+  animation: barraCrece 0.42s var(--curva) both;
   animation-delay: calc(200ms + var(--k) * 60ms);
 }
 

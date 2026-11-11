@@ -506,7 +506,7 @@
    -------------------------------------------------------------------------- */
 
 .bloque[data-fase="saliendo"] {
-  animation: salir 0.22s var(--curva) forwards;
+  animation: salir 0.16s var(--curva) forwards;
   pointer-events: none;
 }
 
@@ -518,7 +518,6 @@
   to {
     opacity: 0;
     transform: translateY(-16px);
-    filter: blur(4px);
   }
 }
 
@@ -526,13 +525,12 @@
   to {
     opacity: 0;
     transform: translateY(16px);
-    filter: blur(4px);
   }
 }
 
 .bloque[data-fase="entrando"] [data-anima] {
-  animation: entrar 0.62s var(--curva) backwards;
-  animation-delay: calc(var(--orden, 0) * 70ms);
+  animation: entrar 0.4s var(--curva) backwards;
+  animation-delay: calc(var(--orden, 0) * 40ms);
 }
 
 .bloque[data-fase="entrando"][data-direccion="atras"] [data-anima] {
@@ -542,16 +540,14 @@
 @keyframes entrar {
   from {
     opacity: 0;
-    transform: translateY(26px);
-    filter: blur(6px);
+    transform: translateY(14px);
   }
 }
 
 @keyframes entrarAtras {
   from {
     opacity: 0;
-    transform: translateY(-26px);
-    filter: blur(6px);
+    transform: translateY(-14px);
   }
 }
 

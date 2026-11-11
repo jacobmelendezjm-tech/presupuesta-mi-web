@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 // Mantiene un estado «activo» visible un mínimo de tiempo. Sirve para que un
 // spinner no parpadee cuando el servidor responde en pocos milisegundos.
-export function useEstadoMinimo(activo, minimo = 450) {
+export function useEstadoMinimo(activo, minimo = 200) {
   const [visible, setVisible] = useState(activo);
   const desde = useRef(activo ? performance.now() : 0);
 

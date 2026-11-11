@@ -25,7 +25,7 @@ const ENFOCABLES = "a[href], button:not([disabled])";
 // directo (la calcula el servidor; aquí solo se muestra) y menú de secciones.
 export function Cabecera({ total, calculando }) {
   const activa = useSeccionActiva(IDS_OBSERVADOS);
-  const ocupado = useEstadoMinimo(calculando, 450); // el spinner no parpadea si el servidor va rápido
+  const ocupado = useEstadoMinimo(calculando, 200); // el spinner no parpadea si el servidor va rápido
   const [abierto, setAbierto] = useState(false);
   const [temaOscuro, setTemaOscuro] = useState(() => {
     try {

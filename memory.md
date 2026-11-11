@@ -1,7 +1,7 @@
 # Memoria del proyecto · Presupuesta mi web
 
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
-Última actualización: **11/11/2026**.
+Última actualización: **12/11/2026**.
 
 > **La píldora de tema claro/oscuro se publicó en GitHub en el commit `9b6ff56`; Vercel completó el despliegue y la API responde `{"status":"ok"}`.** Lee el apartado 8 para el estado actual.
 > Vercel está conectado a `main` y despliega cada push.
@@ -125,6 +125,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 | 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
 | 11/11/2026 | Píldora dinámica en la cabecera para alternar entre claro y oscuro, con preferencia persistente y colores coordinados para el portal y el menú |
+| 12/11/2026 | Letras de PRESUPUESTA con contraste propio (`--portal-letra`) en los dos modos, y web más fluida: precio y maqueta 3D casi al momento, sin `blur` en los cambios de paso y sombras y desenfoques más ligeros |
 
 ---
 
@@ -267,6 +268,20 @@ Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cam
 5. El README describe la nueva estética marfil/gris, Manrope/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
 7. La píldora claro/oscuro, los estilos y la documentación están publicados en `origin/main` (`9b6ff56`). GitHub confirma el despliegue de Vercel y `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
+
+### Fluidez (12/11/2026)
+
+El usuario notaba latencia al elegir opciones. La API local responde en ~11 ms: la espera venía de los
+tiempos puestos a propósito. Valores actuales (no volver a alargarlos sin motivo):
+
+- Petición de precio: agrupa clics durante **40 ms** (`useCalculator.js`); spinner mínimo **200 ms** (`useEstadoMinimo`).
+- `NumeroAnimado`: **350 ms**. Fases de la maqueta (`usePresencia.js` y `VistaWeb3D.jsx`): construir 280–420 ms,
+  destello 900–1100 ms, salida 260 ms. Las animaciones CSS de cada fase están ajustadas a esas duraciones.
+- Cambio de paso sin `filter: blur` (en la calculadora y en la escena); cabecera con `blur(10px)`.
+- Medido con la build de producción y Playwright: el precio aparece ~120 ms tras el clic (antes ~300) y no hay
+  tareas largas de JavaScript; el coste que queda es de rasterizado en GPU.
+- Pendiente: el primer scroll del portal a veces da un fotograma largo (recorte SVG + campo escalado); las medidas
+  eran demasiado variables para cambiar su aspecto.
 
 ### Git (importante)
 

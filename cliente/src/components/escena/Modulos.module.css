@@ -587,21 +587,21 @@
 }
 
 .hoja[data-fase="construyendo"] {
-  animation: hojaEntra 0.7s var(--curva) both;
+  animation: hojaEntra 0.45s var(--curva) both;
 }
 
 .hoja[data-fase="construyendo"]::before,
 .hoja[data-fase="marcado"]::before {
-  animation: marcaHoja 2.4s ease-out both;
+  animation: marcaHoja 0.9s ease-out both;
 }
 
 .hoja[data-fase="inicial"] {
-  animation: hojaEntra 0.6s var(--curva) both;
+  animation: hojaEntra 0.42s var(--curva) both;
   animation-delay: calc(var(--k) * 50ms);
 }
 
 .hoja[data-fase="saliendo"] {
-  animation: hojaSale 0.38s var(--curva) both;
+  animation: hojaSale 0.24s var(--curva) both;
 }
 
 .chapa {
@@ -692,11 +692,11 @@
 
 .gemela[data-fase="construyendo"],
 .gemela[data-fase="inicial"] {
-  animation: gemelaEntra 0.8s var(--curva) both;
+  animation: gemelaEntra 0.5s var(--curva) both;
 }
 
 .gemela[data-fase="saliendo"] {
-  animation: gemelaSale 0.38s var(--curva) both;
+  animation: gemelaSale 0.24s var(--curva) both;
 }
 
 @keyframes gemelaEntra {
@@ -817,17 +817,17 @@
 
 .mantenimiento[data-fase="construyendo"] .anillo,
 .mantenimiento[data-fase="inicial"] .anillo {
-  animation: anilloEntra 1s var(--curva) both;
+  animation: anilloEntra 0.6s var(--curva) both;
 }
 
 .mantenimiento[data-fase="construyendo"] .escudo,
 .mantenimiento[data-fase="inicial"] .escudo {
-  animation: escudoEntra 0.6s var(--curva) 0.25s both;
+  animation: escudoEntra 0.4s var(--curva) 0.1s both;
 }
 
 .mantenimiento[data-fase="saliendo"] .anillo,
 .mantenimiento[data-fase="saliendo"] .escudo {
-  animation: desvanecer 0.38s var(--curva) both;
+  animation: desvanecer 0.24s var(--curva) both;
 }
 
 @keyframes anilloEntra {
@@ -896,11 +896,11 @@
 
 .estelas[data-fase="construyendo"],
 .estelas[data-fase="inicial"] {
-  animation: estelasEntran 0.6s var(--curva) both;
+  animation: estelasEntran 0.4s var(--curva) both;
 }
 
 .estelas[data-fase="saliendo"] {
-  animation: desvanecer 0.38s var(--curva) both;
+  animation: desvanecer 0.24s var(--curva) both;
 }
 
 @keyframes estelasEntran {
