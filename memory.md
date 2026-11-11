@@ -38,7 +38,7 @@ Vienen del enunciado y de decisiones ya tomadas:
    `cliente/src/components/ui/`, sin añadir dependencias.
 6. **Estilo visual (actualizado el 11/11/2026):** dos modos conmutables. El claro usa marfil y gris cálido
    (`#F1F0ED`, `#E9E8E5`, `#FBFAF8`) con tinta negra; el oscuro invierte la escala a grafito y texto claro.
-   Ambos usan **Cormorant Garamond** (Google Fonts, desde el 12/11) para titulares, cifras y precios, e **Inter** para lectura y para los rótulos pequeños (`--rotulo`: menú, etiquetas, botones, HUD, todo lo de 14px o menos). Rechazadas por el usuario: Manrope («típica de los proyectos de Claude») y Aquire (no le gustó; quería algo elegante, formal y serio). Las cifras van con `lnum`. Las superficies translúcidas usan los tokens `--vidrio`, `--vidrio-fuerte`, `--campo`, `--campo-foco` y `--luz-titular`, con valor propio en cada tema: nunca un blanco fijo, que en oscuro se vuelve una placa gris. Tarjetas redondeadas y
+   Ambos usan **Playfair Display** (Google Fonts, elegida por el usuario el 12/11 tras probar Cormorant Garamond) para titulares, cifras y precios —el símbolo € sale de Georgia con la familia `"Euro serif"` (`unicode-range`), porque el de Playfair parece una «C» a 16px—, e **Inter** para lectura y para los rótulos pequeños (`--rotulo`: menú, etiquetas, botones, HUD, todo lo de 14px o menos). Rechazadas por el usuario: Manrope («típica de los proyectos de Claude») y Aquire (no le gustó; quería algo elegante, formal y serio). Las cifras van con `lnum`. Las superficies translúcidas usan los tokens `--vidrio`, `--vidrio-fuerte`, `--campo`, `--campo-foco` y `--luz-titular`, con valor propio en cada tema: nunca un blanco fijo, que en oscuro se vuelve una placa gris. Tarjetas redondeadas y
    superficies suaves. La píldora de tema en la cabecera anima el cambio y recuerda la elección. La vista
    previa 3D mantiene su panel de grafito. Los tokens están en `:root` y `:root[data-tema="oscuro"]` de `cliente/src/index.css`.
 7. **Commits solo a tu nombre**, sin coautores.
@@ -125,7 +125,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 | 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
 | 11/11/2026 | Píldora dinámica en la cabecera para alternar entre claro y oscuro, con preferencia persistente y colores coordinados para el portal y el menú |
-| 12/11/2026 | Se probó Aquire (descartada) y se pasó a Cormorant Garamond + Inter; arreglado el modo oscuro: tarjetas, campos y luz de los titulares tenían blancos fijos |
+| 12/11/2026 | Se probó Aquire (descartada) y se pasó a Playfair Display + Inter (tras probar Cormorant Garamond); arreglado el modo oscuro: tarjetas, campos y luz de los titulares tenían blancos fijos |
 | 12/11/2026 | Letras de PRESUPUESTA con contraste propio (`--portal-letra`) en los dos modos, y web más fluida: precio y maqueta 3D casi al momento, sin `blur` en los cambios de paso y sombras y desenfoques más ligeros |
 
 ---
@@ -252,7 +252,7 @@ Dinámico, interactivo y reactivo.
 
 | Parte | Archivos | Estado |
 | ----- | -------- | ------ |
-| Base compartida | `cliente/index.html` (Cormorant Garamond + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha; tema claro marfil/gris |
+| Base compartida | `cliente/index.html` (Playfair Display + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha; tema claro marfil/gris |
 | Escena 3D | `components/escena/` (`VistaWeb3D`, `Maquetas`, `Modulos`, `piezas`, `usePresencia`, `useEscena`, `useDemo` y sus CSS) | Revisada en Chrome; los tipos y módulos seleccionados aparecen en la maqueta, y urgencia cambia la luz a ámbar |
 | Configurador | `calculadora/` (`Calculadora`, `Pasos`, `Resumen` y sus CSS, `formato.js`, `useCalculator.js`) | Revisado en Chrome en los cuatro pasos y a 1440, 1024, 390 y 320 px; el servidor devolvió los importes esperados |
 | Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Paleta marfil/gris y oscura, con píldora animada y preferencia persistente; el portal, el menú y los estados seleccionados usan los mismos tokens |
@@ -266,7 +266,7 @@ Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cam
 2. Los hooks de movimiento reducido ya comparten `cliente/src/components/ui/use-reducir-movimiento.js`.
 3. Los alias temporales `--azul`, `--azul-hover`, `--enlace` y `--fondo-claro` ya no están en `index.css`.
 4. El laboratorio (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`) ya no existe en este checkout.
-5. El README describe la nueva estética marfil/gris, Cormorant Garamond/Inter y el panel 3D de grafito.
+5. El README describe la nueva estética marfil/gris, Playfair Display/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
 7. La píldora claro/oscuro, los estilos y la documentación están publicados en `origin/main` (`9b6ff56`). GitHub confirma el despliegue de Vercel y `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
 

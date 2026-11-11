@@ -1,5 +1,13 @@
 /* Presupuesta mi web · superficies cálidas, cristal mate y contraste tinta */
 
+/* Solo el símbolo €: el de Playfair tiene las barras tan finas que a 16px parece una «C».
+   Se toma de una serif del sistema; si no hay ninguna, se usa el de Playfair. */
+@font-face {
+  font-family: "Euro serif";
+  src: local("Georgia"), local("Georgia Bold"), local("Times New Roman"), local("Noto Serif");
+  unicode-range: U+20AC;
+}
+
 :root {
   /* Lino, porcelana y vidrio esmerilado */
   --fondo: #f1f0ed;
@@ -59,7 +67,7 @@
 
   /* Tipografía sans limpia y redonda */
   --fuente: "Inter", "Segoe UI", system-ui, sans-serif;
-  --display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  --display: "Euro serif", "Playfair Display", Georgia, "Times New Roman", serif;
   /* Rótulos pequeños (menú, etiquetas, botones, HUD): una serif de lectura no aguanta 11-14px */
   --rotulo: var(--fuente);
   --mono: ui-monospace, Consolas, monospace;
@@ -158,7 +166,7 @@ body {
   font-family: var(--fuente);
   font-size: 16px;
   line-height: 1.55;
-  /* Cifras de altura de mayúscula: Cormorant usa por defecto las «antiguas», que bailan en los precios */
+  /* Cifras de altura de mayúscula: algunas serifs usan por defecto las «antiguas», que bailan en los precios */
   font-feature-settings: "lnum" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

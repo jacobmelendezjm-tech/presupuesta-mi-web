@@ -1,7 +1,7 @@
 # SPEC · Rediseño «escena oscura + verde neón» y vista previa 3D reactiva
 
 > **Nota de vigencia (11/11/2026):** esta especificación documenta la etapa visual oscura publicada el 10/11.
-> La dirección visual actual alterna entre claro (marfil/grises cálidos) y oscuro (grafito), con Cormorant Garamond/Inter,
+> La dirección visual actual alterna entre claro (marfil/grises cálidos) y oscuro (grafito), con Playfair Display/Inter,
 > superficies translúcidas y una píldora de tema persistente. La nueva referencia y el estado están en `memory.md`; los contratos funcionales del
 > configurador y de la escena 3D que se describen aquí siguen vigentes.
 
