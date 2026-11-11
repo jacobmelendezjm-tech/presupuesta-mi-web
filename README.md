@@ -311,7 +311,7 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Web React con una interfaz en marfil y grises cálidos, tipografía Aquire (titulares, cifras y etiquetas) e Inter (texto), superficies suaves y una píldora animada para alternar entre modo claro y oscuro. La selección se conserva al volver a la web. La vista previa 3D mantiene el contraste de un panel de grafito y responde casi al momento a las opciones elegidas: el precio llega en unos 120 ms y cada módulo se monta en menos de medio segundo. Consume las tres rutas de la API:
+Web React con una interfaz en marfil y grises cálidos, tipografía Cormorant Garamond (titulares y cifras) e Inter (texto y rótulos), superficies suaves y una píldora animada para alternar entre modo claro y oscuro. La selección se conserva al volver a la web. La vista previa 3D mantiene el contraste de un panel de grafito y responde casi al momento a las opciones elegidas: el precio llega en unos 120 ms y cada módulo se monta en menos de medio segundo. Consume las tres rutas de la API:
 
 La maqueta de la web del cliente se construye en directo mientras se configura: muestra páginas, diseño y módulos seleccionados, con una cámara que cambia según el paso. La escena respeta la preferencia de reducir movimiento y no calcula precios; el importe siempre llega del servidor.
 
@@ -338,11 +338,6 @@ provisionales.
 | Calculadora | [`Calculadora.jsx`](cliente/src/components/calculadora/Calculadora.jsx) y [`useCalculator.js`](cliente/src/components/calculadora/useCalculator.js): 4 pasos y resumen lateral fijo |
 | Servicios, packs y mantenimiento | Tarifas, configuraciones listas y planes mensuales |
 | Metodología y preguntas | Cómo se calcula y dudas frecuentes |
-
-La fuente **Aquire** (Gregory «Sesohq» Ortiz) es freeware de **uso no comercial**: vale para esta práctica, pero
-para un uso comercial hay que comprar la licencia. Está en [`cliente/public/fuentes/`](cliente/public/fuentes/) en
-woff2. La original dibuja Á, É, Í, Ó, Ú, Ñ y Ü sin acento; [`herramientas/aquire-acentos.py`](herramientas/aquire-acentos.py)
-(fontTools) les añade las tildes con el grosor de cada peso. Le faltan €, ¿, ¡, + y /, que salen de Inter.
 
 Glyph Portal es un componente con licencia MIT de Christian Katzmann, adaptado a JSX y
 traducido al español. Es responsive y respeta la opción del sistema de reducir el

@@ -67,7 +67,7 @@
   align-items: center;
   gap: 12px;
   color: var(--texto);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: normal;
@@ -105,7 +105,7 @@
   padding: 14px 24px 14px 30px;
   border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.52);
+  background: var(--vidrio);
   color: var(--texto);
   font-size: 13.5px;
 }

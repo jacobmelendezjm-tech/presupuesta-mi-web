@@ -58,7 +58,7 @@
   background: var(--luz-escena);
   box-shadow: 0 0.6em 1.4em -0.6em var(--luz-60);
   color: #031a04;
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 0.7em;
   font-weight: 800;
   font-stretch: 90%;
@@ -333,7 +333,7 @@
     0 0 2em -0.4em var(--luz-60),
     0 1em 2em -1em rgba(0, 0, 0, 0.9);
   color: #cfcfcf;
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 0.62em;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -417,7 +417,7 @@
   background: radial-gradient(circle at 35% 30%, #2c2c2c, #101010);
   box-shadow: 0 0 2.2em -0.4em var(--luz-35);
   color: var(--luz-90);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 0.8em;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -567,7 +567,7 @@
   top: 0.32em;
   left: 1.3em;
   color: #9a9a9a;
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 0.62em;
   font-weight: 700;
   font-stretch: 85%;

@@ -28,7 +28,7 @@
   margin: 0 0 14px;
   padding: 0;
   color: var(--texto-2);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: 85%;
@@ -170,7 +170,7 @@
   border: 1px solid var(--verde-borde);
   border-radius: var(--radio-pildora);
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 10px;
   font-weight: 700;
   font-stretch: 85%;
@@ -605,7 +605,7 @@
   align-items: center;
   gap: 8px;
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 11px;
   font-weight: 700;
   font-stretch: 85%;
@@ -689,7 +689,7 @@
   display: flex;
   justify-content: space-between;
   color: var(--texto-3);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 11px;
   font-weight: 600;
   font-stretch: 85%;

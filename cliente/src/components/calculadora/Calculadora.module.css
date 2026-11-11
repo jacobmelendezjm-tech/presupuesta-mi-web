@@ -173,7 +173,7 @@
   top: 50%;
   left: 38px;
   color: var(--texto);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 11px;
   font-weight: 700;
   font-stretch: 85%;
@@ -238,8 +238,8 @@
 }
 
 /* line-height algo mayor que el de la base: con overflow:hidden, 1 recorta las
-   tildes de las mayúsculas («MÓDULOS», «PÁG»). Aquire es muy ancha: en móvil
-   baja hasta 12px para que «SIN DEFINIR» o «0 MÓDULOS» quepan enteros. */
+   tildes de las mayúsculas («MÓDULOS», «PÁG»). En móvil baja hasta 12px para que
+   «SIN DEFINIR» o «0 MÓDULOS» quepan enteros. */
 .specs :global(.spec-valor) {
   font-size: clamp(12px, 2.6cqi, 27px);
   line-height: 1.22;
@@ -313,7 +313,7 @@
   border: 0;
   background: none;
   color: var(--texto-2);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 13px;
   font-weight: 600;
   font-stretch: 88%;
@@ -461,7 +461,7 @@
 
 .contador {
   color: var(--texto-3);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 600;
   font-stretch: 85%;
@@ -652,7 +652,7 @@
     gap: 3px;
   }
 
-  /* Aquire no cabe en una línea en cuatro columnas estrechas: se parte en dos */
+  /* En cuatro columnas estrechas el valor puede partirse en dos líneas */
   .specs :global(.spec-valor) {
     font-size: clamp(11px, 3.3cqi, 18px);
     line-height: 1.2;

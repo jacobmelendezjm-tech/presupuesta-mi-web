@@ -81,7 +81,7 @@
   border-radius: var(--radio-pildora);
   background: var(--verde);
   color: var(--texto-sobre-verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 10.5px;
   font-weight: 800;
   font-stretch: 85%;
@@ -120,7 +120,7 @@
 
 .mant-precio span {
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: 85%;
@@ -278,7 +278,7 @@
 
 .mant-estado .mant-enlace {
   min-height: 44px;
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 13px;
   font-weight: 700;
   font-stretch: 88%;

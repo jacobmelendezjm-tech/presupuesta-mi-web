@@ -1,28 +1,5 @@
 /* Presupuesta mi web · superficies cálidas, cristal mate y contraste tinta */
 
-/* Aquire · Sesohq · freeware de uso no comercial (ver public/fuentes/LICENCIA-aquire.txt).
-   Solo tiene mayúsculas y le faltan €, ¿, ¡, + y /: esos caracteres salen de Inter. */
-@font-face {
-  font-family: "Aquire";
-  src: url("/fuentes/aquire-light.woff2") format("woff2");
-  font-weight: 300;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Aquire";
-  src: url("/fuentes/aquire-regular.woff2") format("woff2");
-  font-weight: 400 500;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Aquire";
-  src: url("/fuentes/aquire-bold.woff2") format("woff2");
-  font-weight: 600 900;
-  font-display: swap;
-}
-
 :root {
   /* Lino, porcelana y vidrio esmerilado */
   --fondo: #f1f0ed;
@@ -69,12 +46,22 @@
   --portal-letra: #2b2a28;
   --portal-letra-hondo: #121211;
 
+  /* Superficies translúcidas (tarjetas, píldoras, campos) y luz detrás de los titulares.
+     Cada tema tiene las suyas: un blanco fijo se vuelve una placa gris en modo oscuro. */
+  --vidrio: rgba(255, 255, 255, 0.62);
+  --vidrio-fuerte: rgba(255, 255, 255, 0.78);
+  --campo: rgba(255, 255, 255, 0.82);
+  --campo-foco: rgba(255, 255, 255, 0.96);
+  --luz-titular: rgba(255, 255, 255, 0.72);
+
   /* Luz de la escena 3D (pasa a ámbar con «Despliegue urgente») */
   --luz: var(--verde);
 
   /* Tipografía sans limpia y redonda */
   --fuente: "Inter", "Segoe UI", system-ui, sans-serif;
-  --display: "Aquire", "Inter", "Segoe UI", system-ui, sans-serif;
+  --display: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
+  /* Rótulos pequeños (menú, etiquetas, botones, HUD): una serif de lectura no aguanta 11-14px */
+  --rotulo: var(--fuente);
   --mono: ui-monospace, Consolas, monospace;
 
   /* Forma y medidas */
@@ -136,6 +123,12 @@
   --portal-letra: #e6e5e1;
   --portal-letra-hondo: #b9b8b3;
 
+  --vidrio: rgba(255, 255, 255, 0.035);
+  --vidrio-fuerte: rgba(255, 255, 255, 0.06);
+  --campo: rgba(255, 255, 255, 0.04);
+  --campo-foco: rgba(255, 255, 255, 0.07);
+  --luz-titular: rgba(255, 255, 255, 0.035);
+
   --scrollbar-thumb: #55544f;
   --sombra: 0 24px 56px -30px rgba(0, 0, 0, 0.7);
   --degradado-escena: radial-gradient(ellipse 75% 65% at 55% 42%, #484744 0%, #32312f 38%, #1d1d1c 72%, #111110 100%);
@@ -165,6 +158,8 @@ body {
   font-family: var(--fuente);
   font-size: 16px;
   line-height: 1.55;
+  /* Cifras de altura de mayúscula: Cormorant usa por defecto las «antiguas», que bailan en los precios */
+  font-feature-settings: "lnum" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -216,7 +211,7 @@ textarea {
   align-items: center;
   gap: 10px;
   color: var(--texto-2);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: normal;
@@ -292,7 +287,7 @@ textarea {
   background: var(--verde);
   box-shadow: 0 12px 32px -14px var(--verde-brillo);
   color: var(--texto-sobre-verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 14px;
   font-weight: 700;
   font-stretch: normal;
@@ -345,7 +340,7 @@ textarea {
   border-radius: var(--radio-pildora);
   background: transparent;
   color: var(--texto);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 14px;
   font-weight: 600;
   font-stretch: normal;
@@ -415,7 +410,7 @@ textarea {
   padding: 0 22px;
   border: 1.5px solid var(--verde-borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--vidrio-fuerte);
   color: var(--texto);
   font: inherit;
   font-size: 15px;
@@ -527,7 +522,7 @@ textarea {
 
 .spec-etiqueta {
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 11px;
   font-weight: 700;
   font-stretch: 85%;
@@ -789,7 +784,7 @@ html.menu-abierto {
 .portal [data-gp-caption] {
   inset: auto clamp(20px, 4vw, 64px) clamp(20px, 5vh, 56px);
   color: var(--texto-2);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 600;
   font-stretch: 86%;
@@ -821,9 +816,9 @@ html.menu-abierto {
   padding: 0 18px;
   border: 1.5px solid var(--verde-borde);
   border-radius: var(--radio-pildora);
-  background: rgba(255, 255, 255, 0.76);
+  background: var(--vidrio-fuerte);
   color: var(--texto);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 13px;
   letter-spacing: 0.08em;
 }
@@ -1009,7 +1004,7 @@ html.menu-abierto {
   position: absolute;
   z-index: -2;
   inset: -50% -10% -40% -20%;
-  background: radial-gradient(ellipse 45% 50% at 30% 45%, rgba(255, 255, 255, 0.72), transparent 70%);
+  background: radial-gradient(ellipse 45% 50% at 30% 45%, var(--luz-titular), transparent 70%);
   pointer-events: none;
 }
 
@@ -1052,7 +1047,7 @@ html.menu-abierto {
   border-radius: 50%;
   box-shadow: 0 0 18px -4px var(--verde-brillo);
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -1061,7 +1056,7 @@ html.menu-abierto {
 .alternativa-enlace {
   gap: 8px;
   min-height: 44px;
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 14px;
   font-weight: 700;
   font-stretch: 90%;
@@ -1104,7 +1099,7 @@ html.menu-abierto {
   padding: clamp(22px, 2.6vw, 34px) clamp(16px, 2vw, 28px);
   border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.64);
+  background: var(--vidrio);
   box-shadow: 0 18px 42px -34px rgba(20, 20, 18, 0.28);
 }
 
@@ -1145,7 +1140,7 @@ html.menu-abierto {
 
 .tarifa-etiqueta {
   color: var(--texto-2);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: normal;
@@ -1196,7 +1191,7 @@ html.menu-abierto {
   padding: clamp(24px, 3vw, 40px);
   border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.56);
+  background: var(--vidrio);
 }
 
 .metodo:first-child {
@@ -1264,7 +1259,7 @@ html.menu-abierto {
   margin-top: clamp(48px, 6vw, 80px);
   border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--vidrio);
   color: var(--texto-2);
   font-size: 14.5px;
 }
@@ -1375,7 +1370,7 @@ html.menu-abierto {
   padding: 0 22px;
   border: 1px solid var(--borde);
   border-radius: var(--radio-grande);
-  background: rgba(255, 255, 255, 0.62);
+  background: var(--vidrio);
   interpolate-size: allow-keywords; /* permite animar la altura hasta «auto» */
 }
 
@@ -1400,7 +1395,7 @@ html.menu-abierto {
 
 .pregunta-numero {
   color: var(--verde);
-  font-family: var(--display);
+  font-family: var(--rotulo);
   font-size: 12px;
   font-weight: 700;
   font-stretch: 86%;
@@ -1659,13 +1654,13 @@ html.menu-abierto {
 }
 
 .segmentado {
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--vidrio-fuerte);
 }
 
 @media (max-width: 699px) {
   .tarifa {
     border-radius: var(--radio-grande);
-    background: rgba(255, 255, 255, 0.64);
+    background: var(--vidrio);
   }
 }
 
