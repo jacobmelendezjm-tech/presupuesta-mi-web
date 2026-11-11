@@ -5,8 +5,8 @@
   overflow: hidden;
   padding: clamp(40px, 6vw, 80px) clamp(20px, 4vw, 48px) calc(88px + env(safe-area-inset-bottom, 0px));
   background:
-    radial-gradient(ellipse 60% 70% at 50% 100%, rgba(255, 255, 255, 0.72), transparent 70%),
-    linear-gradient(180deg, var(--fondo) 0%, #e9e8e5 55%, #e3e2de 100%);
+    radial-gradient(ellipse 60% 70% at 50% 100%, var(--verde-suave), transparent 70%),
+    linear-gradient(180deg, var(--fondo) 0%, var(--fondo-2) 55%, color-mix(in srgb, var(--fondo) 86%, black) 100%);
   color: var(--texto-2);
   font-size: 13px;
 }
@@ -129,8 +129,8 @@
   height: 48px;
   padding-top: 12px;
   border-radius: 96px 96px 0 0;
-  background: #171716;
-  box-shadow: 0 12px 34px -16px rgba(20, 20, 18, 0.42);
+  background: var(--verde);
+  box-shadow: 0 12px 34px -16px var(--verde-brillo);
   color: var(--texto-sobre-verde);
   transform: translateX(-50%);
   transition: height 0.3s var(--curva), padding-top 0.3s var(--curva), background-color 0.2s;

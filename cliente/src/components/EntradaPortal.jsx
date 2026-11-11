@@ -74,10 +74,10 @@ export function EntradaPortal() {
         onProgress={alAvanzar}
         background={<div className="entrada-campo" />}
         style={{
-          "--gp-paper": "#f1f0ed",
-          "--gp-ink": "#171716",
-          "--gp-field": "#d1d0cc",
-          "--gp-foreground": "#171716",
+          "--gp-paper": "var(--portal-paper)",
+          "--gp-ink": "var(--portal-ink)",
+          "--gp-field": "var(--portal-field)",
+          "--gp-foreground": "var(--portal-foreground)",
         }}
         front={
           <>

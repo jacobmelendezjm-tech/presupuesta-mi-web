@@ -6,6 +6,7 @@ import { useSeccionActiva } from "./useSeccionActiva.js";
 import s from "./Cabecera.module.css";
 
 const euros = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" });
+const CLAVE_TEMA = "presupuesta-mi-web-tema";
 
 // Secciones en el orden de la página. Las que tienen «nav» salen también en la barra.
 const SECCIONES = [
@@ -26,9 +27,30 @@ export function Cabecera({ total, calculando }) {
   const activa = useSeccionActiva(IDS_OBSERVADOS);
   const ocupado = useEstadoMinimo(calculando, 450); // el spinner no parpadea si el servidor va rápido
   const [abierto, setAbierto] = useState(false);
+  const [temaOscuro, setTemaOscuro] = useState(() => {
+    try {
+      return window.localStorage.getItem(CLAVE_TEMA) === "oscuro";
+    } catch {
+      return typeof document !== "undefined" && document.documentElement.dataset.tema === "oscuro";
+    }
+  });
   const boton = useRef(null);
   const menu = useRef(null);
   const interior = useRef(null);
+
+  // Conserva la elección y coordina el color de la interfaz del navegador.
+  useEffect(() => {
+    const tema = temaOscuro ? "oscuro" : "claro";
+    const raiz = document.documentElement;
+    raiz.dataset.tema = tema;
+    raiz.style.colorScheme = temaOscuro ? "dark" : "light";
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", temaOscuro ? "#181817" : "#f1f0ed");
+    try {
+      window.localStorage.setItem(CLAVE_TEMA, tema);
+    } catch {
+      // La página sigue funcionando aunque el navegador bloquee el almacenamiento.
+    }
+  }, [temaOscuro]);
 
   // Al cerrar, el foco vuelve a la hamburguesa (salvo si se navega a una sección).
   const cerrar = useCallback((devolverFoco = true) => {
@@ -117,6 +139,29 @@ export function Cabecera({ total, calculando }) {
             {/* Destello verde cada vez que llega un total nuevo (la clave lo reinicia) */}
             {total != null && <span key={total} className={s.destello} aria-hidden="true" />}
           </a>
+
+          <button
+            type="button"
+            className={s.tema}
+            data-oscuro={temaOscuro || undefined}
+            aria-pressed={temaOscuro}
+            aria-label={temaOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            title={temaOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+            onClick={() => setTemaOscuro((oscuro) => !oscuro)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              {temaOscuro ? (
+                <>
+                  <circle cx="12" cy="12" r="3.5" />
+                  <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+                </>
+              ) : (
+                <path d="M20.2 15.1A8.4 8.4 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z" />
+              )}
+            </svg>
+            <span className={s.temaTexto}>{temaOscuro ? "Claro" : "Oscuro"}</span>
+            <span className={s.temaInterruptor} aria-hidden="true"><span /></span>
+          </button>
 
           <button
             ref={boton}

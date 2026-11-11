@@ -36,12 +36,11 @@ Vienen del enunciado y de decisiones ya tomadas:
 5. **CSS propio, sin Tailwind** (CSS Modules en la calculadora). Los componentes que se copien de shadcn o
    21st.dev (pensados para Tailwind y TypeScript) se adaptan a JSX + CSS en
    `cliente/src/components/ui/`, sin añadir dependencias.
-6. **Estilo visual (actualizado el 11/11/2026):** superficies claras marfil y gris cálido (`#F1F0ED`,
-   `#E9E8E5`, `#FBFAF8`), texto tinta (`#171716`), botones y estados seleccionados negros, tarjetas
-   redondeadas con sombras suaves y desenfoque de cristal. **Manrope** para titulares y controles, **Inter**
-   para lectura. La vista 3D conserva un panel de grafito con controles en grises claros. Este sistema toma
-   como referencia la captura de dashboard compartida el 11/11 y sustituye el tema oscuro/neón del 10/11.
-   Los tokens están en `:root` de `cliente/src/index.css`.
+6. **Estilo visual (actualizado el 11/11/2026):** dos modos conmutables. El claro usa marfil y gris cálido
+   (`#F1F0ED`, `#E9E8E5`, `#FBFAF8`) con tinta negra; el oscuro invierte la escala a grafito y texto claro.
+   Ambos usan **Manrope** para titulares/controles y **Inter** para lectura, con tarjetas redondeadas y
+   superficies suaves. La píldora de tema en la cabecera anima el cambio y recuerda la elección. La vista
+   previa 3D mantiene su panel de grafito. Los tokens están en `:root` y `:root[data-tema="oscuro"]` de `cliente/src/index.css`.
 7. **Commits solo a tu nombre**, sin coautores.
 8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
 9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
@@ -88,7 +87,7 @@ Otros detalles:
 - **Portal:** copia del componente Glyph Portal (MIT, © Christian Katzmann; conservar el
   aviso), pasado a JSX y traducido. Mide la letra al montarse: la fuente debe estar
   cargada antes, de eso se encarga `EntradaPortal.jsx`.
-- **Sin modo claro/oscuro:** se quitó el botón de tema.
+- **Tema:** la píldora de la cabecera alterna entre claro y oscuro; guarda la preferencia en `localStorage` y evita el destello inicial al recargar.
 - **Responsive y navegadores:** ver el apartado 6.
 
 ### Asistente con IA y PDF (Presupuesta mi Web 2)
@@ -125,6 +124,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 10/11/2026 | Rediseño oscuro/verde y vista previa 3D reactiva publicados en GitHub en `9c548c8`; revisión visual completada (ver apartado 8) |
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 | 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
+| 11/11/2026 | Píldora dinámica en la cabecera para alternar entre claro y oscuro, con preferencia persistente y colores coordinados para el portal y el menú |
 
 ---
 
@@ -253,10 +253,10 @@ Dinámico, interactivo y reactivo.
 | Base compartida | `cliente/index.html` (fuentes Manrope + Inter), `index.css` **por encima** del marcador `FIN DE LA BASE COMPARTIDA` (tokens y clases `.etiqueta`, `.titular`, `.fantasma`, `.boton`, `.boton-contorno`, `.boton-texto`, `.pildora`, `.spinner`, `.skeleton`, `.punto-vivo`, `.specs`), `ui/numero-animado.jsx`, `ui/use-estado-minimo.js` | Hecha; tema claro marfil/gris |
 | Escena 3D | `components/escena/` (`VistaWeb3D`, `Maquetas`, `Modulos`, `piezas`, `usePresencia`, `useEscena`, `useDemo` y sus CSS) | Revisada en Chrome; los tipos y módulos seleccionados aparecen en la maqueta, y urgencia cambia la luz a ámbar |
 | Configurador | `calculadora/` (`Calculadora`, `Pasos`, `Resumen` y sus CSS, `formato.js`, `useCalculator.js`) | Revisado en Chrome en los cuatro pasos y a 1440, 1024, 390 y 320 px; el servidor devolvió los importes esperados |
-| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Se aplicó la nueva paleta y tipografía; captura inicial revisada en Chrome a 1440 px y el viewport se midió a 390 px sin scroll horizontal |
+| Tema | `App.jsx`, `components/layout/` (`Cabecera`, `Pie`, `LogoJM`, `useSeccionActiva`), `EntradaPortal.jsx`, `index.css` por debajo del marcador | Paleta marfil/gris y oscura, con píldora animada y preferencia persistente; el portal, el menú y los estados seleccionados usan los mismos tokens |
 | Secciones | `ui/asistente-ia`, `ui/pricing`, `ui/planes-mantenimiento` (jsx + css) | Reestilizadas en marfil y superficies claras; queda una revisión visual completa de todos los pasos y secciones después del cambio |
 
-Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cambio visual. El 11/11 la interfaz y la API se abrieron con servidores locales; Vite aplicó los cambios sin mostrar errores y se revisó el portal en Chrome. El nuevo tema se midió a 390 px CSS: `scrollWidth` y `clientWidth` fueron 390. No se han vuelto a recorrer todos los flujos ni a compilar el proyecto. El servidor (`src/`) no se modificó. El endpoint de estado de producción respondió `{"status":"ok"}` el 11/11.
+Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cambio visual. El 11/11 la interfaz y la API se abrieron con servidores locales; Vite aplicó los cambios sin errores de interfaz y se revisó el portal en Chrome. El viewport nuevo se midió a 390 px CSS (`scrollWidth` y `clientWidth` fueron 390); la píldora se revisó a 1440 y 390 px, y alternar y recargar conservó el modo oscuro. No se ha compilado tras este cambio ni vuelto a recorrer todos los flujos. El servidor (`src/`) no se modificó. El endpoint de estado de producción respondió `{"status":"ok"}` el 11/11.
 
 ### Estado y pendientes
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#f1f0ed" />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="description" content="Configura tu web y mírala construirse en 3D mientras el servidor calcula tu presupuesto con tarifas claras." />
     <title>Presupuesta mi web</title>
     <link
@@ -18,8 +18,17 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      try {
+        if (localStorage.getItem("presupuesta-mi-web-tema") === "oscuro") {
+          document.documentElement.dataset.tema = "oscuro";
+          document.documentElement.style.colorScheme = "dark";
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#181817");
+        }
+      } catch {}
+    </script>
     <!-- Evita el destello blanco antes de que cargue el CSS -->
-    <style>html, body { background: #f1f0ed; }</style>
+    <style>html, body { background: var(--fondo, #f1f0ed); }</style>
   </head>
   <body>
     <div id="root"></div>

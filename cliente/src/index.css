@@ -9,6 +9,10 @@
   --superficie-3: #e8e7e3;
   --borde: rgba(25, 25, 24, 0.08);
   --borde-fuerte: rgba(25, 25, 24, 0.16);
+  --trazo-fantasma: rgba(23, 23, 22, 0.18);
+  --fantasma-1: rgba(23, 23, 22, 0.09);
+  --fantasma-2: rgba(23, 23, 22, 0.025);
+  --fantasma-3: rgba(23, 23, 22, 0);
 
   /* Tinta negra y grises cálidos */
   --texto: #171716;
@@ -28,6 +32,16 @@
   --ambar: #8b7351;
   --rojo: #b34338;
   --fondo-error: rgba(179, 67, 56, 0.08);
+
+  /* Material del portal */
+  --portal-paper: #f1f0ed;
+  --portal-ink: #171716;
+  --portal-field: #d1d0cc;
+  --portal-foreground: #171716;
+  --portal-surface: #d9d8d4;
+  --portal-surface-deep: #c1c0bc;
+  --portal-sheen: rgba(255, 255, 255, 0.42);
+  --portal-halo: rgba(255, 255, 255, 0.2);
 
   /* Luz de la escena 3D (pasa a ámbar con «Despliegue urgente») */
   --luz: var(--verde);
@@ -52,7 +66,52 @@
 
   /* Escenario 3D de grafito dentro del espacio claro */
   --degradado-escena: radial-gradient(ellipse 75% 65% at 55% 42%, #454441 0%, #2f2e2c 38%, #1a1a19 72%, #10100f 100%);
+  --scrollbar-thumb: #c3c1bc;
   color-scheme: light;
+}
+
+:root[data-tema="oscuro"] {
+  --fondo: #181817;
+  --fondo-2: #222220;
+  --superficie: #242422;
+  --superficie-2: #2c2c2a;
+  --superficie-3: #363633;
+  --borde: rgba(255, 255, 255, 0.09);
+  --borde-fuerte: rgba(255, 255, 255, 0.18);
+  --trazo-fantasma: rgba(255, 255, 255, 0.2);
+  --fantasma-1: rgba(255, 255, 255, 0.14);
+  --fantasma-2: rgba(255, 255, 255, 0.035);
+  --fantasma-3: rgba(255, 255, 255, 0);
+
+  --texto: #f2f1ed;
+  --texto-2: #b7b5af;
+  --texto-3: #96948e;
+  --texto-sobre-verde: #171716;
+
+  --verde: #f2f1ed;
+  --verde-claro: #ffffff;
+  --verde-oscuro: #d4d1ca;
+  --verde-suave: rgba(255, 255, 255, 0.08);
+  --verde-borde: rgba(255, 255, 255, 0.3);
+  --verde-brillo: rgba(255, 255, 255, 0.14);
+
+  --ambar: #d0b181;
+  --rojo: #ff8b80;
+  --fondo-error: rgba(255, 139, 128, 0.1);
+
+  --portal-paper: #181817;
+  --portal-ink: #f2f1ed;
+  --portal-field: #343432;
+  --portal-foreground: #f2f1ed;
+  --portal-surface: #393937;
+  --portal-surface-deep: #242422;
+  --portal-sheen: rgba(255, 255, 255, 0.18);
+  --portal-halo: rgba(255, 255, 255, 0.09);
+
+  --scrollbar-thumb: #55544f;
+  --sombra: 0 24px 56px -30px rgba(0, 0, 0, 0.7);
+  --degradado-escena: radial-gradient(ellipse 75% 65% at 55% 42%, #484744 0%, #32312f 38%, #1d1d1c 72%, #111110 100%);
+  color-scheme: dark;
 }
 
 *,
@@ -65,7 +124,7 @@ html {
   background: var(--fondo);
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--hueco-nav) + 16px);
-  scrollbar-color: #c3c1bc var(--fondo);
+  scrollbar-color: var(--scrollbar-thumb) var(--fondo);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -174,7 +233,7 @@ textarea {
    Siempre en un elemento aria-hidden con posición y tamaño propios. */
 .fantasma {
   color: transparent;
-  background: linear-gradient(180deg, rgba(23, 23, 22, 0.09) 0%, rgba(23, 23, 22, 0.025) 72%, rgba(23, 23, 22, 0) 100%);
+  background: linear-gradient(180deg, var(--fantasma-1) 0%, var(--fantasma-2) 72%, var(--fantasma-3) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   font-family: var(--display);
@@ -564,8 +623,8 @@ html.menu-abierto {
   --luz-x: 70%;
   --luz-y: 50%;
   --estudio:
-    radial-gradient(ellipse 38% 42% at var(--luz-x) var(--luz-y), rgba(255, 255, 255, 0.42), transparent 72%),
-    radial-gradient(ellipse 86% 78% at var(--luz-x) calc(var(--luz-y) - 4%), #d9d8d4 0%, #d0cfcb 40%, #c7c6c2 76%, #c1c0bc 100%);
+    radial-gradient(ellipse 38% 42% at var(--luz-x) var(--luz-y), var(--portal-sheen), transparent 72%),
+    radial-gradient(ellipse 86% 78% at var(--luz-x) calc(var(--luz-y) - 4%), var(--portal-surface) 0%, color-mix(in srgb, var(--portal-surface) 56%, var(--portal-surface-deep)) 40%, color-mix(in srgb, var(--portal-surface) 24%, var(--portal-surface-deep)) 76%, var(--portal-surface-deep) 100%);
   position: relative;
 }
 
@@ -611,11 +670,11 @@ html.menu-abierto {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(104deg, transparent 36%, rgba(255, 255, 255, 0.44) 47%, rgba(255, 255, 255, 0.1) 53%, transparent 60%),
-    radial-gradient(ellipse 36% 30% at 22% 47%, rgba(255, 255, 255, 0.38), rgba(225, 224, 220, 0.18) 52%, transparent 78%),
-    radial-gradient(ellipse 34% 30% at 78% 45%, rgba(255, 255, 255, 0.34), rgba(217, 216, 212, 0.16) 52%, transparent 80%),
-    radial-gradient(ellipse 70% 30% at 50% 52%, rgba(255, 255, 255, 0.2), transparent 82%),
-    linear-gradient(180deg, #deddd9 22%, #c9c8c4 46%, #d7d6d2 66%, #c8c7c3 84%);
+    linear-gradient(104deg, transparent 36%, var(--portal-sheen) 47%, var(--portal-halo) 53%, transparent 60%),
+    radial-gradient(ellipse 36% 30% at 22% 47%, var(--portal-sheen), var(--portal-halo) 52%, transparent 78%),
+    radial-gradient(ellipse 34% 30% at 78% 45%, var(--portal-sheen), var(--portal-halo) 52%, transparent 80%),
+    radial-gradient(ellipse 70% 30% at 50% 52%, var(--portal-halo), transparent 82%),
+    linear-gradient(180deg, var(--portal-surface) 22%, var(--portal-surface-deep) 46%, var(--portal-surface) 66%, var(--portal-surface-deep) 84%);
   opacity: clamp(0, calc((0.66 - var(--entrada, 0)) * 3.6), 1);
 }
 
@@ -1140,7 +1199,7 @@ html.menu-abierto {
 .metodo-numero {
   margin-bottom: -0.17em;
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(23, 23, 22, 0.18);
+  -webkit-text-stroke: 1.5px var(--trazo-fantasma);
   font-family: var(--display);
   font-size: clamp(96px, 10.5vw, 164px);
   font-weight: 900;
@@ -1244,7 +1303,8 @@ html.menu-abierto {
   padding: 20px 22px 24px;
   overflow: auto;
   border-top: 1px solid var(--borde);
-  color: #d6d6d6;
+  background: var(--superficie-2);
+  color: var(--texto-2);
   font-family: var(--mono);
   font-size: 12.5px;
   line-height: 1.6;

@@ -15,14 +15,14 @@
   position: absolute;
   inset: 0;
   border-bottom: 1px solid var(--borde);
-  background: rgba(248, 247, 244, 0.78);
+  background: color-mix(in srgb, var(--fondo) 84%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   backdrop-filter: blur(18px) saturate(150%);
   transition: background-color 0.3s;
 }
 
 .cabecera[data-menu]::before {
-  background: rgba(241, 240, 237, 0.97);
+  background: color-mix(in srgb, var(--fondo) 97%, transparent);
 }
 
 /* Enlace para saltar el portal con el teclado: solo aparece al enfocarlo */
@@ -166,7 +166,7 @@
   padding: 0 16px 0 22px;
   border: 1.5px solid var(--verde-borde);
   border-radius: var(--radio-pildora);
-  background: rgba(255, 255, 255, 0.68);
+  background: var(--superficie);
   transition: border-color 0.25s, background-color 0.25s, box-shadow 0.35s var(--curva);
 }
 
@@ -224,6 +224,87 @@
   box-shadow: 0 0 10px var(--verde-brillo);
 }
 
+/* Píldora dinámica para invertir el tema de toda la página. */
+.tema {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 11px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-pildora);
+  background: var(--superficie);
+  color: var(--texto);
+  font-family: var(--fuente);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.35s, background-color 0.35s, border-color 0.35s, box-shadow 0.35s, transform 0.25s var(--curva);
+}
+
+.tema:hover {
+  border-color: var(--texto);
+  box-shadow: 0 5px 18px -12px var(--texto);
+  transform: translateY(-1px);
+}
+
+.tema:active {
+  transform: scale(0.96);
+}
+
+.tema svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.45s var(--curva);
+}
+
+.tema[data-oscuro] svg {
+  transform: rotate(35deg);
+}
+
+.temaTexto {
+  min-width: 38px;
+  text-align: left;
+}
+
+.temaInterruptor {
+  display: flex;
+  align-items: center;
+  width: 29px;
+  height: 17px;
+  padding: 2px;
+  border-radius: var(--radio-pildora);
+  background: var(--superficie-3);
+  transition: background-color 0.35s;
+}
+
+.temaInterruptor > span {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--texto-2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transform: translateX(0);
+  transition: background-color 0.35s, transform 0.35s var(--curva);
+}
+
+.tema[data-oscuro] .temaInterruptor {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.tema[data-oscuro] .temaInterruptor > span {
+  background: var(--texto);
+  transform: translateX(12px);
+}
+
 .destello {
   position: absolute;
   inset: -1.5px;
@@ -235,10 +316,10 @@
 
 @keyframes destello {
   from {
-    box-shadow: 0 0 0 0 rgba(23, 23, 22, 0.55);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--verde) 55%, transparent);
   }
   to {
-    box-shadow: 0 0 0 12px rgba(23, 23, 22, 0);
+    box-shadow: 0 0 0 12px color-mix(in srgb, var(--verde) 0%, transparent);
   }
 }
 
@@ -309,9 +390,9 @@
   overflow: hidden auto;
   overscroll-behavior: contain;
   background:
-    radial-gradient(ellipse 48% 60% at 86% 26%, rgba(255, 255, 255, 0.9), transparent 70%),
-    radial-gradient(ellipse 70% 60% at 30% 40%, rgba(255, 255, 255, 0.6), transparent 70%),
-    #f1f0ed;
+    radial-gradient(ellipse 48% 60% at 86% 26%, color-mix(in srgb, var(--superficie) 76%, transparent), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 30% 40%, var(--verde-suave), transparent 70%),
+    var(--fondo);
   animation: menu-entrar 0.3s var(--curva);
 }
 
@@ -494,6 +575,15 @@
     padding: 0 12px 0 16px;
   }
 
+  .tema {
+    gap: 6px;
+    padding-inline: 9px;
+  }
+
+  .temaTexto {
+    display: none;
+  }
+
   /* La palabra «Estimación» se oculta a la vista; el nombre accesible ya la incluye */
   .estimacionEtiqueta {
     position: absolute;
@@ -505,7 +595,7 @@
   }
 }
 
-@media (max-width: 379px) {
+@media (max-width: 430px) {
   .marcaTexto {
     display: none;
   }
@@ -514,6 +604,13 @@
 @media (prefers-reduced-motion: reduce) {
   .destello {
     display: none;
+  }
+
+  .tema,
+  .tema svg,
+  .temaInterruptor,
+  .temaInterruptor > span {
+    transition: none;
   }
 
   .menuEnlace:hover,

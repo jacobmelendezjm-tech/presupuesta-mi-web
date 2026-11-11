@@ -1,8 +1,8 @@
 # SPEC · Rediseño «escena oscura + verde neón» y vista previa 3D reactiva
 
 > **Nota de vigencia (11/11/2026):** esta especificación documenta la etapa visual oscura publicada el 10/11.
-> La dirección visual actual es clara, en marfil y grises cálidos, con Manrope/Inter, superficies translúcidas
-> y contraste de grafito. La nueva referencia y el estado están en `memory.md`; los contratos funcionales del
+> La dirección visual actual alterna entre claro (marfil/grises cálidos) y oscuro (grafito), con Manrope/Inter,
+> superficies translúcidas y una píldora de tema persistente. La nueva referencia y el estado están en `memory.md`; los contratos funcionales del
 > configurador y de la escena 3D que se describen aquí siguen vigentes.
 
 Proyecto: `c:/Users/Alumno/Desktop/presupuesta-mi-web-main` (API Express en la raíz `src/`, cliente React 19 + Vite 8 en `cliente/`).
