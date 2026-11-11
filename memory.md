@@ -3,7 +3,7 @@
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
 Última actualización: **12/11/2026**.
 
-> **La píldora de tema claro/oscuro se publicó en GitHub en el commit `9b6ff56`; Vercel completó el despliegue y la API responde `{"status":"ok"}`.** Lee el apartado 8 para el estado actual.
+> **Estado al 12/11/2026: todo publicado en `main` y desplegado en Vercel; la API responde `{"status":"ok"}`.** Hoy: contraste del portal, web más fluida (tiempos de la maqueta y del precio acortados), tipografía **Playfair Display + Inter** y modo oscuro sin placas grises. Lee la regla 6 y el apartado 8 («Fluidez») antes de tocar estilos o tiempos.
 > Vercel está conectado a `main` y despliega cada push.
 
 ---
@@ -268,7 +268,8 @@ Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cam
 4. El laboratorio (`cliente/laboratorio.html` y `cliente/src/laboratorio.jsx`) ya no existe en este checkout.
 5. El README describe la nueva estética marfil/gris, Playfair Display/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
-7. La píldora claro/oscuro, los estilos y la documentación están publicados en `origin/main` (`9b6ff56`). GitHub confirma el despliegue de Vercel y `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
+7. Todo lo del 12/11 (contraste, fluidez, Playfair Display y modo oscuro) está publicado en `origin/main` y desplegado; `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
+8. Pendiente: revisar en Safari/Firefox y en un ordenador menos potente (el del instituto) si la escena 3D va fluida; decidir si los títulos de las tarjetas (Esencial, Básico…) pasan también a Playfair.
 
 ### Fluidez (12/11/2026)
 
@@ -291,6 +292,7 @@ tiempos puestos a propósito. Valores actuales (no volver a alargarlos sin motiv
   Los commits van **sin coautores**.
 - La carpeta `videos/` no está en este checkout; el commit documental solo incluye `README.md` y `memory.md`.
 - El push usa el Git Credential Manager de Windows: puede abrir una ventana para iniciar sesión en GitHub.
+- Desde Git Bash el push falla con «unable to get local issuer certificate»: usar `git -c http.sslBackend=schannel push`.
 
 ### Herramienta de capturas (opcional)
 
