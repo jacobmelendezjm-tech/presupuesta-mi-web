@@ -26,17 +26,17 @@
 }
 
 .escena {
-  --texto: #f4f3f0;
-  --texto-2: #b7b5af;
-  --texto-3: #92908a;
-  --borde: rgba(255, 255, 255, 0.12);
-  --borde-fuerte: rgba(255, 255, 255, 0.24);
-  --verde: #d4d1ca;
-  --verde-claro: #f5f3ed;
-  --verde-borde: rgba(245, 243, 237, 0.42);
-  --verde-suave: rgba(245, 243, 237, 0.11);
-  --verde-brillo: rgba(245, 243, 237, 0.16);
-  --texto-sobre-verde: #171716;
+  --texto: var(--escena-texto);
+  --texto-2: var(--escena-texto-2);
+  --texto-3: var(--escena-texto-3);
+  --borde: var(--escena-borde);
+  --borde-fuerte: var(--escena-borde-fuerte);
+  --verde: var(--escena-acento);
+  --verde-claro: var(--escena-acento-claro);
+  --verde-borde: var(--escena-acento-borde);
+  --verde-suave: var(--escena-acento-suave);
+  --verde-brillo: var(--escena-acento-suave);
+  --texto-sobre-verde: var(--escena-sobre-acento);
   /* Cámara del paso 1 (presentación del producto, plano 3/4) */
   --rx: 10deg;
   --ry: -22deg;
@@ -52,7 +52,7 @@
   --fantasma-x: 0%;
   --foco-x: 0%;
 
-  --luz-escena: #d4d1ca;
+  --luz-escena: var(--escena-luz);
   --luz-90: color-mix(in srgb, var(--luz-escena) 90%, white);
   --luz-60: color-mix(in srgb, var(--luz-escena) 60%, transparent);
   --luz-35: color-mix(in srgb, var(--luz-escena) 35%, transparent);
@@ -144,7 +144,7 @@
   position: absolute;
   inset: 0;
   z-index: 6;
-  background: radial-gradient(ellipse 80% 75% at 50% 46%, transparent 52%, rgba(0, 0, 0, 0.55) 100%);
+  background: radial-gradient(ellipse 80% 75% at 50% 46%, transparent 52%, color-mix(in srgb, var(--escena-base) 70%, transparent) 100%);
   pointer-events: none;
 }
 
@@ -291,7 +291,7 @@
   position: absolute;
   inset: 0;
   border-radius: 1.3em;
-  background: linear-gradient(160deg, #1c1c1c, #070707 60%);
+  background: linear-gradient(160deg, #211b17, #080706 60%);
   /* Contraluz: más intenso arriba, como una luz detrás y por encima del producto */
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.05),
@@ -309,7 +309,7 @@
   border-radius: 1.3em;
   background:
     radial-gradient(ellipse 90% 60% at 30% 0%, rgba(255, 255, 255, 0.045), transparent 70%),
-    linear-gradient(180deg, #171717 0%, #101010 100%);
+    linear-gradient(180deg, #1b1613 0%, #130f0d 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 0 0 1px rgba(255, 255, 255, 0.08),
@@ -359,7 +359,7 @@
   height: 2.6em;
   padding: 0 1.2em;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: linear-gradient(180deg, #232323, #1a1a1a);
+  background: linear-gradient(180deg, #2a211c, #1f1915);
 }
 
 /* Tres puntos con un solo nodo */
@@ -369,10 +369,10 @@
   height: 0.62em;
   margin-right: 2.2em;
   border-radius: 50%;
-  background: #4a4a4a;
+  background: #5b4539;
   box-shadow:
-    1.05em 0 0 #3c3c3c,
-    2.1em 0 0 #3c3c3c;
+    1.05em 0 0 #49382f,
+    2.1em 0 0 #49382f;
 }
 
 .url {
@@ -388,7 +388,7 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.28);
-  color: #9b9b9b;
+  color: #bb937b;
   font-size: 0.78em;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -434,7 +434,7 @@
   width: 3.3em;
   height: 0.55em;
   border-radius: 999px;
-  background: linear-gradient(90deg, #333 0 30%, transparent 30% 40%, #333 40% 70%, transparent 70% 80%, #333 80%);
+  background: linear-gradient(90deg, #3e3028 0 30%, transparent 30% 40%, #3e3028 40% 70%, transparent 70% 80%, #3e3028 80%);
 }
 
 /* Línea de progreso del navegador mientras se construye algo */
@@ -562,7 +562,7 @@
     linear-gradient(rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.075)) 1.1em 1.1em / min(40%, 11em) 0.85em no-repeat,
     linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) 1.1em 2.55em / min(68%, 18em) 0.55em no-repeat,
     linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)) 1.1em 3.55em / min(52%, 14em) 0.55em no-repeat,
-    linear-gradient(180deg, #282828, #1e1e1e);
+    linear-gradient(180deg, #302620, #241c18);
 }
 
 [data-obra="construyendo"] .bloque::before,
@@ -771,7 +771,7 @@
   padding: 0.45em 0.8em;
   border: 1px solid var(--luz-60);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--luz-escena) 14%, #070707);
+  background: color-mix(in srgb, var(--luz-escena) 14%, #080706);
   box-shadow: 0 0.6em 1.6em -0.6em rgba(0, 0, 0, 0.9), 0 0 1.4em -0.4em var(--luz-35);
   color: var(--luz-90);
   font-family: var(--rotulo);
@@ -858,7 +858,7 @@
   padding: 0 13px;
   border: 1px solid var(--borde);
   border-radius: 999px;
-  background: rgba(6, 6, 6, 0.6);
+  background: var(--escena-vidrio);
   color: var(--texto);
   white-space: nowrap;
 }

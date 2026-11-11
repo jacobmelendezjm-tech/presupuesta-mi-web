@@ -55,7 +55,7 @@
   border: 1px solid var(--borde-fuerte);
   border-radius: var(--radio-grande);
   background: var(--superficie);
-  box-shadow: 0 24px 60px -42px rgba(20, 20, 18, 0.35);
+  box-shadow: 0 24px 60px -42px rgba(23, 18, 16, 0.35);
 }
 
 .totalFila {

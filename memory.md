@@ -3,7 +3,7 @@
 Qué se ha hecho hasta ahora, cómo está montado y cómo seguir la próxima vez.
 Última actualización: **12/11/2026**.
 
-> **Estado al 12/11/2026: todo publicado en `main` y desplegado en Vercel; la API responde `{"status":"ok"}`.** Hoy: contraste del portal, web más fluida (tiempos de la maqueta y del precio acortados), tipografía **Playfair Display + Inter** y modo oscuro sin placas grises. Lee la regla 6 y el apartado 8 («Fluidez») antes de tocar estilos o tiempos.
+> **Estado al 12/11/2026: todo publicado en `main` y desplegado en Vercel; la API responde `{"status":"ok"}`.** Hoy: contraste del portal, web más fluida, tipografía **Playfair Display + Inter**, paleta de **pasteles cálidos** en web y PDF, y revisión completa del enunciado de «Presupuesta mi web 2» (cumple todo). Lee la regla 6 y el apartado 8 («Fluidez») antes de tocar estilos o tiempos.
 > Vercel está conectado a `main` y despliega cada push.
 
 ---
@@ -36,11 +36,17 @@ Vienen del enunciado y de decisiones ya tomadas:
 5. **CSS propio, sin Tailwind** (CSS Modules en la calculadora). Los componentes que se copien de shadcn o
    21st.dev (pensados para Tailwind y TypeScript) se adaptan a JSX + CSS en
    `cliente/src/components/ui/`, sin añadir dependencias.
-6. **Estilo visual (actualizado el 11/11/2026):** dos modos conmutables. El claro usa marfil y gris cálido
-   (`#F1F0ED`, `#E9E8E5`, `#FBFAF8`) con tinta negra; el oscuro invierte la escala a grafito y texto claro.
+6. **Estilo visual (actualizado el 12/11/2026):** paleta de **pasteles cálidos «Melocotón y salvia»** (el usuario
+   rechazó el marfil/grafito anterior por «muy oscuro e insulso» y pidió teoría del color). Base análoga cálida
+   (crema `#FBF4EC`, melocotón `#F8D3BF`, albaricoque `#F5B99B`, rosa `#F2CACB`), contrapunto en tríada pastel
+   (salvia `#CFE1CC`, lavanda `#DDD5EF`, mantequilla `#F8E7B5`), regla 60-30-10, texto espresso `#3B2A22` y
+   acento terracota `#A8492F` (los tokens `--verde*` son el acento: nombre histórico). Oscuro = cacao `#1F1814`
+   con acento albaricoque `#F2A584`. Contrastes WCAG comprobados (todo AA o más). Tarifas y metodología usan
+   `--tinte-1..5`; el escenario 3D usa `--escena-*` (estudio melocotón, dispositivo cacao). Los grises/negros
+   neutros fijos de la maqueta se pasaron a tonos cálidos con un script (tono 22°): no volver a meter grises neutros.
    Ambos usan **Playfair Display** (Google Fonts, elegida por el usuario el 12/11 tras probar Cormorant Garamond) para titulares, cifras y precios —el símbolo € sale de Georgia con la familia `"Euro serif"` (`unicode-range`), porque el de Playfair parece una «C» a 16px—, e **Inter** para lectura y para los rótulos pequeños (`--rotulo`: menú, etiquetas, botones, HUD, todo lo de 14px o menos). Rechazadas por el usuario: Manrope («típica de los proyectos de Claude») y Aquire (no le gustó; quería algo elegante, formal y serio). Las cifras van con `lnum`. Las superficies translúcidas usan los tokens `--vidrio`, `--vidrio-fuerte`, `--campo`, `--campo-foco` y `--luz-titular`, con valor propio en cada tema: nunca un blanco fijo, que en oscuro se vuelve una placa gris. Tarjetas redondeadas y
    superficies suaves. La píldora de tema en la cabecera anima el cambio y recuerda la elección. La vista
-   previa 3D mantiene su panel de grafito. Los tokens están en `:root` y `:root[data-tema="oscuro"]` de `cliente/src/index.css`.
+   previa 3D es un estudio melocotón. Los tokens están en `:root` y `:root[data-tema="oscuro"]` de `cliente/src/index.css`.
 7. **Commits solo a tu nombre**, sin coautores.
 8. **No subir** `node_modules`, `public/` de la raíz (se genera al compilar), `.env` ni credenciales.
 9. **Tras cada cambio:** actualizar este archivo y el README, hacer commit y push
@@ -99,8 +105,8 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 
 - Modelo por defecto: `gpt-5.4-mini` (Responses API con JSON Schema estricto).
 - La clave está en `.env` en local y debe estar en Vercel como `OPENAI_API_KEY`.
-- PDF con **PDFKit** en el servidor y la identidad de la web: logo JM, Inter,
-  cabecera azul noche, acento azul y escala sobria en el desglose. Las fuentes están en
+- PDF con **PDFKit** en el servidor y la identidad de la web: logo JM, Playfair Display + Inter,
+  cabecera melocotón → rosa con filete terracota y desglose en la tríada pastel; la vista previa es la misma hoja. Las fuentes están en
   `src/assets/fuentes/` (licencia OFL). `src/pdf.js` cita cada ruta entera a propósito:
   si se construyen con variables, Vercel no las empaqueta y el PDF falla solo en producción.
 - Camarón: `cliente/public/camaron.png` (web) y `src/assets/camaron.png` (PDF).
@@ -125,6 +131,7 @@ vista previa → PDF. Rutas nuevas: `GET /api/catalogo`, `POST /api/propuesta`,
 | 11/11/2026 | Revisión documentada en README y memoria; actualización publicada en `main`, con despliegue automático de Vercel |
 | 11/11/2026 | Nueva dirección visual basada en la captura de dashboard: marfil, grises cálidos, Manrope/Inter, tarjetas translúcidas y panel 3D de grafito |
 | 11/11/2026 | Píldora dinámica en la cabecera para alternar entre claro y oscuro, con preferencia persistente y colores coordinados para el portal y el menú |
+| 12/11/2026 | Paleta de pasteles cálidos «Melocotón y salvia» en web, escena 3D, vista previa y PDF (Playfair + Inter, cabecera melocotón → rosa, desglose en tríada pastel); README con RA5 · CE 5.1 y 5.8 |
 | 12/11/2026 | Se probó Aquire (descartada) y se pasó a Playfair Display + Inter (tras probar Cormorant Garamond); arreglado el modo oscuro: tarjetas, campos y luz de los titulares tenían blancos fijos |
 | 12/11/2026 | Letras de PRESUPUESTA con contraste propio (`--portal-letra`) en los dos modos, y web más fluida: precio y maqueta 3D casi al momento, sin `blur` en los cambios de paso y sombras y desenfoques más ligeros |
 
@@ -269,7 +276,7 @@ Comprobado el 10/11: `npx vite build` compiló sin errores antes del último cam
 5. El README describe la nueva estética marfil/gris, Playfair Display/Inter y el panel 3D de grafito.
 6. Se actualizó el historial de este archivo.
 7. Todo lo del 12/11 (contraste, fluidez, Playfair Display y modo oscuro) está publicado en `origin/main` y desplegado; `https://presupuesta-mi-web.vercel.app/api/estado` responde `{"status":"ok"}`.
-8. Pendiente: revisar en Safari/Firefox y en un ordenador menos potente (el del instituto) si la escena 3D va fluida; decidir si los títulos de las tarjetas (Esencial, Básico…) pasan también a Playfair.
+8. Pendiente: revisar en Safari/Firefox y en un ordenador menos potente (el del instituto) si la escena 3D va fluida; decidir si los títulos de las tarjetas (Esencial, Básico…) pasan también a Playfair. El enunciado de «Presupuesta mi web 2» se revisó punto por punto el 12/11 en producción (formulario, OpenAI real, validación, revisión, cálculo, PDF, fallo y reintento): cumple todo.
 
 ### Fluidez (12/11/2026)
 

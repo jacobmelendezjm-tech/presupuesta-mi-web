@@ -31,26 +31,26 @@
    -------------------------------------------------------------------------- */
 
 .escena {
-  --fondo: #111110;
-  --texto: #f4f3f0;
-  --texto-2: #b7b5af;
-  --texto-3: #92908a;
-  --borde: rgba(255, 255, 255, 0.12);
-  --borde-fuerte: rgba(255, 255, 255, 0.24);
-  --verde: #d4d1ca;
-  --verde-claro: #f5f3ed;
-  --verde-borde: rgba(245, 243, 237, 0.42);
-  --verde-suave: rgba(245, 243, 237, 0.11);
-  --verde-brillo: rgba(245, 243, 237, 0.16);
-  --texto-sobre-verde: #171716;
-  --luz: #d4d1ca;
+  --fondo: var(--escena-base);
+  --texto: var(--escena-texto);
+  --texto-2: var(--escena-texto-2);
+  --texto-3: var(--escena-texto-3);
+  --borde: var(--escena-borde);
+  --borde-fuerte: var(--escena-borde-fuerte);
+  --verde: var(--escena-acento);
+  --verde-claro: var(--escena-acento-claro);
+  --verde-borde: var(--escena-acento-borde);
+  --verde-suave: var(--escena-acento-suave);
+  --verde-brillo: var(--escena-acento-suave);
+  --texto-sobre-verde: var(--escena-sobre-acento);
+  --luz: var(--escena-luz);
   position: sticky;
   top: var(--hueco-nav);
   z-index: 1;
   height: var(--alto-escena);
   min-height: 480px;
   overflow: hidden;
-  background: #111110;
+  background: var(--escena-base);
   container-type: inline-size;
 }
 
@@ -73,9 +73,9 @@
   bottom: 0;
   z-index: 2;
   width: clamp(48px, 8%, 140px);
-  background: linear-gradient(90deg, rgba(11, 11, 11, 0), var(--fondo));
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
-  mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
+  background: linear-gradient(90deg, rgba(13, 10, 9, 0), var(--fondo));
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000000 220px);
+  mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000000 220px);
   pointer-events: none;
 }
 
@@ -89,9 +89,9 @@
     left: 0;
     z-index: 2;
     width: 120px;
-    background: linear-gradient(270deg, rgba(11, 11, 11, 0), var(--fondo));
-    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
-    mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000 220px);
+    background: linear-gradient(270deg, rgba(13, 10, 9, 0), var(--fondo));
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000000 220px);
+    mask-image: linear-gradient(180deg, transparent 0, transparent 120px, #000000 220px);
     pointer-events: none;
   }
 }
@@ -207,7 +207,7 @@
   left: 0;
   z-index: 3;
   padding: clamp(40px, 8vh, 72px) var(--margen-escena) clamp(18px, 3.6vh, 34px);
-  background: linear-gradient(0deg, rgba(5, 5, 5, 0.8), rgba(5, 5, 5, 0.45) 55%, rgba(5, 5, 5, 0));
+  background: linear-gradient(0deg, color-mix(in srgb, var(--escena-base) 86%, transparent), color-mix(in srgb, var(--escena-base) 45%, transparent) 55%, transparent);
   pointer-events: none;
 }
 
@@ -640,7 +640,7 @@
 
   .pieEscena {
     padding: 30px 16px 10px;
-    background: linear-gradient(0deg, rgba(5, 5, 5, 0.88), rgba(5, 5, 5, 0));
+    background: linear-gradient(0deg, color-mix(in srgb, var(--escena-base) 92%, transparent), transparent);
   }
 
   .pieEscena .specs {

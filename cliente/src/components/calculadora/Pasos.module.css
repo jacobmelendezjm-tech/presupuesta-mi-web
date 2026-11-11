@@ -308,7 +308,7 @@
   border-radius: 7px;
   background:
     radial-gradient(110% 120% at 75% 0%, rgba(255, 255, 255, 0.06), transparent 60%),
-    #0c0c0c;
+    #0e0b0a;
   perspective: 220px;
   transition: border-color 0.25s, box-shadow 0.35s;
 }
@@ -452,7 +452,7 @@
 .esquema[data-diseno="inmersivo"] {
   background:
     radial-gradient(60% 90% at 74% 50%, color-mix(in srgb, var(--verde) 22%, transparent), transparent 70%),
-    #0c0c0c;
+    #0e0b0a;
 }
 
 /* Cubo 3D del enfoque inmersivo (hoja aislada: nada de overflow ni opacidad en él) */

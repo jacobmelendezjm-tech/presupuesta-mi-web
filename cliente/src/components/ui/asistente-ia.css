@@ -2,7 +2,7 @@
    pasos como la navegación de la referencia (activo en blanco con barra verde),
    tarjetas oscuras, campos cuyo borde se vuelve verde al enfocar, chips de borde
    fino, skeletons mientras la IA prepara la propuesta y Camarón con un brillo verde.
-   La vista previa (.ia-papel) sigue siendo papel blanco, igual que el PDF.
+   La vista previa (.ia-papel) es la misma hoja que el PDF: papel blanco con cabecera melocotón.
    Ojo: index.css se carga después que este archivo, así que para cambiar una
    clase global (.boton, .boton-contorno…) hace falta más especificidad. */
 
@@ -717,16 +717,26 @@ input.ia-entrada-numero {
   }
 }
 
-/* ---------- Vista previa: papel blanco, igual que el PDF ---------- */
+/* ---------- Vista previa: la misma hoja que el PDF (src/pdf.js) ----------
+   Papel blanco con cabecera melocotón → rosa, filete terracota, titulares en
+   Playfair y el desglose con la tríada pastel. Colores fijos a propósito: es una
+   hoja impresa y se ve igual en modo claro y oscuro. */
 
 .ia-papel {
+  --papel-pad: clamp(22px, 5vw, 52px);
+  --papel-texto: #3b2a22;
+  --papel-suave: #6b5246;
+  --papel-linea: #eedfd3;
+  --papel-fondo: #fbf1e8;
+  --papel-acento: #a8492f;
   display: grid;
   gap: 8px;
-  padding: clamp(22px, 5vw, 52px);
-  border-radius: 6px;
+  overflow: hidden;
+  padding: 0 var(--papel-pad) var(--papel-pad);
+  border-radius: 10px;
   background: #fff;
-  box-shadow: 0 2px 4px rgba(20, 20, 18, 0.08), 0 28px 64px -38px rgba(20, 20, 18, 0.32);
-  color: #171716;
+  box-shadow: 0 2px 4px rgba(120, 60, 30, 0.08), 0 28px 64px -38px rgba(120, 60, 30, 0.38);
+  color: var(--papel-texto);
   font-size: 15px;
   transform-origin: 50% 0;
   animation: ia-papel-entrar 0.8s var(--curva) both;
@@ -744,29 +754,44 @@ input.ia-entrada-numero {
   display: flex;
   justify-content: space-between;
   gap: 16px;
+  margin: 0 calc(var(--papel-pad) * -1) 18px;
+  padding: calc(var(--papel-pad) * 0.8) var(--papel-pad) 0;
+  border-bottom: 3px solid var(--papel-acento);
+  background: linear-gradient(110deg, #f8d3bf, #f2cacb);
+}
+
+.ia-papel-cabecera > div {
+  padding-bottom: calc(var(--papel-pad) * 0.6);
 }
 
 .ia-papel-cabecera img {
-  width: 66px;
+  align-self: flex-end;
+  width: 86px;
   height: auto;
   flex-shrink: 0;
 }
 
 .ia-papel-marca {
-  color: #171716;
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--papel-texto);
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .ia-papel h3 {
-  font-size: 32px;
+  color: var(--papel-texto);
+  font-family: var(--display);
+  font-size: 34px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .ia-papel h4 {
   margin: 18px 0 2px;
-  font-size: 16px;
+  color: var(--papel-texto);
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 700;
 }
 
 .ia-papel-cliente {
@@ -776,13 +801,17 @@ input.ia-entrada-numero {
 }
 
 .ia-papel-suave {
-  color: #6e6e73;
+  color: var(--papel-suave);
   font-size: 13px;
 }
 
 .ia-papel ul {
   margin: 0;
   padding-left: 18px;
+}
+
+.ia-papel li::marker {
+  color: var(--papel-acento);
 }
 
 .ia-tabla {
@@ -797,20 +826,42 @@ input.ia-entrada-numero {
 .ia-papel th,
 .ia-papel td {
   padding: 10px 8px;
-  border-bottom: 1px solid #d2d2d7;
+  border-bottom: 1px solid var(--papel-linea);
   text-align: left;
   vertical-align: top;
 }
 
 .ia-papel thead th {
-  background: #f5f5f7;
-  color: #6e6e73;
+  background: var(--papel-fondo);
+  color: var(--papel-suave);
   font-size: 12px;
 }
+
+/* Cada concepto con su punto de la tríada pastel, como en el PDF */
+.ia-papel tbody tr th:first-child::before,
+.ia-papel tbody tr td:first-child::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #c4643f;
+  vertical-align: 1px;
+}
+
+.ia-papel tbody tr:nth-child(5n + 2) > :first-child::before { background: #f0a27f; }
+.ia-papel tbody tr:nth-child(5n + 3) > :first-child::before { background: #9dbb98; }
+.ia-papel tbody tr:nth-child(5n + 4) > :first-child::before { background: #b9abdf; }
+.ia-papel tbody tr:nth-child(5n + 5) > :first-child::before { background: #e3bf62; }
 
 .ia-papel td span,
 .ia-papel td em {
   display: block;
+}
+
+.ia-papel td em {
+  color: var(--papel-suave);
 }
 
 .ia-papel .ia-num {
@@ -825,8 +876,18 @@ input.ia-entrada-numero {
 .ia-papel tfoot th,
 .ia-papel tfoot td {
   border-bottom: 0;
-  font-size: 20px;
+  background: var(--papel-fondo);
+  font-family: var(--display);
+  font-size: 21px;
   font-weight: 700;
+}
+
+.ia-papel tfoot th {
+  border-radius: 10px 0 0 10px;
+}
+
+.ia-papel tfoot td:last-child {
+  border-radius: 0 10px 10px 0;
 }
 
 /* ---------- Tablet y móvil ---------- */

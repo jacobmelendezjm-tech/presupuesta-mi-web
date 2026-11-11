@@ -1,7 +1,9 @@
 # Presupuesta mi web
 
 API desarrollada con **Node.js**, **Express** y **JavaScript** para el módulo
-**0613 · Desarrollo web en entorno servidor** (RA7 · CE 7.4, 7.6 y 7.7).
+**0613 · Desarrollo web en entorno servidor** (RA7 · CE 7.4, 7.6 y 7.7). La ampliación con IA y PDF
+(«Presupuesta mi web 2») corresponde a **RA5 · CE 5.1 y 5.8** y **RA7 · CE 7.7**
+(programacion-0613.pdf, páginas 20–22).
 
 La API recibe las características de una web, **valida los datos en el servidor**
 y devuelve un **presupuesto desglosado** calculado con las tarifas propias del
@@ -311,7 +313,7 @@ dan el mismo resultado contra la versión desplegada en Vercel.
 
 ## Ampliación: interfaz React (CE 7.7)
 
-Web React con una interfaz en marfil y grises cálidos, tipografía Playfair Display (titulares y cifras) e Inter (texto y rótulos), superficies suaves y una píldora animada para alternar entre modo claro y oscuro. La selección se conserva al volver a la web. La vista previa 3D mantiene el contraste de un panel de grafito y responde casi al momento a las opciones elegidas: el precio llega en unos 120 ms y cada módulo se monta en menos de medio segundo. Consume las tres rutas de la API:
+Web React con una paleta de pasteles cálidos («Melocotón y salvia»: crema, melocotón, albaricoque y terracota, con salvia y lavanda de contrapunto), tipografía Playfair Display (titulares y cifras) e Inter (texto y rótulos), superficies suaves y una píldora animada para alternar entre modo claro y oscuro. La selección se conserva al volver a la web. La vista previa 3D es un estudio melocotón con un dispositivo de cacao y responde casi al momento a las opciones elegidas: el precio llega en unos 120 ms y cada módulo se monta en menos de medio segundo. Consume las tres rutas de la API:
 
 La maqueta de la web del cliente se construye en directo mientras se configura: muestra páginas, diseño y módulos seleccionados, con una cámara que cambia según el paso. La escena respeta la preferencia de reducir movimiento y no calcula precios; el importe siempre llega del servidor.
 
@@ -397,9 +399,11 @@ comprueba en código que:
 | pdf-lib | Útil para editar PDF existentes, pero sin maquetación; sin versiones desde 2022 |
 | Puppeteer | Fiel al HTML, pero necesita Chromium: pesado y delicado en funciones serverless |
 
-El PDF lleva la identidad de la web: logo JM, tipografía Inter (incluida en
-[`src/assets/fuentes`](src/assets/fuentes), con licencia OFL), cabecera azul noche con
-Camarón, y una escala sobria de azules para cada concepto.
+El PDF lleva la identidad de la web: logo JM, titulares y total en **Playfair Display** y
+texto en **Inter** (ambas en [`src/assets/fuentes`](src/assets/fuentes), con licencia OFL),
+cabecera en degradado melocotón → rosa con Camarón y filete terracota, y el desglose con
+los tonos de la tríada pastel (terracota, albaricoque, salvia, lavanda y mantequilla). La
+vista previa de la web es la misma hoja, así que lo que se revisa es lo que se descarga.
 
 ### Comprobaciones
 

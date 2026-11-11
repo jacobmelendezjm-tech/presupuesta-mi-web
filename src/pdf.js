@@ -7,24 +7,29 @@ const RUTA_INTER = path.join(__dirname, "assets", "fuentes", "inter-latin-400-no
 const RUTA_INTER_SEMI = path.join(__dirname, "assets", "fuentes", "inter-latin-600-normal.woff");
 const RUTA_INTER_BOLD = path.join(__dirname, "assets", "fuentes", "inter-latin-700-normal.woff");
 const RUTA_INTER_CURSIVA = path.join(__dirname, "assets", "fuentes", "inter-latin-400-italic.woff");
+const RUTA_PLAYFAIR_SEMI = path.join(__dirname, "assets", "fuentes", "playfair-display-latin-600-normal.woff");
+const RUTA_PLAYFAIR_BOLD = path.join(__dirname, "assets", "fuentes", "playfair-display-latin-700-normal.woff");
 
 const URL_WEB = "https://presupuesta-mi-web.vercel.app";
 
-// Misma identidad que la web (tokens de cliente/src/index.css).
+// Misma identidad que la web: paleta «Melocotón y salvia» (tokens de cliente/src/index.css).
 const COLOR = {
-  noche: "#0f172a",
-  texto: "#0f172a",
-  suave: "#64748b",
-  gris: "#94a3b8",
-  grisClaro: "#cbd5e1",
-  linea: "#e2e8f0",
-  fondo: "#f4f5f7",
-  azul: "#2563eb",
-  azulClaro: "#60a5fa",
+  texto: "#3b2a22", // espresso
+  suave: "#6b5246",
+  gris: "#82665a",
+  linea: "#eedfd3",
+  fondo: "#fbf1e8", // tinte melocotón para cajas
+  pendiente: "#e3bf62", // mantequilla: viñetas de lo que falta por valorar
+  melocoton: "#f8d3bf",
+  rosa: "#f2cacb",
+  acento: "#a8492f", // terracota
+  acentoClaro: "#f5b99b", // albaricoque
 };
-// Escala sobria para el desglose: cada concepto toma un tono por orden.
-const TONOS = ["#0f172a", "#2563eb", "#60a5fa", "#94a3b8", "#cbd5e1"];
+// Desglose con la tríada pastel, en tonos medios para que se distingan sobre papel.
+const TONOS = ["#c4643f", "#f0a27f", "#9dbb98", "#b9abdf", "#e3bf62"];
 const tonoLinea = (indice) => TONOS[indice % TONOS.length];
+// Playfair usa cifras «antiguas» por defecto (el 9 baja de la línea): en importes, alineadas.
+const CIFRAS = ["lnum"];
 
 const ANCHO_PAGINA = 595.28;
 const MARGEN = 50;
@@ -60,14 +65,16 @@ function dibujarLogo(doc, x, y, ancho, colorLetras) {
   const escala = ancho / 46;
   doc.save().translate(x, y).scale(escala);
   doc.path("M3 18a5 5 0 0 0 10 0V3M19 23V3l8 11 8-11v20").lineWidth(2.6).lineCap("round").lineJoin("round").stroke(colorLetras);
-  doc.circle(42, 21, 2.4).fill(COLOR.azulClaro);
+  doc.circle(42, 21, 2.4).fill(COLOR.acento);
   doc.restore();
 }
 
 function dibujarCabecera(doc, documento) {
-  doc.rect(0, 0, ANCHO_PAGINA, ALTO_CABECERA).fill(COLOR.noche);
+  const degradado = doc.linearGradient(0, 0, ANCHO_PAGINA, ALTO_CABECERA);
+  degradado.stop(0, COLOR.melocoton).stop(1, COLOR.rosa);
+  doc.rect(0, 0, ANCHO_PAGINA, ALTO_CABECERA).fill(degradado);
 
-  doc.rect(0, ALTO_CABECERA, ANCHO_PAGINA, 4).fill(COLOR.azul);
+  doc.rect(0, ALTO_CABECERA, ANCHO_PAGINA, 3).fill(COLOR.acento);
 
   // Camarón apoyado sobre la franja de color
   const camaron = doc.openImage(RUTA_CAMARON);
@@ -75,24 +82,24 @@ function dibujarCabecera(doc, documento) {
   const altoCamaron = (camaron.height / camaron.width) * anchoCamaron;
   doc.image(camaron, ANCHO_PAGINA - MARGEN - anchoCamaron + 10, ALTO_CABECERA - altoCamaron + 2, { width: anchoCamaron });
 
-  dibujarLogo(doc, MARGEN, 30, 34, "#f5f5f7");
-  doc.moveTo(MARGEN + 42, 31).lineTo(MARGEN + 42, 49).lineWidth(0.75).stroke("#475569");
-  doc.font("InterSemi").fontSize(14).fillColor("#f5f5f7").text("Presupuesta", MARGEN + 50, 33, { lineBreak: false });
+  dibujarLogo(doc, MARGEN, 30, 34, COLOR.texto);
+  doc.moveTo(MARGEN + 42, 31).lineTo(MARGEN + 42, 49).lineWidth(0.75).stroke(COLOR.acento);
+  doc.font("PlayfairSemi").fontSize(14).fillColor(COLOR.texto).text("Presupuesta", MARGEN + 50, 31, { lineBreak: false });
 
   const anchoTexto = ANCHO - 130;
-  doc.font("InterBold").fontSize(32).fillColor("#f5f5f7").text("Tu presupuesto.", MARGEN, 66, { width: anchoTexto, lineBreak: false });
-  doc.font("InterSemi").fontSize(12).fillColor("#f5f5f7").text(limpiar(documento.cliente), MARGEN, 114, {
+  doc.font("PlayfairBold").fontSize(32).fillColor(COLOR.texto).text("Tu presupuesto.", MARGEN, 62, { width: anchoTexto, lineBreak: false });
+  doc.font("InterSemi").fontSize(12).fillColor(COLOR.texto).text(limpiar(documento.cliente), MARGEN, 114, {
     width: anchoTexto,
     height: 32,
     ellipsis: true,
   });
-  doc.font("Inter").fontSize(10).fillColor(COLOR.grisClaro).text(limpiar(documento.fecha), MARGEN, 150, { width: anchoTexto });
+  doc.font("Inter").fontSize(10).fillColor(COLOR.suave).text(limpiar(documento.fecha), MARGEN, 150, { width: anchoTexto });
 }
 
 /** Total grande y barra de conceptos. */
 function dibujarTotal(doc, documento, y) {
   const total = limpiar(euros(documento.total));
-  doc.font("InterBold").fontSize(50).fillColor(COLOR.noche).text(total, MARGEN, y, { lineBreak: false });
+  doc.font("PlayfairBold").fontSize(50).fillColor(COLOR.texto).text(total, MARGEN, y - 6, { lineBreak: false, features: CIFRAS });
   doc.font("Inter").fontSize(9.5).fillColor(COLOR.suave).text(`Sin impuestos · ${documento.moneda}`, MARGEN, y + 62, { lineBreak: false });
 
   const conImporte = documento.lineas.filter((l) => l.importe > 0);
@@ -125,6 +132,8 @@ function generarPdf(documento) {
     doc.registerFont("InterSemi", RUTA_INTER_SEMI);
     doc.registerFont("InterBold", RUTA_INTER_BOLD);
     doc.registerFont("InterCursiva", RUTA_INTER_CURSIVA);
+    doc.registerFont("PlayfairSemi", RUTA_PLAYFAIR_SEMI);
+    doc.registerFont("PlayfairBold", RUTA_PLAYFAIR_BOLD);
 
     const partes = [];
     doc.on("data", (p) => partes.push(p));
@@ -140,21 +149,21 @@ function generarPdf(documento) {
     const titulo = (principal, secundario, altoSiguiente = 0) => {
       asegurarEspacio(62 + altoSiguiente);
       doc.moveDown(1.5);
-      doc.font("InterBold").fontSize(17).fillColor(COLOR.texto).text(`${principal} `, MARGEN, doc.y, { continued: true });
-      doc.fillColor(COLOR.gris).text(secundario);
+      doc.font("PlayfairBold").fontSize(18).fillColor(COLOR.texto).text(`${principal} `, MARGEN, doc.y, { continued: true });
+      doc.font("PlayfairSemi").fillColor(COLOR.acento).text(secundario);
       doc.moveDown(0.55);
     };
 
     const altoElemento = (texto) =>
       doc.font("Inter").fontSize(10).heightOfString(limpiar(texto), { width: ANCHO - SANGRIA, lineGap: 1.5 }) + 8;
 
-    const lista = (elementos) => {
+    const lista = (elementos, color = COLOR.acento) => {
       for (const elemento of elementos) {
         const texto = limpiar(elemento);
         asegurarEspacio(altoElemento(texto));
         doc.font("Inter").fontSize(10);
         const y = doc.y;
-        doc.circle(MARGEN + 3, y + 5.5, 2.25).fill(COLOR.azul);
+        doc.circle(MARGEN + 3, y + 5.5, 2.25).fill(color);
         doc.fillColor(COLOR.texto).text(texto, MARGEN + SANGRIA, y, { width: ANCHO - SANGRIA, lineGap: 1.5 });
         doc.moveDown(0.4);
       }
@@ -221,8 +230,9 @@ function generarPdf(documento) {
 
     asegurarEspacio(ALTO_FILA_TOTAL);
     const yTotal = doc.y + 12;
-    doc.font("InterBold").fontSize(16).fillColor(COLOR.texto).text("Total", MARGEN, yTotal, { lineBreak: false });
-    doc.text(limpiar(euros(documento.total)), MARGEN, yTotal, { width: ANCHO, align: "right" });
+    doc.roundedRect(MARGEN - 10, yTotal - 8, ANCHO + 20, 34, 10).fill(COLOR.fondo);
+    doc.font("PlayfairBold").fontSize(16).fillColor(COLOR.texto).text("Total", MARGEN, yTotal, { lineBreak: false });
+    doc.text(limpiar(euros(documento.total)), MARGEN, yTotal, { width: ANCHO, align: "right", features: CIFRAS });
     doc.y = yTotal + 22;
 
     if (documento.dudas.length > 0 || documento.pendientes.length > 0) {
@@ -233,7 +243,7 @@ function generarPdf(documento) {
         doc.moveDown(0.4).font("InterSemi").fontSize(10.5).fillColor(COLOR.texto);
         doc.text("Fuera de catálogo · pendiente de valorar (no incluido en el total)", MARGEN, doc.y, { width: ANCHO });
         doc.moveDown(0.45);
-        lista(documento.pendientes);
+        lista(documento.pendientes, COLOR.pendiente);
       }
     }
 
@@ -243,15 +253,15 @@ function generarPdf(documento) {
       doc.switchToPage(i);
       doc.page.margins.bottom = 0;
 
-      if (i > 0) doc.rect(0, 0, ANCHO_PAGINA, 4).fill(COLOR.azul);
+      if (i > 0) doc.rect(0, 0, ANCHO_PAGINA, 4).fill(COLOR.acentoClaro);
 
       doc.moveTo(MARGEN, 794).lineTo(MARGEN + ANCHO, 794).lineWidth(0.5).stroke(COLOR.linea);
       dibujarLogo(doc, MARGEN, 802, 19, COLOR.texto);
-      doc.font("InterSemi").fontSize(8).fillColor(COLOR.texto).text("Presupuesta mi web", MARGEN + 25, 800, { lineBreak: false });
+      doc.font("PlayfairSemi").fontSize(8.5).fillColor(COLOR.texto).text("Presupuesta mi web", MARGEN + 25, 799, { lineBreak: false });
       doc.font("Inter").fontSize(7.5).fillColor(COLOR.suave);
       doc.text("Tu web, al precio exacto.", MARGEN + 25, 811, { lineBreak: false });
       doc.text(`Página ${i + 1} de ${rango.count}`, MARGEN, 800, { width: ANCHO, align: "right", lineBreak: false });
-      doc.fillColor(COLOR.azul).text("presupuesta-mi-web.vercel.app", MARGEN, 811, { width: ANCHO, align: "right", lineBreak: false, link: URL_WEB });
+      doc.fillColor(COLOR.acento).text("presupuesta-mi-web.vercel.app", MARGEN, 811, { width: ANCHO, align: "right", lineBreak: false, link: URL_WEB });
       doc.fillColor(COLOR.gris).fontSize(7).text("Propuesta orientativa generada con asistencia de IA y revisada por el cliente.", MARGEN, 822, {
         width: ANCHO,
         align: "center",

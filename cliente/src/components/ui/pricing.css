@@ -120,7 +120,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0) 40%),
     var(--superficie);
-  box-shadow: 0 20px 48px -38px rgba(20, 20, 18, 0.32);
+  box-shadow: 0 20px 48px -38px rgba(23, 18, 16, 0.32);
 }
 
 /* Con subgrid, las seis filas (nombre, texto, precio, botones, características e
